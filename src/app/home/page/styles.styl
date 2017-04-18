@@ -1,0 +1,47 @@
+@require "~darch/src/styles/variables"
+@require "~darch/src/button/styles"
+
+.logo
+    height: ($bar-height - 20pt);
+
+.link-active
+    color: $text-color !important;
+    
+.content
+    padding-top: 20pt;
+
+.signin-button
+    font-size: 0.8em;
+    
+    composes: button;
+    composes: button-flat;
+    composes: button-flat-moody;
+    
+    padding: 0.4em 0.8em !important;
+    color: white !important;
+    height: auto !important;
+
+.create-button
+    font-size: 0.8em;
+    
+    composes: button;
+    composes: button-flat;
+    composes: button-flat-warning;
+    
+    padding: 0.4em 0.8em !important;
+    color: white !important;
+    height: auto !important;
+    
+    span
+        font-size: 0.9em;
+
+
+.account-button
+    display: block !important;
+    
+    @media (min-width: $screen-tablet-min) {
+        margin-left: 10pt;
+    }
+    
+    span 
+        font-size: 26pt;

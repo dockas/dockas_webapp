@@ -1,0 +1,101 @@
+lang: pt-br
+
+formats:
+    datetime: DD/MM/YYYY HH:mm:ss
+    date: DD/MM/YYYY
+    time: HH:mm:ss
+
+    number:
+        thousandSeparator: "."
+        decimalSeparator: ","
+        currency: R$
+
+dictionary:
+    # Generic terms
+    _LOADING_: Carregando
+    _SEND_: Enviar
+    _SIGNUP_: Cadastrar
+    _SIGNIN_: Entrar
+    _CONTINUE_: Continuar
+    _FINALIZE_: Finalizar
+    _UPDATE_: Atualizar
+    _YES_: Sim
+    _NO_: Não
+    _ADD_: Adicionar
+    _ITEMS_: Itens
+    _ITEM_: Item
+    _SAVE_: Salvar
+    _SAVING_: Salvando
+
+    # Nav bar
+    _NAV_BAR_SIGNIN_ITEM_LABEL_: Login
+    _NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_: Adicionar Produto
+
+    # Signin page
+    _LOGIN_FIELD_LABEL_: email
+    _LOGIN_FIELD_PLACEHOLDER_: meu@email.com
+    _PASSWORD_FIELD_LABEL_: senha
+    _PASSWORD_FIELD_PLACEHOLDER_: ••••••
+
+    # Checkout page
+    _CHECKOUT_PROGRESS_STEP_REVIEW_TEXT_: Revisão
+    _CHECKOUT_PROGRESS_STEP_ADDRESS_TEXT_: Endereço
+    _CHECKOUT_PROGRESS_STEP_PAYMENT_TEXT_: Pagamento
+    _CHECKOUT_PROGRESS_STEP_FINALIZE_TEXT_: Conclusão
+
+    _CHECKOUT_STEP_REVIEW_TITLE_: Revise suas compras
+    _CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_: Item
+    _CHECKOUT_STEP_REVIEW_UNIT_PRICE_TH_: Preço Unitário
+    _CHECKOUT_STEP_REVIEW_COUNT_TH_: Quantidade
+    _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: Preço Total
+    
+    _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
+    _NEW_ADDRESS_MODAL_ID_FIELD_LABEL_: Identificador
+    _NEW_ADDRESS_MODAL_ID_FIELD_PLACEHOLDER_: minha casa
+    _NEW_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: CEP
+    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: Endereço
+    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
+    _NEW_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: Número
+    _NEW_ADDRESS_MODAL_NUMBER_FIELD_PLACEHOLDER_: "4938"
+    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: Complemento
+    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_PLACEHOLDER_: Apto 402
+    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: Bairro
+    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
+    _NEW_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
+    _NEW_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
+
+    _CHECKOUT_STEP_PAYMENT_TITLE_: Realizar o pagamento
+    _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
+
+    # Create product page
+    _CREATE_PRODUCT_PAGE_TITLE_: Novo Produto
+    _CREATE_PRODUCT_PAGE_SUMMARY_FIELD_LABEL_: Resumo
+    _CREATE_PRODUCT_PAGE_SUMMARY_FIELD_PLACEHOLDER_: tomate do himaláia
+    _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_: Descrição
+    _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: descrição genérica sobre o tomate do himaláia para ajudar em pesquisas
+    _CREATE_PRODUCT_PAGE_PRICE_FIELD_LABEL_: Preço
+    _CREATE_PRODUCT_PAGE_PRICE_FIELD_PLACEHOLDER_: 50,00
+    _CREATE_PRODUCT_PAGE_STOCK_FIELD_LABEL_: Estoque
+    _CREATE_PRODUCT_PAGE_STOCK_FIELD_PLACEHOLDER_: 500
+    _CREATE_PRODUCT_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
+    _PRODUCT_CREATE_SUCCESS_: Produto criado com sucesso.
+
+    # Basket Card
+    _BASKET_CARD_ITEMS_TEXT_: "{{numItems}} itens"
+    _BASKET_CARD_ITEM_TEXT_: "{{numItems}} item"
+    _BASKET_CARD_FINALIZE_BUTTON_TEXT_: Finalizar
+    _BASKET_CARD_CONTINUE_BUTTON_TEXT_: Continuar
+    _BASKET_CARD_CHOOSE_ADDRESS_BUTTON_TEXT_: Continuar
+    _BASKET_CARD_PAY_BUTTON_TEXT_: Continuar
+    _BASKET_CARD_FINISH_BUTTON_TEXT_: Encerrar
+
+    # Field errors
+    _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
+    _FIELD_ERROR_EMAIL_: Digite um endereço de email válido
+    _FIELD_ERROR_DIGITS_: Apenas números são permitidos neste campo.
+
+    # Error messages
+    _AUTH_ERROR_2_: Nome de usuário, email ou senha incorretos.
+    _ROOM_ERROR_2_: Ops... Alguma informação está incorreta.
+    _USER_ERROR_6_: Email já cadastrado.
+    _USER_ERROR_7_: Nome de usuário já cadastrado.

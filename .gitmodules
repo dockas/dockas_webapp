@@ -1,0 +1,3 @@
+[submodule "darch"]
+	path = darch
+	url = git@github.com:nosebit/darch.git

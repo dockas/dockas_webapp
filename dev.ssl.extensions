@@ -1,0 +1,14 @@
+[ dev ]
+nsCertType              = server
+keyUsage                = digitalSignature,nonRepudiation,keyEncipherment
+extendedKeyUsage        = serverAuth
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+subjectAltName          = @dev_subject
+
+[ dev_subject ]
+DNS.1 = dockas.dev
+DNS.2 = www.dockas.dev
+DNS.3 = blog.lerbox.dev
+DNS.4 = api.dockas.dev
+DNS.5 = socket.dockas.dev

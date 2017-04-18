@@ -1,0 +1,16 @@
+siteinfo:
+    #mixpanel_key: 0c9e1048c3d7c85d826448b2bab8a00b
+    base_url: //dockas.dev
+    logo_icon_url: //dockas.dev/assets/images/logo_icon.png
+    logo_favicon_url: //dockas.dev/assets/images/favicon.png
+
+#hostnames:
+#    webapp: dockas.dev
+#    api: api.dockas.dev
+#    socket: socket.dockas.dev
+
+hostnames:
+    webapp: dockas.dev
+    api: api.dockas.dev
+    socket: socket.dockas.dev
+    file: api.dockas.dev/v1/file

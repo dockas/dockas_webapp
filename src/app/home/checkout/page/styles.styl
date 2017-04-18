@@ -1,0 +1,43 @@
+@require "~darch/src/styles/variables";
+
+.progress-steps
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 0;
+    
+    li
+        display: inline-block;
+        width: 25%;
+        text-align: center;
+
+    .step-container
+        position: relative;
+        line-height: 1;
+
+    .step-bullete
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid white;
+        background: #ddd;
+        display: inline-block;
+
+    .step-bar
+        background: #ddd;
+        height: 2px;
+        position: absolute;
+        top: 50%;
+        margin-top: -2px;
+        z-index: -1;
+        right: 50%;
+        width: 100%;
+
+    .step-title
+        color: #ddd;
+    
+    li.active
+        .step-bullete
+            background: $color-success;
+        
+        .step-title
+            color: $color-success;

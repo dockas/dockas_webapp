@@ -1,0 +1,21 @@
+siteinfo:
+    description: Dockas - The online market
+    title: Dockas
+    keywords: startup,tech,chat
+    #fb_app_id: 250528625300602
+    #mixpanel_key: cd89107f218f244fd5e91772fd041fbe
+    #analytics_key: UA-79995910-2
+    #optimizely_key: 5385733009
+    #google_maps_key: AIzaSyDOko7oldevlasKPWl1x1sqZje1nzBZNvk
+    base_url: //dockas.com
+    logo_icon_url: //dockas.com/assets/images/logo_icon.png
+    logo_favicon_url: //dockas.com/assets/images/favicon.png
+
+hostnames:
+    webapp: dockas.com
+    api: api.dockas.com
+    socket: socket.dockas.com
+    file: api.dockas.com/v1/file
+
+mapbox:
+    accessToken: pk.eyJ1IjoiYnJ1bm9zZSIsImEiOiJjaXpoOTRsd3UwMWFxMnhwbG56MTFoNnVqIn0.z8vunE1lGlbIAiW8RSNfYQ

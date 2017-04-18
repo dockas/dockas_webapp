@@ -1,0 +1,18 @@
+# Ignore MAC OS X files
+.DS_Store
+
+# Ignore npm and dist folders
+node_modules
+dist
+
+# Ignore local config files
+config/local*
+config/index.js
+
+# Yarn
+yarn.lock
+
+# Nginx
+.ssl
+.srl
+nginx.conf
