@@ -90,13 +90,8 @@ class Component extends React.Component {
 
         data.postal_code = `${data.postal_code}`;
 
-        let addresses = (this.props.user.addresses?lodash.clone(this.props.user.addresses):[]);
-        addresses.push(data);
-
-        logger.info("addresses", addresses);
-
         Redux.dispatch(
-            User.actions.userUpdate({addresses})
+            User.actions.userAddAddress(data)
         ).then(() => {
             this.setState({
                 newAddressModalOpen: false,
@@ -148,7 +143,7 @@ class Component extends React.Component {
                     </div>
 
                     <div>
-                        {user.addresses ? (
+                        {user.addresses && user.addresses.length ? (
                             user.addresses.map((data) => {
                                 return (
                                     <div key={data.id} className={styles.addressCard}>
@@ -156,7 +151,7 @@ class Component extends React.Component {
                                             <input type="radio" value={data.id} checked={selectedAddress?selectedAddress.id==data.id:false} onChange={this.onAddressRadioChange} />
                                         </div>
                                         <div className={styles.addressBody}>
-                                            <div className={styles.addressId}>{data.id}</div>
+                                            <div className={styles.addressLabel}>{data.label}</div>
                                             <div className={styles.addressInfo}>
                                                 {data.address}, {data.number}{data.complement?` ${data.complement}`:""}
                                             </div>
@@ -176,7 +171,9 @@ class Component extends React.Component {
                     this.setState({newAddressModalOpen: false});
                 }}>
                     <Modal.Header>
-                        <h3 style={{margin: 0}}>Adicionar Novo Endereço</h3>
+                        <h3 style={{margin: 0}}>
+                            <i18n.Translate text="_NEW_ADDRESS_MODAL_TITLE_" />
+                        </h3>
                     </Modal.Header>
 
                     <Form onSubmit={this.onNewAddressSubmit} loading={newAddressModalLoading}>
@@ -186,15 +183,15 @@ class Component extends React.Component {
                                     <Grid.Cell span={2}>
                                         <Field.Section>
                                             <div className={styles.label}>
-                                                <i18n.Translate text="_NEW_ADDRESS_MODAL_ID_FIELD_LABEL_" />
+                                                <i18n.Translate text="_NEW_ADDRESS_MODAL_LABEL_FIELD_LABEL_" />
                                             </div>
                                             <Field.Text
-                                                name="id"
-                                                placeholder="_NEW_ADDRESS_MODAL_ID_FIELD_PLACEHOLDER_"
+                                                name="label"
+                                                placeholder="_NEW_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_"
                                                 scale={1}
                                                 validators="$required"/>
                                             <Field.Error
-                                                for="id"
+                                                for="label"
                                                 validator="$required"
                                                 message="_FIELD_ERROR_REQUIRED_"/>
                                         </Field.Section>

@@ -1,6 +1,9 @@
 import React from "react";
+import config from "config";
+import lodash from "lodash";
 import {LoggerFactory} from "darch/src/utils";
-//import {Basket} from "common";
+import i18n from "darch/src/i18n";
+import Container from "darch/src/container";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("checkout.finalize");
@@ -25,9 +28,16 @@ export default class Component extends React.Component {
     }
 
     render() {
+        let {support} = config;
+        let selectedSupport = support[lodash.random(0, support.length-1)];
+
         return (
             <div className={styles.page}>
-                Finalizar
+                <Container>
+                    <h3><i18n.Translate text="_CHECKOUT_STEP_FINALIZE_TITLE_" /></h3>
+
+                    <i18n.Translate text="_CHECKOUT_STEP_FINALIZE_BODY_" data={selectedSupport} />
+                </Container>
             </div>
         );
     }

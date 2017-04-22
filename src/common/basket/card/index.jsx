@@ -70,7 +70,7 @@ class Component extends React.Component {
             <div>
                 <div className={styles.card}>
                     <div>
-                        <span className={styles.price}><i18n.Number value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} currency={true} /></span>
+                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} /></span>
                         <span className={styles.items}>
                             <span className={styles.separator}>/</span>
                             {lodash.size(items) == 1 ? (

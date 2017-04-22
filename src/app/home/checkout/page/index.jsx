@@ -52,7 +52,7 @@ export default class Component extends React.Component {
                             <i18n.Translate text="_CHECKOUT_PROGRESS_STEP_PAYMENT_TEXT_" />
                         </div>
                     </li>
-                    <li className={pathname=="/checkout/finilize"?styles.active:""}>
+                    <li className={pathname=="/checkout/finalize"?styles.active:""}>
                         <div className={styles.stepContainer}>
                             <div className={classNames([styles.stepBar, styles.stepBarLeft])}></div>
                             <div className={styles.stepBullete}></div>

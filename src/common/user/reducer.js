@@ -73,6 +73,46 @@ export default handleActions({
         );
     },
 
+    userAddAddress_COMPLETED(state, action) {
+        let logger = Logger.create("userAddAddress_COMPLETED");
+        logger.info("enter", {state: state, action: action});
+
+        let profile = state.profiles[state.uid];
+        profile.addresses.push(action.payload);
+
+        return lodash.assign(
+            {},
+            state, 
+            {
+                profiles: lodash.set(
+                    state.profiles, 
+                    state.uid, 
+                    profile
+                )
+            }
+        );
+    },
+
+    userRemoveAddress_COMPLETED(state, action) {
+        let logger = Logger.create("userRemoveAddress_COMPLETED");
+        logger.info("enter", {state: state, action: action});
+
+        let profile = state.profiles[state.uid];
+        lodash.remove(profile.addresses, (a) => { return a.id == action.payload; });
+
+        return lodash.assign(
+            {},
+            state, 
+            {
+                profiles: lodash.set(
+                    state.profiles, 
+                    state.uid, 
+                    profile
+                )
+            }
+        );
+    },
+
     userFind_COMPLETED(state, action) {
         let logger = Logger.create("userFind_COMPLETED");
         logger.info("enter", {state: state, action: action});

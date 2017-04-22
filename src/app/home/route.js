@@ -12,8 +12,8 @@ module.exports = {
             cb(null, [
                 require("./catalog/route"),
                 require("./account/route"),
-                require("./create/route"),
-                require("./checkout/route")
+                require("./checkout/route"),
+                require("./admin/route")
             ]);
         });
     },

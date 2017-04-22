@@ -1,7 +1,7 @@
 import React from "react";
 import config from "config";
 import {connect} from "react-redux";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
 import styles from "./styles";
@@ -113,10 +113,21 @@ class Component extends React.Component {
                 </div>
 
                 <div className={styles.price}>
-                    <i18n.Number value={data.price} numDecimals={2} currency={true} />
+                    <i18n.Number prefix="R$" value={data.priceValue} numDecimals={2}/>
                 </div>
 
-                <div className={styles.summary}>{data.summary}</div>
+                <div className={styles.name}>
+                    <textarea disabled rows="2" value={data.name}></textarea>
+                </div>
+
+                {data.tags && data.tags.length ? (
+                    <div className={styles.tagsContainer}>
+                        <div className={styles.tag} style={{
+                            backgroundColor: data.tags[0].color,
+                            color: Style.darkness(data.tags[0].color) > 40 ? "#ffffff" : "#000000"
+                        }}>{data.tags[0].name}</div>
+                    </div>
+                ) : null}
             </div>
         );
     }

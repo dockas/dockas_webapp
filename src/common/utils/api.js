@@ -67,12 +67,24 @@ export default class Api {
         return this.request("POST", "user/signup", data, opts);
     }
 
+    userFind(query, opts) {
+        return this.request("GET", "user", query, opts);
+    }
+
     userMe(opts) {
         return this.request("GET", "user/me", null, opts);
     }
 
     userUpdate(data, opts) {
-        return this.request("PUT", "user", data, opts);
+        return this.request("PUT", "user/me", data, opts);
+    }
+
+    userAddAddress(data, opts) {
+        return this.request("POST", "user/me/address", data, opts);
+    }
+
+    userRemoveAddress(id, opts) {
+        return this.request("DELETE", `user/me/address/${id}`, null, opts);
     }
 
     productCreate(data, opts) {
@@ -81,5 +93,29 @@ export default class Api {
 
     productFind(query, opts) {
         return this.request("GET", "product", query, opts);
+    }
+
+    productPriceUpdate(id, data, opts) {
+        return this.request("PUT", `product/${id}/price`, data, opts);
+    }
+
+    tagCreate(data, opts) {
+        return this.request("POST", "tag", data, opts);
+    }
+
+    tagFind(query, opts) {
+        return this.request("GET", "tag", query, opts);
+    }
+
+    priceCreate(data, opts) {
+        return this.request("POST", "price", data, opts);
+    }
+
+    orderCreate(data, opts) {
+        return this.request("POST", "order", data, opts);
+    }
+
+    orderFind(query, opts) {
+        return this.request("GET", "order", query, opts);
     }
 }

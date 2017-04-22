@@ -1,5 +1,5 @@
 import React from "react";
-import {withRouter} from "react-router";
+import {Link,withRouter} from "react-router";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
@@ -128,6 +128,7 @@ class Component extends React.Component {
                                                 <i18n.Translate text="_SIGNIN_" />
                                             </Button>
                                         </div>
+                                        <Link to="/signup" style={{textDecoration: "none", marginTop: "10px", display: "inline-block"}}><i18n.Translate text="_CREATE_ACCOUNT_TEXT_" /></Link>
                                     </Field.Section>
                                 </Form>
                             </div>

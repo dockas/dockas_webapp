@@ -26,16 +26,64 @@ dictionary:
     _ITEM_: Item
     _SAVE_: Salvar
     _SAVING_: Salvando
+    _OK_: Ok
+    _FINALIZING_: Finalizando
 
     # Nav bar
     _NAV_BAR_SIGNIN_ITEM_LABEL_: Login
-    _NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_: Adicionar Produto
+    _NAV_BAR_ADMIN_ITEM_LABEL_: Admin
+
+    # Admin page
+    _ADMIN_BAR_TITLE_: Admin
+    _ADMIN_BAR_PRODUCTS_LABEL_: Produtos
+    _ADMIN_BAR_USERS_LABEL_: Usuários
+    _ADMIN_BAR_ORDERS_LABEL_: Pedidos
+    _ADMIN_BAR_ADD_ACTION_LABEL_: Adicionar
+
+    _ADMIN_PRODUCTS_PAGE_NAME_TH_: nome
+    _ADMIN_PRODUCTS_PAGE_PRICE_VALUE_TH_: preço
+    _ADMIN_PRODUCTS_PAGE_CREATOR_TH_: criador
+    _ADMIN_PRODUCTS_PAGE_CREATED_AT_TH_: criado em
+    _ADMIN_PRODUCTS_PAGE_NO_PRODUCTS_: Nenhum produto cadastrado
+    _ADMIN_PRODUCTS_PAGE_CHANGE_PRICE_MODAL_TITLE_: Atualizar Preço
+    _ADMIN_PRODUCTS_PAGE_CHANGE_PRICE_MODAL_VALUE_LABEL_: Valor
+
+    _ADMIN_USERS_PAGE_FULL_NAME_TH_: nome
+    _ADMIN_USERS_PAGE_EMAIL_TH_: email
+    _ADMIN_USERS_PAGE_ROLE_TH_: tipo
+    _ADMIN_USERS_PAGE_CREATED_AT_TH_: criado em
+    _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_TITLE_: Alterar tipo
+    _ADMIN_USERS_PAGE_ROLE_USER_: usuário
+    _ADMIN_USERS_PAGE_ROLE_ADMIN_: admin
+    _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_LABEL_: tipo
+    _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_PLACEHOLDER_: -- selecionar --
+
+    _ADMIN_ORDERS_PAGE_USER_TH_: Usuário
+    _ADMIN_ORDERS_PAGE_ADDRESS_TH_: Endereço
+    _ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_: Valor
+    _ADMIN_ORDERS_PAGE_CREATED_AT_TH_: Criado em
+    _ADMIN_ORDERS_PAGE_STATUS_TH_: Estado
 
     # Signin page
     _LOGIN_FIELD_LABEL_: email
     _LOGIN_FIELD_PLACEHOLDER_: meu@email.com
     _PASSWORD_FIELD_LABEL_: senha
     _PASSWORD_FIELD_PLACEHOLDER_: ••••••
+    _CREATE_ACCOUNT_TEXT_: ainda não tenho uma conta
+
+    # Signup page
+    _SIGNUP_PAGE_FULLNAME_FIELD_LABEL_: nome completo
+    _SIGNUP_PAGE_FULLNAME_FIELD_PLACEHOLDER_: Chuck Norris
+    _SIGNUP_PAGE_EMAIL_FIELD_LABEL_: email
+    _SIGNUP_PAGE_EMAIL_FIELD_PLACEHOLDER_: chuck@norris.com
+    _SIGNUP_PAGE_PASSWORD_FIELD_LABEL_: senha
+    _SIGNUP_PAGE_PASSWORD_FIELD_PLACEHOLDER_: •••••
+    _SIGNUP_PAGE_UNMASK_PASSWORD_LABEL: mostrar
+    _SIGNUP_PAGE_MASK_PASSWORD_LABEL: esconder
+
+    # Info modal
+    _INFO_MODAL_TITLE_: Informações importantes
+    _INFO_MODAL_BODY_: "<p>Bem vindo ao Dockas! Antes de começar precisamos lhe avisar de algumas coisas importantes:</p><ol><li>nesse primeiro momento de operação do Dockas atendemos apenas a cidade de Belo Horizonte;</li><li>as entregas das compras por enquanto são realizadas apenas aos domingos;</li><li>limitamos o número de compras a 20 por semana, mas vamos progressivamente aumentar esse limite para atender a todos.</li></ol><p>Qualquer dúvida/crítica/sugestão entre em contato conosco pelo email <a href='mailto:contato@dockas.com'>contato@dockas.com</a>. Ótimas compras!! :)</p>"
 
     # Checkout page
     _CHECKOUT_PROGRESS_STEP_REVIEW_TEXT_: Revisão
@@ -50,8 +98,9 @@ dictionary:
     _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: Preço Total
     
     _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
-    _NEW_ADDRESS_MODAL_ID_FIELD_LABEL_: Identificador
-    _NEW_ADDRESS_MODAL_ID_FIELD_PLACEHOLDER_: minha casa
+    _NEW_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
+    _NEW_ADDRESS_MODAL_LABEL_FIELD_LABEL_: Identificador
+    _NEW_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
     _NEW_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: CEP
     _NEW_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: Endereço
     _NEW_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
@@ -67,18 +116,33 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_TITLE_: Realizar o pagamento
     _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
 
+    _CHECKOUT_STEP_FINALIZE_TITLE_: Obrigado pela preferência :)
+    _CHECKOUT_STEP_FINALIZE_BODY_: Seu pedido foi realizado com sucesso e agora você pode acompanhá-lo na página de <a href="/orders">Meus Pedidos</a>. Lembramos que atualmente todos as compras são entregues apenas aos Domingos de cada semana, mas não se preocupe pois lhe notificaremos assim que suas compras estiverem à caminho. Em caso de qualquer dúvida entre em contato com a gente pelo email <a href="mailto:contato@dockas.com">contato@dockas.com</a> ou pelo telefone {{phone}} ({{name}}).
+
     # Create product page
     _CREATE_PRODUCT_PAGE_TITLE_: Novo Produto
-    _CREATE_PRODUCT_PAGE_SUMMARY_FIELD_LABEL_: Resumo
-    _CREATE_PRODUCT_PAGE_SUMMARY_FIELD_PLACEHOLDER_: tomate do himaláia
+    _CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_: Nome
+    _CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_: tomate do himaláia
     _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_: Descrição
     _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: descrição genérica sobre o tomate do himaláia para ajudar em pesquisas
-    _CREATE_PRODUCT_PAGE_PRICE_FIELD_LABEL_: Preço
-    _CREATE_PRODUCT_PAGE_PRICE_FIELD_PLACEHOLDER_: 50,00
+    _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_LABEL_: Preço (R$)
+    _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_PLACEHOLDER_: 50,00
     _CREATE_PRODUCT_PAGE_STOCK_FIELD_LABEL_: Estoque
     _CREATE_PRODUCT_PAGE_STOCK_FIELD_PLACEHOLDER_: 500
+    _CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_: Tags
+    _CREATE_PRODUCT_PAGE_TAGS_FIELD_PLACEHOLDER_: -- selecionar --
     _CREATE_PRODUCT_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
     _PRODUCT_CREATE_SUCCESS_: Produto criado com sucesso.
+
+    _NEW_TAG_MODAL_TITLE_: Adicionar Nova Tag
+    _NEW_TAG_MODAL_NAME_FIELD_LABEL_: nome
+    _NEW_TAG_MODAL_NAME_FIELD_PLACEHOLDER_: minha tag
+    _NEW_TAG_MODAL_TEXTCOLOR_FIELD_LABEL_: cor do texto
+    _NEW_TAG_MODAL_TEXTCOLOR_FIELD_PLACEHOLDER_: ffffff
+    _NEW_TAG_MODAL_BACKGROUNDCOLOR_FIELD_LABEL_: cor de fundo
+    _NEW_TAG_MODAL_BACKGROUNDCOLOR_FIELD_PLACEHOLDER_: 446CB3
+    _NEW_TAG_MODAL_PREVIEW_FIELD_LABEL_: Preview
+    _TAG_CREATE_SUCCESS_: Tag criada com sucesso.
 
     # Basket Card
     _BASKET_CARD_ITEMS_TEXT_: "{{numItems}} itens"
@@ -93,6 +157,7 @@ dictionary:
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
     _FIELD_ERROR_EMAIL_: Digite um endereço de email válido
     _FIELD_ERROR_DIGITS_: Apenas números são permitidos neste campo.
+    _FIELD_ERROR_COLOR_: Digite uma cor válida
 
     # Error messages
     _AUTH_ERROR_2_: Nome de usuário, email ou senha incorretos.

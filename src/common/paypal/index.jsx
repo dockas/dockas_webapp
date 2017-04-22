@@ -1,6 +1,7 @@
 /* globals paypal */
 
 import React from "react";
+import config from "config";
 import {findDOMNode} from "react-dom";
 import {LoggerFactory} from "darch/src/utils";
 import styles from "./styles";
@@ -15,13 +16,11 @@ export default class Component extends React.Component {
     static displayName = "paypal";
     
     static defaultProps = {
-        env: "production",
         currency: "BRL",
         onComplete: () => {}
     };
     
     static propTypes = {
-        env: React.PropTypes.string,
         value: React.PropTypes.number.isRequired,
         currency: React.PropTypes.string,
         onComplete: React.PropTypes.func
@@ -35,7 +34,10 @@ export default class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter", {value: this.props.value});
 
-        let {env, value, currency, onComplete} = this.props;
+        let env = process.env.NODE_ENV != "production" ? "sandbox" : "production";
+        let {value, currency, onComplete} = this.props;
+
+        console.log("config", config);
 
         paypal.Button.render({
 
@@ -44,10 +46,7 @@ export default class Component extends React.Component {
 
             // PayPal Client IDs - replace with your own
             // Create a PayPal app: https://developer.paypal.com/developer/applications/create
-            client: {
-                sandbox:    "Ac95bP9cLOVq7YzUbyMNabCBWH3p1frTjzZ74a_a1DH-VFdenOtrrTD2z6qG7FLRFszgFvyu4bWh0NMa",
-                production: "AdgyTk-1bkskjMaVHZeWUzIeCkEBIKr0jsOtQAXDx4rKZoaNcaU8Nq5RAHEzqj_ipfHFDVboeuNtcnyW"
-            },
+            client: config.paypal,
 
             locale: "pt_BR",
 

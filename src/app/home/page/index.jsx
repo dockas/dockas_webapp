@@ -6,7 +6,7 @@ import {LoggerFactory} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Bar from "darch/src/bar";
 import Dropdown from "darch/src/dropdown";
-import logoIcon from "assets/images/logo_icon_80x80.png";
+import logoIcon from "assets/images/logo_400x88.png";
 import styles from "./styles";
 import {Basket} from "common";
 
@@ -91,10 +91,10 @@ class Component extends React.Component {
                                 </Link>
                             </Bar.Item>*/}
 
-                            {user && user.role == "admin" ? (
+                            {user && user.roles.indexOf("admin") >= 0 ? (
                                 <Bar.Item>
-                                    <Link to="/create/product" className={styles.createButton}>
-                                        <i18n.Translate text="_NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_" />
+                                    <Link to="/admin" className={styles.createButton}>
+                                        <i18n.Translate text="_NAV_BAR_ADMIN_ITEM_LABEL_" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}

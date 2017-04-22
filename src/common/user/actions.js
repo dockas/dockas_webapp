@@ -1,4 +1,5 @@
 import {createActions} from "redux-actions";
+import lodash from "lodash";
 import {LoggerFactory} from "darch/src";
 import Api from "../utils/api";
 //import Socket from "../utils/socket";
@@ -32,6 +33,26 @@ export default createActions({
         logger.debug("Api userUpdate success", updateResponse);
 
         return profile;
+    },
+
+    async userAddAddress(address, opts) {
+        var logger = Logger.create("userAddAddress");
+        logger.info("enter", address);
+
+        let response = await Api.shared.userAddAddress(address, opts);
+        logger.debug("Api userAddAddress success", response);
+
+        return lodash.assign({}, address, {id: response.result});
+    },
+
+    async userRemoveAddress(id, opts) {
+        var logger = Logger.create("userRemoveAddress");
+        logger.info("enter", id);
+
+        let response = await Api.shared.userRemoveAddress(id, opts);
+        logger.debug("Api userRemoveAddress success", response);
+
+        return id;
     },
 
     async userFind(query, opts) {

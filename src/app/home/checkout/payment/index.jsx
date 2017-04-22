@@ -1,13 +1,15 @@
 import React from "react";
+import lodash from "lodash";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
-import {Paypal} from "common";
+import Spinner from "darch/src/spinner";
+import {Api,Paypal,Basket} from "common";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("checkout.payment");
+let Logger = new LoggerFactory("checkout.payment", {level: "debug"});
 
 /**
  * Redux map state to props function.
@@ -38,6 +40,8 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
+    state = {};
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
@@ -48,10 +52,53 @@ class Component extends React.Component {
         logger.info("enter");
     }
 
-    onPaymentComplete() {
+    async onPaymentComplete(data) {
         let logger = Logger.create("onPaymentComplete");
-        logger.info("enter");
+        logger.info("enter", data);
 
+        // Create order
+        this.setState({loading: true});
+
+        let items = this.props.basket.items;
+        let order = {
+            totalPrice: this.props.basket.totalPrice,
+            address: this.props.basket.address.id,
+            items: [],
+            paypal: {
+                id: data.id,
+                state: data.state,
+                paymentMethod: lodash.get(data, "payer.payment_method"),
+                allData: JSON.stringify(data)
+            }
+        };
+
+        console.log("PAYMENT COMPLETE 1", order);
+
+        // Add items to order
+        for(let key of Object.keys(items)) {
+            order.items.push({
+                product: items[key].product._id,
+                priceValue: items[key].product.priceValue,
+                count: items[key].count
+            });
+        }
+
+        console.log("PAYMENT COMPLETE 2", order);
+
+        // Create order
+        try {
+            let orderCreateResponse = await Api.shared.orderCreate(order);
+            logger.info("api orderCreate success", orderCreateResponse);
+        }
+        catch(error) {
+            logger.error("api orderCreate error", error);
+            this.setState({loading: false});
+        }
+
+        // Clear the basket
+        Redux.dispatch(Basket.actions.basketClear());
+
+        // Redirect to success page
         this.props.router.replace("/checkout/finalize");
     }
 
@@ -68,12 +115,21 @@ class Component extends React.Component {
 
                     <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_" />
 
-                    <div className={styles.paypalBtnContainer}>
-                        <Paypal value={parseFloat(basket.totalPrice.toFixed(2))} 
-                            user={user}
-                            selectedAddress={basket.address}
-                            onComplete={this.onPaymentComplete} />
-                    </div>
+                    {this.state.loading ? (
+                        <div className={styles.loadingContainer}>
+                            <i18n.Translate text="_FINALIZING_" />
+                            <span className={styles.spinnerContainer}>
+                                <Spinner.CircSide color="moody" />
+                            </span>
+                        </div>
+                    ) : (
+                        <div className={styles.paypalBtnContainer}>
+                            <Paypal value={parseFloat(basket.totalPrice.toFixed(2))} 
+                                user={user}
+                                selectedAddress={basket.address}
+                                onComplete={this.onPaymentComplete} />
+                        </div>
+                    )}
                 </Container>
 
                 {/*<Basket.Card onClick={this.onBasketButtonClick} buttonLabel="_BASKET_CARD_PAY_BUTTON_TEXT_" />*/}

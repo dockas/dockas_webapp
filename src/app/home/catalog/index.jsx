@@ -1,12 +1,16 @@
 import React from "react";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import {LoggerFactory,Redux,Storage} from "darch/src/utils";
 import {connect} from "react-redux";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
+import Modal from "darch/src/modal";
+import i18n from "darch/src/i18n";
+import Button from "darch/src/button";
 import Product from "common/product";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("catalog");
+let storage = new Storage();
 
 /**
  * Redux map state to props function.
@@ -36,45 +40,27 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
-    products = [
-        {
-            _id: 1,
-            summary: "tomate do himaláia",
-            price: 55.00,
-            currency: "R$",
-            images: []
-        },
-        {
-            _id: 2,
-            summary: "cenoura tomalo",
-            price: 12.54,
-            currency: "R$",
-            images: []
-        },
-        {
-            _id: 3,
-            summary: "papel higiênico Neve",
-            price: 17.86,
-            currency: "R$",
-            images: []
-        },
-        {
-            _id: 4,
-            summary: "fralda Pampers",
-            price: 38.99,
-            currency: "R$",
-            images: []
-        }
-    ];
+    state = {};
 
-    componentDidMount() {
+    async componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
+        let infoModalViewed = await storage.get("infoModalViewed");
+
+        if(!infoModalViewed) {
+            this.setState({infoModalOpen: true});
+        }
+
         // Retrieve products
         Redux.dispatch(
-            Product.actions.productFind()
+            Product.actions.productFind({populate: ["tags"]})
         );
+    }
+
+    onInfoModalDismiss() {
+        storage.set("infoModalViewed", "true");
+        this.setState({infoModalOpen: false});
     }
 
     render() {
@@ -97,6 +83,25 @@ class Component extends React.Component {
                         )}
                     </Grid>
                 </Container>
+
+                <Modal open={this.state.infoModalOpen}>
+                    <Modal.Header>
+                        <h3 style={{margin: 0}}>
+                            <i18n.Translate text="_INFO_MODAL_TITLE_" />
+                        </h3>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <i18n.Translate text="_INFO_MODAL_BODY_" />
+                    </Modal.Body>
+
+                    <Modal.Footer align="right">
+                        <Button type="submit"
+                            scale={1} onClick={this.onInfoModalDismiss}>
+                            <i18n.Translate text="_OK_" />
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         );
     }

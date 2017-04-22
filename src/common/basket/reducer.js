@@ -34,7 +34,7 @@ export default handleActions({
         items[product._id].count++;
 
         // Sum product price to totalPrice.
-        let totalPrice = state.totalPrice + product.price;
+        let totalPrice = state.totalPrice + product.priceValue;
 
         logger.info("result", {items, totalPrice});
 
@@ -55,7 +55,7 @@ export default handleActions({
 
         if(items[product._id]) {
             items[product._id].count--;
-            totalPrice -= product.price;
+            totalPrice -= product.priceValue;
 
             if(items[product._id].count === 0) {
                 delete items[product._id];

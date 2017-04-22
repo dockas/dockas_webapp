@@ -29,7 +29,7 @@ function mapStateToProps(state) {
  * Redux dispatch to props map.
  */
 let mapDispatchToProps = {
-
+    
 };
 
 /**
@@ -106,11 +106,11 @@ class Component extends React.Component {
                                                 backgroundPosition: "center"
                                             }}></div>
                                             
-                                            {item.product.summary}
+                                            {item.product.name}
                                         </td>
-                                        <td><i18n.Number value={item.product.price} numDecimals={2} currency={true} /></td>
+                                        <td><i18n.Number value={item.product.priceValue} numDecimals={2} currency={true} /></td>
                                         <td>{item.count}</td>
-                                        <td><i18n.Number value={item.count * item.product.price} numDecimals={2} currency={true} /></td>
+                                        <td><i18n.Number value={item.count * item.product.priceValue} numDecimals={2} currency={true} /></td>
                                         <td>
                                             <Button onClick={this.onRemoveButtonClick(item.product)} color="danger" scale={0.8}>-1</Button>
                                             <Button onClick={this.onAddButtonClick(item.product)} color="moody" scale={0.8}>+1</Button>

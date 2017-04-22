@@ -17,5 +17,19 @@ hostnames:
     socket: socket.dockas.com
     file: api.dockas.com/v1/file
 
+paypal:
+    sandbox: "Ac95bP9cLOVq7YzUbyMNabCBWH3p1frTjzZ74a_a1DH-VFdenOtrrTD2z6qG7FLRFszgFvyu4bWh0NMa"
+    production: "AdgyTk-1bkskjMaVHZeWUzIeCkEBIKr0jsOtQAXDx4rKZoaNcaU8Nq5RAHEzqj_ipfHFDVboeuNtcnyW"
+
 mapbox:
     accessToken: pk.eyJ1IjoiYnJ1bm9zZSIsImEiOiJjaXpoOTRsd3UwMWFxMnhwbG56MTFoNnVqIn0.z8vunE1lGlbIAiW8RSNfYQ
+
+support:
+    - name: Bruno
+      phone: (31)99537-0317
+    - name: Marco
+      phone: (31)9999-9999
+    - name: Danilo
+      phone: (31)9999-9999
+    - name: Felipe
+      phone: (31)9999-9999
