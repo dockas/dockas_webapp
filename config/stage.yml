@@ -2,3 +2,9 @@ siteinfo:
     base_url: //stage.dockas.com
     logo_icon_url: //stage.dockas.com/assets/images/logo_icon.png
     logo_favicon_url: //stage.dockas.com/assets/images/favicon.png
+
+hostnames:
+    webapp: stage.dockas.com
+    api: api.stage.dockas.com
+    socket: socket.stage.dockas.com
+    file: api.stage.dockas.com/v1/file

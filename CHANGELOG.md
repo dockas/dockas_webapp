@@ -6,3 +6,4 @@ FEA : Create signup page.
 FEA : Create admin area with products, users and orders.
 ENH : Move create module to admin module.
 BUG : Correct a bug with weak permission of .ssh keys.
+ENH : Change hostnames for stage environment.
