@@ -14,6 +14,7 @@ ADD . ./
 
 # Add ssh keys (to clone repos via npm)
 RUN mv ./.ssh /root/ && \
+    chmod 400 -R /root/.ssh && \
     eval "$(ssh-agent -s)" && \
     ssh-add /root/.ssh/id_rsa && \
     ssh-keyscan -H bitbucket.org >> /root/.ssh/known_hosts
