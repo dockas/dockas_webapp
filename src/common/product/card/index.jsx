@@ -95,7 +95,7 @@ class Component extends React.Component {
 
                 <div className={styles.imageContainer}>
                     <div className={styles.image} style={{
-                        backgroundImage: `url(http://${config.hostnames.file}/${data.image})`,
+                        backgroundImage: `url(//${config.hostnames.file}/${data.image})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center"
                     }}></div>

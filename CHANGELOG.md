@@ -13,3 +13,4 @@ BUG : Correct a bug with proxy_pass to rest api in nginx.conf.tpl.
 BUG : Correct a bug with uploader target url using hard coded http protocol in create product page.
 BUG : Correct a bug with roles admin user page change role modal.
 GIT : Checkout new darch commits.
+ENH : Remove all hard coded http protocol from product image fetch.

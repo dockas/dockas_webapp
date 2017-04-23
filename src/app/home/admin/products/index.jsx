@@ -68,7 +68,7 @@ export default class Component extends React.Component {
                                         <tr key={product._id}>
                                             <td>
                                                 <div className={styles.image} style={{
-                                                    backgroundImage: `url(http://${config.hostnames.file}/${product.image})`,
+                                                    backgroundImage: `url(//${config.hostnames.file}/${product.image})`,
                                                     backgroundSize: "cover",
                                                     backgroundPosition: "center"
                                                 }}></div>
