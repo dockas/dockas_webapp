@@ -9,6 +9,24 @@ let gulp                = require('gulp'),
     webpack             = require('webpack'),
     config              = require('./gulp.config');
 
+let statsOpts = {
+    colors: gutil.colors.supportsColor,
+    hash: false,
+    timings: false,
+    chunks: false,
+    chunkModules: false,
+    modules: false,
+    children: true,
+    version: true,
+    cached: false,
+    cachedAssets: false,
+    reasons: false,
+    source: false,
+    errorDetails: false
+};
+
+let bundlerDoneCalled = {};
+
 /****************************************************************
 * Clean Tasks : remove destination folders
 ****************************************************************/
@@ -62,29 +80,40 @@ gulp.task('pug', function(done) {
 /****************************************************************
 * Bundler Tasks : bundle all js files into one
 ****************************************************************/
-var bundlerDoneCalled = false;
 gulp.task('bundler:dev', function(done) {
     webpack(require("./webpack/dev.config.js"), function(err, stats) {
         if(err) throw new gutil.PluginError("webpack", err);
 
-        gutil.log("[webpack]", stats.toString({
-            colors: gutil.colors.supportsColor,
-            hash: false,
-            timings: false,
-            chunks: false,
-            chunkModules: false,
-            modules: false,
-            children: true,
-            version: true,
-            cached: false,
-            cachedAssets: false,
-            reasons: false,
-            source: false,
-            errorDetails: false
-        }));
+        gutil.log("[webpack]", stats.toString(statsOpts));
 
-        if(!bundlerDoneCalled){
-            bundlerDoneCalled = true;
+        if(!bundlerDoneCalled.dev){
+            bundlerDoneCalled.dev = true;
+            done();
+        }
+    });
+});
+
+gulp.task('bundler:stage', function(done) {
+    webpack(require("./webpack/stage.config.js"), function(err, stats) {
+        if(err) throw new gutil.PluginError("webpack", err);
+
+        gutil.log("[webpack]", stats.toString(statsOpts));
+
+        if(!bundlerDoneCalled.stage){
+            bundlerDoneCalled.stage = true;
+            done();
+        }
+    });
+});
+
+gulp.task('bundler:prod', function(done) {
+    webpack(require("./webpack/prod.config.js"), function(err, stats) {
+        if(err) throw new gutil.PluginError("webpack", err);
+
+        gutil.log("[webpack]", stats.toString(statsOpts));
+
+        if(!bundlerDoneCalled.prod){
+            bundlerDoneCalled.prod = true;
             done();
         }
     });
@@ -101,6 +130,19 @@ gulp.task('development', [
     gulp.watch(config.src.i18n, ['i18n']);
 });
 
+/****************************************************************
+* STAGE TASK
+****************************************************************/
+gulp.task('stage', [
+    'bundler:stage'
+]);
+
+/****************************************************************
+* PRODUCTION TASK
+****************************************************************/
+gulp.task('production', [
+    'bundler:prod'
+]);
 
 /****************************************************************
 * DEFAULT TASK : Choose task by NODE_ENV

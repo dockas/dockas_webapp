@@ -7,3 +7,5 @@ FEA : Create admin area with products, users and orders.
 ENH : Move create module to admin module.
 BUG : Correct a bug with weak permission of .ssh keys.
 ENH : Change hostnames for stage environment.
+FEA : Add stage and prod rules to gulpfile.
+FEA : Add prod.config.js to webpack config dir.
