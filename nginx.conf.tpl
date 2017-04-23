@@ -40,7 +40,7 @@ server {
 
     client_max_body_size 10M;
 
-    location / {
+    location /v1/ {
         proxy_pass              http://localhost:9898/;
     }
 }

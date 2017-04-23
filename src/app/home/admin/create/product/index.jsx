@@ -281,7 +281,7 @@ class Component extends React.Component {
                     <Grid>
                         <Grid.Cell>
                             {this.state.authToken ? (
-                                <Uploader token={this.state.authToken} targetUrl={`http://${config.hostnames.file}/upload`} 
+                                <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.file}/upload`} 
                                     onFlowInit={this.onFlowInit}
                                     onUploadSuccess={this.onUploadSuccess}/>
                             ) : null}

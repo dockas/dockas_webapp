@@ -82,13 +82,13 @@ class Component extends React.Component {
 
         let data = {
             _id: this.state.changeRoleUser._id,
-            role: this.state.changeRoleUserRole
+            roles: [this.state.changeRoleUserRole]
         };
 
         await Api.shared.userUpdate(data);
 
         // Update user profile
-        this.state.changeRoleUser.role = data.role;
+        this.state.changeRoleUser.roles = data.roles;
 
         this.setState({
             changeRoleModalLoading: false,
