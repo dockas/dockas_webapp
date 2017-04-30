@@ -8,4 +8,4 @@ hostnames:
     webapp: stage.dockas.com
     api: api.stage.dockas.com
     socket: socket.stage.dockas.com
-    file: api.stage.dockas.com/v1/file
+    file: file.stage.dockas.com

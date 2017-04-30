@@ -19,3 +19,4 @@ FEA : Add admin invitations panel.
 ENH : Add mainImage, images, owner fields to product creation.
 ENH : Show open orders to admin orders table and filters.
 FEA : Add invitation validation to signup page.
+FIX : Fix file hostname for stage environment.
