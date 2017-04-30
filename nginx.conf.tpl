@@ -44,3 +44,11 @@ server {
         proxy_pass              http://localhost:9898/;
     }
 }
+
+# File server definition
+server {
+    listen                      80;
+    server_name                 file.dockas.dev;
+
+    root                        PWD_PATH/../api_rest/files;
+}

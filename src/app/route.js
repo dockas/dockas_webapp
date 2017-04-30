@@ -39,11 +39,5 @@ module.exports = {
                 require("./signup/route")
             ]);
         });
-    },
-
-    /*getIndexRoute(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./catalog/route"));
-        });
-    }*/
+    }
 };

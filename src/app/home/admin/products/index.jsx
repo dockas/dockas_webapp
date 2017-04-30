@@ -46,7 +46,7 @@ export default class Component extends React.Component {
         return (
             <div>
                 <Bar>
-                    <Tabs.Item align="right" color="moody" to="/admin/create/product"><i18n.Translate text="_ADMIN_BAR_ADD_ACTION_LABEL_" /></Tabs.Item>
+                    <Tabs.Item align="right" color="moody" to="/admin/create/product"><i18n.Translate text="_ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_" /></Tabs.Item>
                 </Bar>
 
                 <Container>
@@ -68,7 +68,7 @@ export default class Component extends React.Component {
                                         <tr key={product._id}>
                                             <td>
                                                 <div className={styles.image} style={{
-                                                    backgroundImage: `url(//${config.hostnames.file}/${product.image})`,
+                                                    backgroundImage: `url(//${config.hostnames.file}/images/${product.mainImage})`,
                                                     backgroundSize: "cover",
                                                     backgroundPosition: "center"
                                                 }}></div>

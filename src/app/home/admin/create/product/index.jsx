@@ -85,6 +85,8 @@ class Component extends React.Component {
         logger.info("enter", data);
         //console.log("onFormSubmit", data);
 
+        this.setState({loading: true});
+
         // Register data
         this.data = lodash.clone(data);
 
@@ -103,13 +105,14 @@ class Component extends React.Component {
         this.flow = flow;
     }
 
-    async onUploadSuccess(fileId) {
+    async onUploadSuccess(fileData) {
         let productResponse,
             logger = Logger.create("onUploadSuccess");
 
-        logger.info("enter", fileId);
+        logger.info("enter", fileData);
 
-        this.data.image = fileId;
+        this.data.mainImage = fileData.path;
+        this.data.images = [fileData.path];
 
         // Handle creation of new tags.
         /*let promises = [];
@@ -238,6 +241,37 @@ class Component extends React.Component {
         return {value, label: value};
     }
 
+    /**
+     * This function loads users.
+     */
+    async loadUsers(value) {
+        let logger = Logger.create("loadUsers");
+        logger.info("enter", {value});
+
+        if(lodash.isEmpty(value)) {return;}
+
+        this.setState({loadingUsers: true});
+
+        try {
+            let response = await Api.shared.userFind({
+                email: value
+            });
+
+            logger.debug("Api userFind success", response);
+
+            // Process users
+            let users = response.results.map((user) => {
+                return {value: user._id, label: user.email};
+            });
+
+            this.setState({users, loadingUsers: false});
+        }
+        catch(error) {
+            logger.error("Api userFind error", error);
+            this.setState({loadingUsers: false});
+        }
+    }
+
     selectTagColor(color) {
         return () => {
             this.setState({selectedTagColor: color});
@@ -261,6 +295,7 @@ class Component extends React.Component {
 
     render() {
         let {tags,loadingTags,newTagModalOpen} = this.state;
+        let {users,loadingUsers} = this.state;
 
         console.log("STATETAO", this.state);
 
@@ -281,7 +316,7 @@ class Component extends React.Component {
                     <Grid>
                         <Grid.Cell>
                             {this.state.authToken ? (
-                                <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.file}/upload`} 
+                                <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
                                     onFlowInit={this.onFlowInit}
                                     onUploadSuccess={this.onUploadSuccess}/>
                             ) : null}
@@ -296,19 +331,63 @@ class Component extends React.Component {
                                     onSubmit={this.onFormSubmit}>
 
                                     <Field.Section>
+                                        <Grid>
+                                            <Grid.Cell>
+                                                <Field.Section>
+                                                    <Text scale={0.8}>
+                                                        <i18n.Translate text="_CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_" />
+                                                    </Text>
+                                                    <div>
+                                                        <Field.Text
+                                                            name="name"
+                                                            placeholder="_CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_"
+                                                            scale={1}
+                                                            validators="$required"/>
+                                                        <Field.Error
+                                                            for="name"
+                                                            validator="$required"
+                                                            message="_FIELD_ERROR_REQUIRED_"/>
+                                                    </div>
+                                                </Field.Section>
+                                            </Grid.Cell>
+
+                                            <Grid.Cell>
+                                                <Field.Section>
+                                                    <Text scale={0.8}>
+                                                        <i18n.Translate text="_CREATE_PRODUCT_PAGE_NAME_ID_FIELD_LABEL_" />
+                                                    </Text>
+                                                    <div>
+                                                        <Field.Text
+                                                            name="nameId"
+                                                            placeholder="_CREATE_PRODUCT_PAGE_NAME_ID_FIELD_PLACEHOLDER_"
+                                                            scale={1}
+                                                            validators="id"/>
+                                                        <Field.Error
+                                                            for="nameId"
+                                                            validator="id"
+                                                            message="_FIELD_ERROR_ID_"/>
+                                                    </div>
+                                                </Field.Section>
+                                            </Grid.Cell>
+                                        </Grid>
+                                    </Field.Section>
+
+                                    <Field.Section>
                                         <Text scale={0.8}>
-                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_" />
+                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_OWNER_FIELD_LABEL_" />
                                         </Text>
                                         <div>
-                                            <Field.Text
-                                                name="name"
-                                                placeholder="_CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_"
+                                            <Field.Select
+                                                name="owner"
+                                                placeholder="_CREATE_PRODUCT_PAGE_OWNER_FIELD_PLACEHOLDER_"
+                                                options={users}
+                                                loadOptions={this.loadUsers}
+                                                loading={loadingUsers}
+                                                clearSearchOnSelect={true}
+                                                creatable={false}
+                                                multi={false}
                                                 scale={1}
-                                                validators="$required"/>
-                                            <Field.Error
-                                                for="name"
-                                                validator="$required"
-                                                message="_FIELD_ERROR_REQUIRED_"/>
+                                                loaderComponent={<Spinner.CircSide color="#555" />}/>
                                         </div>
                                     </Field.Section>
 
@@ -317,11 +396,11 @@ class Component extends React.Component {
                                             <i18n.Translate text="_CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_" />
                                         </Text>
                                         <div>
-                                            <Field.Text
+                                            <Field.TextArea
+                                                rows={2}
                                                 name="description"
                                                 placeholder="_CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_"
-                                                scale={1}
-                                                validators="$required"/>
+                                                scale={1} />
                                             <Field.Error
                                                 for="description"
                                                 validator="$required"

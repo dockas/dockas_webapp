@@ -12,15 +12,11 @@ module.exports = {
             cb(null, [
                 require("./catalog/route"),
                 require("./account/route"),
+                require("./orders/route"),
                 require("./checkout/route"),
+                require("./invitation/route"),
                 require("./admin/route")
             ]);
-        });
-    },
-
-    getIndexRoute(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./catalog/route"));
         });
     }
 };

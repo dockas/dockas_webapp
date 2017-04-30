@@ -5,7 +5,8 @@ import {LoggerFactory} from "darch/src/utils";
 let Logger = new LoggerFactory("common.user.reducer", {level:"debug"});
 
 let initialState = {
-    data: null
+    data: null,
+    query: null
 };
 
 export default handleActions({
@@ -20,6 +21,9 @@ export default handleActions({
         let logger = Logger.create("productFind_COMPLETED");
         logger.info("enter", {state: state, action: action});
 
-        return {data: action.payload};
+        return {
+            data: action.payload.data,
+            query: action.payload.query
+        };
     }
 }, initialState);

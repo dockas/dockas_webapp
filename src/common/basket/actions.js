@@ -1,3 +1,5 @@
+/* global mixpanel */
+
 import {createActions} from "redux-actions";
 import {LoggerFactory, Storage} from "darch/src/utils";
 //import Toaster from "darch/src/toaster";
@@ -20,12 +22,20 @@ export default createActions({
         var logger = Logger.create("basketAddProduct");
         logger.info("enter", product);
 
+        mixpanel.track("basket product added", {
+            product: product.nameId
+        });
+
         return product;
     },
 
     basketRemoveProduct(product) {
         var logger = Logger.create("basketRemoveProduct");
         logger.info("enter", product);
+
+        mixpanel.track("basket product removed", {
+            product: product.nameId
+        });
 
         return product;
     },

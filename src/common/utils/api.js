@@ -11,7 +11,7 @@ export default class Api {
     constructor({http=new Http(), shared=false} = {}) {
         if(shared){Api.shared = this;}
 
-        this.baseUrl = `//${config.hostnames.api}/v1`;
+        this.baseUrl = `//${config.hostnames.api}/${config.apiVersion}`;
         this.http = http;
     }
 
@@ -38,7 +38,9 @@ export default class Api {
 
                     // Let's show error message.
                     Redux.dispatch(
-                        Toaster.actions.push("danger", `_${name}_${code}_`)
+                        Toaster.actions.push("danger", `_${name}_${code}_`, {
+                            untranslatedDefault: "_ERROR_UNKNOWN_"
+                        })
                     );
                 }
                 
@@ -95,6 +97,10 @@ export default class Api {
         return this.request("GET", "product", query, opts);
     }
 
+    productFindByNameId(nameId, opts) {
+        return this.request("GET", `product/nameId/${nameId}`, null, opts);
+    }
+
     productPriceUpdate(id, data, opts) {
         return this.request("PUT", `product/${id}/price`, data, opts);
     }
@@ -117,5 +123,21 @@ export default class Api {
 
     orderFind(query, opts) {
         return this.request("GET", "order", query, opts);
+    }
+
+    invitationCreate(data, opts) {
+        return this.request("POST", "invitation", data, opts);
+    }
+
+    invitationFind(query, opts) {
+        return this.request("GET", "invitation", query, opts);
+    }
+
+    invitationFindById(id, opts) {
+        return this.request("GET", `invitation/${id}`, null, opts);
+    }
+
+    invitationSend(id, opts) {
+        return this.request("POST", `invitation/${id}`, null, opts);
     }
 }

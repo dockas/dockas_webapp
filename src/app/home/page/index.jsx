@@ -1,3 +1,5 @@
+/* global mixpanel */
+
 import React from "react";
 import classNames from "classnames";
 import {Link,withRouter} from "react-router";
@@ -56,6 +58,8 @@ class Component extends React.Component {
     onBasketCardButtonClick() {
         let logger = Logger.create("onBasketCardButtonClick");
         logger.info("enter");
+
+        mixpanel.track("start checkout button clicked");
         
         this.props.router.push("/checkout");
     }
@@ -108,9 +112,16 @@ class Component extends React.Component {
                                     buttonLayout="none" 
                                     buttonColor="dark" 
                                     buttonScale={0.8}>
-                                        <Dropdown.Item to="account">Perfil</Dropdown.Item>
+                                        <Dropdown.Item to="/account">
+                                            <i18n.Translate text="_NAV_BAR_ACCOUNT_ITEM_LABEL_" />
+                                        </Dropdown.Item>
+                                        <Dropdown.Item to="/orders">
+                                            <i18n.Translate text="_NAV_BAR_ORDERS_ITEM_LABEL_" />
+                                        </Dropdown.Item>
                                         <Dropdown.Separator></Dropdown.Separator>
-                                        <Dropdown.Item onClick={this.onLogoutClick}>Logout</Dropdown.Item>
+                                        <Dropdown.Item onClick={this.onLogoutClick}>
+                                            <i18n.Translate text="_NAV_BAR_LOGOUT_ITEM_LABEL_" />
+                                        </Dropdown.Item>
                                     </Dropdown>
                                 </Bar.Item>
                             ) : (
@@ -128,7 +139,7 @@ class Component extends React.Component {
                     {this.props.children}
                 </div>
 
-                {(/^\/checkout/).test(pathname) ? null : (
+                {(/^(\/?checkout)|(\/?invitation)/).test(pathname) ? null : (
                     <Basket.Card onClick={this.onBasketCardButtonClick}/>
                 )}
             </div>

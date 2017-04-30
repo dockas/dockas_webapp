@@ -1,3 +1,5 @@
+/* global mixpanel */
+
 import React from "react";
 import {withRouter} from "react-router";
 import {LoggerFactory, Redux} from "darch/src/utils";
@@ -11,6 +13,7 @@ import Grid from "darch/src/grid";
 import logo from "assets/images/logo_icon.png";
 import {Api,Auth} from "common";
 import styles from "./styles";
+import SignupStore from "./store";
 
 let Logger = new LoggerFactory("signup");
 
@@ -25,13 +28,21 @@ class Component extends React.Component {
 
     state = {};
 
+    constructor(props) {
+        super(props);
+
+        this.invitation = SignupStore.invitation;
+    }
+
     /**
      * LYFECICLE : This function is called when component
      * got mounted in the view.
      */
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
-        logger.info("enter");
+        logger.info("enter", {
+            invitation: SignupStore.invitation
+        });
     }
 
     /**
@@ -44,8 +55,12 @@ class Component extends React.Component {
         this.setState({loading: true});
 
         try {
+            data.invitation = this.invitation._id;
+
             // Signs the user up.
             let signupResponse = await Api.shared.signup(data);
+
+            mixpanel.track("signup success");
 
             logger.debug("Api signup success", signupResponse);
 
@@ -108,6 +123,8 @@ class Component extends React.Component {
                                             name="email"
                                             placeholder="_SIGNUP_PAGE_EMAIL_FIELD_PLACEHOLDER_"
                                             scale={1.5}
+                                            value={this.invitation.email}
+                                            disabled={true}
                                             validators="$required|$email"/>
                                         <Field.Error
                                             for="email"

@@ -30,6 +30,7 @@ export default class Component extends React.Component {
                         <Tabs.Item to="/admin/products" onlyActiveOnIndex={true}><i18n.Translate text="_ADMIN_BAR_PRODUCTS_LABEL_" /></Tabs.Item>
                         <Tabs.Item to="/admin/users"><i18n.Translate text="_ADMIN_BAR_USERS_LABEL_" /></Tabs.Item>
                         <Tabs.Item to="/admin/orders"><i18n.Translate text="_ADMIN_BAR_ORDERS_LABEL_" /></Tabs.Item>
+                        <Tabs.Item to="/admin/invitations"><i18n.Translate text="_ADMIN_BAR_INVITATIONS_LABEL_" /></Tabs.Item>
 
                         {this.props.children}
                     </Tabs>

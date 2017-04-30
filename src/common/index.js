@@ -4,3 +4,4 @@ export User from "./user";
 export Product from "./product";
 export Basket from "./basket";
 export Paypal from "./paypal";
+export Order from "./order";

@@ -14,5 +14,16 @@ export default createActions({
         logger.debug("Api orderCreate success", createResponse);
 
         return createResponse.result;
+    },
+
+    async orderFind(query, opts) {
+        var logger = Logger.create("orderFind");
+        logger.info("enter", query);
+
+        let findResponse = await Api.shared.orderFind(query, opts);
+
+        logger.debug("Api orderCreate success", findResponse);
+
+        return {data: findResponse.results, query};
     }
 });

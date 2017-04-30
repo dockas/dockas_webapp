@@ -26,19 +26,31 @@ dictionary:
     _ITEM_: Item
     _SAVE_: Salvar
     _SAVING_: Salvando
+    _SENDING_: Enviando
     _OK_: Ok
     _FINALIZING_: Finalizando
+    _TOTAL_IN_BASKET_: Total na Cesta
 
     # Nav bar
-    _NAV_BAR_SIGNIN_ITEM_LABEL_: Login
+    _NAV_BAR_ACCOUNT_ITEM_LABEL_: Perfil
+    _NAV_BAR_ORDERS_ITEM_LABEL_: Meus Pedidos
+    _NAV_BAR_LOGOUT_ITEM_LABEL_: Sair
+    _NAV_BAR_SIGNIN_ITEM_LABEL_: Entrar
     _NAV_BAR_ADMIN_ITEM_LABEL_: Admin
+
+    # Catalog Page
+    _CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_: nome do item
+    _CATALOG_LIST_PAGE_SEARCH_TAGS_FIELD_PLACEHOLDER_: -- selecionar categorias --
+    _CATALOG_LIST_PAGE_SEARCH_BUTTON_TEXT_: procurar
 
     # Admin page
     _ADMIN_BAR_TITLE_: Admin
     _ADMIN_BAR_PRODUCTS_LABEL_: Produtos
     _ADMIN_BAR_USERS_LABEL_: Usuários
     _ADMIN_BAR_ORDERS_LABEL_: Pedidos
-    _ADMIN_BAR_ADD_ACTION_LABEL_: Adicionar
+    _ADMIN_BAR_INVITATIONS_LABEL_: Convites
+    _ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_: Adicionar
+    _ADMIN_BAR_ORDERS_SEND_ACTION_LABEL_: Enviar
 
     _ADMIN_PRODUCTS_PAGE_NAME_TH_: nome
     _ADMIN_PRODUCTS_PAGE_PRICE_VALUE_TH_: preço
@@ -58,11 +70,22 @@ dictionary:
     _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_LABEL_: tipo
     _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_PLACEHOLDER_: -- selecionar --
 
-    _ADMIN_ORDERS_PAGE_USER_TH_: Usuário
-    _ADMIN_ORDERS_PAGE_ADDRESS_TH_: Endereço
-    _ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_: Valor
-    _ADMIN_ORDERS_PAGE_CREATED_AT_TH_: Criado em
-    _ADMIN_ORDERS_PAGE_STATUS_TH_: Estado
+    _ADMIN_ORDERS_PAGE_USER_TH_: usuário
+    _ADMIN_ORDERS_PAGE_ADDRESS_TH_: endereço
+    _ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_: valor
+    _ADMIN_ORDERS_PAGE_CREATED_AT_TH_: criado em
+    _ADMIN_ORDERS_PAGE_STATUS_TH_: estado
+    _ADMIN_ORDERS_PAGE_PRODUCT_NAME_TH_: nome
+    _ADMIN_ORDERS_PAGE_PRODUCT_COUNT_TH_: quantidade total
+    _ADMIN_ORDERS_PAGE_FILTER_ONLY_PRODUCTS_: apenas produtos
+    _ADMIN_ORDERS_PAGE_FILTER_WITHIN_WEEK_ORDERS_: apenas da semana
+    _ADMIN_ORDERS_PAGE_FILTER_OPEN_ORDERS_: abertos
+
+    _ADMIN_INVITATIONS_PAGE_EMAIL_TH_: email
+    _ADMIN_INVITATIONS_PAGE_SENT_COUNT_TH_: envios
+    _ADMIN_INVITATIONS_PAGE_SENT_AT_TH_: enviado em
+    _ADMIN_INVITATIONS_PAGE_STATUS_TH_: status
+    _ADMIN_INVITATIONS_PAGE_NO_DATA_FOUND_TEXT_: Nenhum convite encontrado
 
     # Signin page
     _LOGIN_FIELD_LABEL_: email
@@ -117,12 +140,16 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
 
     _CHECKOUT_STEP_FINALIZE_TITLE_: Obrigado pela preferência :)
-    _CHECKOUT_STEP_FINALIZE_BODY_: Seu pedido foi realizado com sucesso e agora você pode acompanhá-lo na página de <a href="/orders">Meus Pedidos</a>. Lembramos que atualmente todos as compras são entregues apenas aos Domingos de cada semana, mas não se preocupe pois lhe notificaremos assim que suas compras estiverem à caminho. Em caso de qualquer dúvida entre em contato com a gente pelo email <a href="mailto:contato@dockas.com">contato@dockas.com</a> ou pelo telefone {{phone}} ({{name}}).
+    _CHECKOUT_STEP_FINALIZE_BODY_: <p>Seu pedido foi realizado com sucesso e agora você pode acompanhá-lo na página de <a href="/orders">Meus Pedidos</a>.</p><p>Lembramos que atualmente todos as compras são entregues apenas aos Domingos de cada semana, mas não se preocupe pois lhe notificaremos assim que suas compras estiverem à caminho.</p><p>Em caso de qualquer dúvida entre em contato com a gente pelo email <a href="mailto:contato@dockas.com">contato@dockas.com</a> ou pelo telefone {{phone}} ({{name}}).</p>
 
     # Create product page
     _CREATE_PRODUCT_PAGE_TITLE_: Novo Produto
     _CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_: Nome
     _CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_: tomate do himaláia
+    _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_LABEL_: Identificador
+    _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_PLACEHOLDER_: tomate-do-himalaia
+    _CREATE_PRODUCT_PAGE_OWNER_FIELD_LABEL_: Dono do Produto
+    _CREATE_PRODUCT_PAGE_OWNER_FIELD_PLACEHOLDER_: dono@email.com
     _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_: Descrição
     _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: descrição genérica sobre o tomate do himaláia para ajudar em pesquisas
     _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_LABEL_: Preço (R$)
@@ -144,6 +171,29 @@ dictionary:
     _NEW_TAG_MODAL_PREVIEW_FIELD_LABEL_: Preview
     _TAG_CREATE_SUCCESS_: Tag criada com sucesso.
 
+    # Orders Page
+    _ORDERS_PAGE_TITLE_: Meus Pedidos
+    _ORDERS_PAGE_CREATED_AT_TH_: data de criação
+    _ORDERS_PAGE_ADDRESS_TH_: endereço de entrega
+    _ORDERS_PAGE_ITEMS_COUNT_TH_: número de items
+    _ORDERS_PAGE_PRICE_VALUE_TH_: preço
+    _ORDERS_PAGE_STATUS_TH_: status
+    _ORDERS_PAGE_NO_DATA_FOUND_TEXT_: Nenhum pedido realizado ainda
+
+    # Catalog Item Page
+    _CATALOG_ITEM_PAGE_NAME_FIELD_LABEL_: nome
+    _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+
+    # Invitation Page
+    _INVITATION_PAGE_TITLE_: Solicite seu convite
+    _INVITATION_PAGE_BODY_TEXT_: Para garantir um padrão elevado de qualidade, apenas pessoas convidadas podem realizar compras no Dockas neste momento. Informe seu email no campo abaixo que em breve lhe enviaremos um convite exclusivo.
+    _INVITATION_PAGE_EMAIL_FIELD_LABEL_: email
+    _INVITATION_PAGE_EMAIL_FIELD_PLACEHOLDER_: meu@email.com
+    _INVITATION_PAGE_SEND_BUTTON_TEXT_: solicitar convite
+    _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
+    _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.
+
+
     # Basket Card
     _BASKET_CARD_ITEMS_TEXT_: "{{numItems}} itens"
     _BASKET_CARD_ITEM_TEXT_: "{{numItems}} item"
@@ -152,15 +202,17 @@ dictionary:
     _BASKET_CARD_CHOOSE_ADDRESS_BUTTON_TEXT_: Continuar
     _BASKET_CARD_PAY_BUTTON_TEXT_: Continuar
     _BASKET_CARD_FINISH_BUTTON_TEXT_: Encerrar
+    _BASKET_CARD_INVITATION_BUTTON_TEXT_: quero comprar
 
     # Field errors
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
     _FIELD_ERROR_EMAIL_: Digite um endereço de email válido
     _FIELD_ERROR_DIGITS_: Apenas números são permitidos neste campo.
     _FIELD_ERROR_COLOR_: Digite uma cor válida
+    _FIELD_ERROR_ID_: Apenas os caracteres a-z (sem acentos), dígitos 0-9 e hífen (-) são permitidos.
 
     # Error messages
+    _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.
     _AUTH_ERROR_2_: Nome de usuário, email ou senha incorretos.
-    _ROOM_ERROR_2_: Ops... Alguma informação está incorreta.
     _USER_ERROR_6_: Email já cadastrado.
-    _USER_ERROR_7_: Nome de usuário já cadastrado.
+    _ERROR_UNKNOWN_: Ops.. Algo misterioso aconteceu! :(

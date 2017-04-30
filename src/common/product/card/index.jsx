@@ -1,11 +1,13 @@
 import React from "react";
 import config from "config";
 import {connect} from "react-redux";
+import {withRouter} from "react-router";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
-import styles from "./styles";
 import {Basket} from "common";
+import styles from "./styles";
+import Badge from "../badge";
 
 let Logger = new LoggerFactory("common.product.card");
 
@@ -17,6 +19,7 @@ let Logger = new LoggerFactory("common.product.card");
  */
 function mapStateToProps(state) {
     return {
+        uid: state.user.uid,
         basket: state.basket
     };
 }
@@ -56,29 +59,59 @@ class Component extends React.Component {
         this.setState({showOverlay: false});
     }
 
-    onAddBtnClick() {
+    onAddBtnClick(evt) {
         let logger = Logger.create("onAddBtnClick");
         logger.info("enter");
+
+        evt.preventDefault();
+        evt.stopPropagation();
 
         Redux.dispatch(
             Basket.actions.basketAddProduct(this.props.data)
         );
     }
 
-    onRemoveBtnClick() {
+    onRemoveBtnClick(evt) {
         let logger = Logger.create("onRemoveBtnClick");
         logger.info("enter");
+
+        evt.preventDefault();
+        evt.stopPropagation();
 
         Redux.dispatch(
             Basket.actions.basketRemoveProduct(this.props.data)
         );
     }
 
+    goToProductDetail() {
+        this.props.router.push({
+            pathname: `/item/${this.props.data.nameId}`
+        });
+    }
+
+    renderTags() {
+        let {data} = this.props;
+        let tags = [];
+
+        for(let i = 0; i < data.tags.length && i < 2; i++) {
+            let tag = data.tags[i];
+
+            tags.push(
+                <div key={tag._id} className={styles.tag} style={{
+                    backgroundColor: tag.color,
+                    color: Style.darkness(tag.color) > 40 ? "#ffffff" : "#000000"
+                }}>{tag.name}</div>
+            );
+        }
+
+        return tags;        
+    }
+
     /**
      * This function is responsible for generating the component's view.
      */
     render() {
-        let {data} = this.props;
+        let {data,uid} = this.props;
         let {showOverlay} = this.state;
 
         let item = this.props.basket.items[data._id];
@@ -86,21 +119,20 @@ class Component extends React.Component {
         return (
             <div className={styles.card} 
                 onMouseEnter={this.onMouseEnter}
-                onMouseLeave={this.onMouseLeave}>
+                onMouseLeave={this.onMouseLeave}
+                onClick={this.goToProductDetail}>
                 {item ? (
-                    <div className={styles.counterBag}>
-                        {item.count}
-                    </div>
+                    <Badge count={item.count} />
                 ) : null}
 
                 <div className={styles.imageContainer}>
                     <div className={styles.image} style={{
-                        backgroundImage: `url(//${config.hostnames.file}/${data.image})`,
+                        backgroundImage: `url(//${config.hostnames.file}/images/${data.mainImage})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center"
                     }}></div>
 
-                    {showOverlay ? (
+                    {uid && showOverlay ? (
                         <div className={styles.overlay}>
                             {item ? (<Button scale={0.6} color="danger" onClick={this.onRemoveBtnClick}>
                                 <span className="icon-minus-strong"></span>
@@ -122,10 +154,7 @@ class Component extends React.Component {
 
                 {data.tags && data.tags.length ? (
                     <div className={styles.tagsContainer}>
-                        <div className={styles.tag} style={{
-                            backgroundColor: data.tags[0].color,
-                            color: Style.darkness(data.tags[0].color) > 40 ? "#ffffff" : "#000000"
-                        }}>{data.tags[0].name}</div>
+                        {this.renderTags()}
                     </div>
                 ) : null}
             </div>
@@ -134,9 +163,9 @@ class Component extends React.Component {
 }
 
 /** Export **/
-export default connect(
+export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(Component);
+)(Component));
 
 

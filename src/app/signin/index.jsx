@@ -1,3 +1,5 @@
+/* global mixpanel */
+
 import React from "react";
 import {Link,withRouter} from "react-router";
 import {LoggerFactory,Redux} from "darch/src/utils";
@@ -55,6 +57,8 @@ class Component extends React.Component {
                 })
             );
 
+            mixpanel.track("signin success");
+
             logger.debug("Auth signin action success", signinResponse);
 
             let {query} = this.props.location;
@@ -64,6 +68,9 @@ class Component extends React.Component {
         }
         catch(error) {
             logger.error("signin process error", error);
+
+            mixpanel.track("signin error", error);
+
             this.setState({loading: false});
         }
     }

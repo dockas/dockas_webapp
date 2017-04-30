@@ -1,9 +1,11 @@
+apiVersion: v1
+
 siteinfo:
     description: Dockas - The online market
     title: Dockas
     keywords: startup,tech,chat
     #fb_app_id: 250528625300602
-    #mixpanel_key: cd89107f218f244fd5e91772fd041fbe
+    mixpanel_key: 2376ce562fae83abb04ff50606c430fd
     #analytics_key: UA-79995910-2
     #optimizely_key: 5385733009
     #google_maps_key: AIzaSyDOko7oldevlasKPWl1x1sqZje1nzBZNvk
@@ -15,7 +17,7 @@ hostnames:
     webapp: dockas.com
     api: api.dockas.com
     socket: socket.dockas.com
-    file: api.dockas.com/v1/file
+    file: file.dockas.com
 
 paypal:
     sandbox: "Ac95bP9cLOVq7YzUbyMNabCBWH3p1frTjzZ74a_a1DH-VFdenOtrrTD2z6qG7FLRFszgFvyu4bWh0NMa"
@@ -28,8 +30,8 @@ support:
     - name: Bruno
       phone: (31)99537-0317
     - name: Marco
-      phone: (31)9999-9999
+      phone: (37)99121-9019
     - name: Danilo
-      phone: (31)9999-9999
+      phone: (31)99710-3611
     - name: Felipe
       phone: (31)9999-9999

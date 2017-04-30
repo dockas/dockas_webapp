@@ -30,6 +30,6 @@ export default createActions({
 
         logger.debug("Api productCreate success", findResponse);
 
-        return findResponse.results;
+        return {data: findResponse.results, query};
     },
 });

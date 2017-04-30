@@ -1,6 +1,8 @@
+/* global mixpanel */
+
 import React from "react";
-//import config from "config";
 import {connect} from "react-redux";
+import {withRouter} from "react-router";
 import lodash from "lodash";
 import {LoggerFactory} from "darch/src/utils";
 import Button from "darch/src/button";
@@ -18,6 +20,7 @@ let Logger = new LoggerFactory("common.product.card");
  */
 function mapStateToProps(state) {
     return {
+        uid: state.user.uid,
         basket: state.basket
     };
 }
@@ -59,14 +62,23 @@ class Component extends React.Component {
         logger.info("enter");
     }
 
+    onGetInivitationBtnClick() {
+        let logger = Logger.create("onGetInivitationBtnClick");
+        logger.info("enter");
+
+        mixpanel.track("get invitation button clicked");
+
+        this.props.router.push("invitation");
+    }
+
     /**
      * This function is responsible for generating the component's view.
      */
     render() {
         let {items, totalPrice} = this.props.basket;
-        let {buttonLabel} = this.props;
+        let {uid,buttonLabel} = this.props;
 
-        return (
+        return uid ? (
             <div>
                 <div className={styles.card}>
                     <div>
@@ -88,13 +100,23 @@ class Component extends React.Component {
                     </div>
                 </div>
             </div>
+        ) : (
+            <div>
+                <div className={styles.card}>
+                    <div>
+                        <Button scale={0.8} block={true} color="success" onClick={this.onGetInivitationBtnClick}>
+                            <i18n.Translate text="_BASKET_CARD_INVITATION_BUTTON_TEXT_" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
         );
     }
 }
 
 /** Export **/
-export default connect(
+export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(Component);
+)(Component));
 
