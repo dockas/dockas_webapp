@@ -35,3 +35,4 @@ ENH : Add alert support with socket.io integration.
 FEA : Create an independent badge component within commom modules.
 ENH : Add price update modal within Product.Card component.
 GIT : Checkout new darch commit fixing a bug with crypto.
+BUG : Correct a bug with ProximaNova ligh woff font name.
