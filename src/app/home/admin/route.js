@@ -5,7 +5,7 @@ module.exports = {
 
     indexRoute: { 
         onEnter: (nextState, replace) => {
-            replace("/admin/products");
+            replace("/admin/users");
         }
     },
 

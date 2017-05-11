@@ -36,3 +36,6 @@ FEA : Create an independent badge component within commom modules.
 ENH : Add price update modal within Product.Card component.
 GIT : Checkout new darch commit fixing a bug with crypto.
 BUG : Correct a bug with ProximaNova ligh woff font name.
+BUG : Redirect to invitation page when user does not provided a invitation token in signup page.
+BUG : Make users the default page of admin area.
+BUG : Populate brand and check brand owner instead of product owners inside product detail page.

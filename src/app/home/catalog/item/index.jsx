@@ -71,7 +71,7 @@ class Component extends React.Component {
 
             try {
                 let findResponse = await Api.shared.productFindByNameId(nameId, {
-                    populate: ["images"]
+                    populate: ["images","tags","brand"]
                 });
                 
                 product = findResponse.result;
@@ -311,7 +311,7 @@ class Component extends React.Component {
                                                         <i18n.Translate text="_CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_" />
                                                     </Text>
 
-                                                    {user && user.roles.indexOf("admin") >= 0 || product.owners.indexOf(uid) >= 0 ? (
+                                                    {(user && user.roles.indexOf("admin") >= 0) || (product.brand.owners && product.brand.owners.indexOf(uid) >= 0) ? (
                                                         !editing.description ? (
                                                             <span> • <a style={{fontSize: "0.8em"}} onClick={() => {this.setState({editing: Object.assign(editing, {description: true})});}}><i18n.Translate text="_CATALOG_ITEM_PAGE_EDIT_LABEL_" /></a></span>
                                                         ) : (

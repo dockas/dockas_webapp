@@ -113,7 +113,7 @@ class Component extends React.Component {
         this.setState({searchLoading: true});
 
         let mergedQuery = lodash.assign({}, query, {
-            populate: ["tags","images"]
+            populate: ["tags","images","brand"]
         });
 
         if(lodash.isEmpty(mergedQuery.name)){

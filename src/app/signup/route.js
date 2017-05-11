@@ -12,6 +12,11 @@ module.exports = {
         notAuthPol(nextState,replace).then(() => {
             let invitationId = lodash.get(nextState, "location.query.invitation");
 
+            if(!invitationId) {
+                replace("/invitation");
+                return cb();
+            }
+
             Api.shared.invitationFindById(invitationId)
             .then((response) => {
                 let invitation = response.result;
