@@ -31,12 +31,12 @@ export default class Component extends React.Component {
 
         // Test toaster
         /*Redux.shared.store.dispatch(
-            Toaster.actions.push("info", "Message 1")
+            Toaster.actions.push("moody", "Message 1")
         );
 
         setTimeout(() => {
             Redux.shared.store.dispatch(
-                Toaster.actions.push("info", "Message 2")
+                Toaster.actions.push("moody", "Message 2")
             );
         }, 1000);*/
     }
@@ -46,7 +46,7 @@ export default class Component extends React.Component {
             <div className={styles.page}>
                 {this.props.children}
 
-                <Toaster/>
+                <Toaster position="top-center"/>
             </div>
         );
     }

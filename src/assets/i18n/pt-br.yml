@@ -27,30 +27,48 @@ dictionary:
     _SAVE_: Salvar
     _SAVING_: Salvando
     _SENDING_: Enviando
+    _CANCEL_: Cancelar
     _OK_: Ok
     _FINALIZING_: Finalizando
     _TOTAL_IN_BASKET_: Total na Cesta
 
     # Nav bar
-    _NAV_BAR_ACCOUNT_ITEM_LABEL_: Perfil
-    _NAV_BAR_ORDERS_ITEM_LABEL_: Meus Pedidos
-    _NAV_BAR_LOGOUT_ITEM_LABEL_: Sair
-    _NAV_BAR_SIGNIN_ITEM_LABEL_: Entrar
-    _NAV_BAR_ADMIN_ITEM_LABEL_: Admin
+    _NAV_BAR_ACCOUNT_ITEM_LABEL_: perfil
+    _NAV_BAR_ORDERS_ITEM_LABEL_: meus pedidos
+    _NAV_BAR_LOGOUT_ITEM_LABEL_: sair
+    _NAV_BAR_SIGNIN_ITEM_LABEL_: entrar
+    _NAV_BAR_ADMIN_ITEM_LABEL_: admin
+    _NAV_BAR_ALERTS_ITEM_LABEL_: alertas
+    _NAV_BAR_LISTS_ITEM_LABEL_: minhas listas
 
     # Catalog Page
     _CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_: nome do item
     _CATALOG_LIST_PAGE_SEARCH_TAGS_FIELD_PLACEHOLDER_: -- selecionar categorias --
     _CATALOG_LIST_PAGE_SEARCH_BUTTON_TEXT_: procurar
+    _CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_: apenas selecionados
+    _CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_: salvar lista
+    _CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_: adicionar
+    _CATALOG_LIST_PAGE_LOADED_LIST_LABEL_: lista
+
+    _LIST_UPDATE_SUCCESS_TOAST_MESSAGE_: lista salva com sucesso
+
+    # Create list modal
+    _CREATE_LIST_MODAL_TITLE_: Criar Lista
+    _CREATE_LIST_MODAL_NAME_FIELD_LABEL_: nome da lista
+    _CREATE_LIST_MODAL_NAME_FIELD_PLACEHOLDER_: festinha em casa
 
     # Admin page
     _ADMIN_BAR_TITLE_: Admin
-    _ADMIN_BAR_PRODUCTS_LABEL_: Produtos
-    _ADMIN_BAR_USERS_LABEL_: Usuários
-    _ADMIN_BAR_ORDERS_LABEL_: Pedidos
-    _ADMIN_BAR_INVITATIONS_LABEL_: Convites
-    _ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_: Adicionar
-    _ADMIN_BAR_ORDERS_SEND_ACTION_LABEL_: Enviar
+    _ADMIN_BAR_PRODUCTS_LABEL_: produtos
+    _ADMIN_BAR_USERS_LABEL_: usuários
+    _ADMIN_BAR_ORDERS_LABEL_: pedidos
+    _ADMIN_BAR_INVITATIONS_LABEL_: convites
+    _ADMIN_BAR_ALERTS_LABEL_: alertas
+    _ADMIN_BAR_COUPONS_LABEL_: cupons
+    _ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_: adicionar
+    _ADMIN_BAR_ORDERS_SEND_ACTION_LABEL_: enviar
+    _ADMIN_BAR_ALERTS_CREATE_ACTION_LABEL_: adicionar
+    _ADMIN_BAR_COUPONS_CREATE_ACTION_LABEL_: criar
 
     _ADMIN_PRODUCTS_PAGE_NAME_TH_: nome
     _ADMIN_PRODUCTS_PAGE_PRICE_VALUE_TH_: preço
@@ -87,6 +105,17 @@ dictionary:
     _ADMIN_INVITATIONS_PAGE_STATUS_TH_: status
     _ADMIN_INVITATIONS_PAGE_NO_DATA_FOUND_TEXT_: Nenhum convite encontrado
 
+    _ADMIN_ALERTS_PAGE_USERS_TH_: usuários
+    _ADMIN_ALERTS_TYPE_TH_: tipo
+    _ADMIN_ALERTS_MESSAGE_TH_: mensagem
+    _ADMIN_ALERTS_PAGE_CREATED_AT_TH_: criada em
+
+    _ADMIN_COUPONS_PAGE_NAME_ID_TH_: nome
+    _ADMIN_COUPONS_PAGE_MAX_APPLY_COUNT_TH_: num. máximo
+    _ADMIN_COUPONS_PAGE_APPLIERS_COUNT_TH_: num. aplicados
+    _ADMIN_COUPONS_PAGE_VALUE_TH_: valor
+    _ADMIN_COUPONS_PAGE_NO_DATA_FOUND_TEXT_: nenhum cupom encontrado
+    
     # Signin page
     _LOGIN_FIELD_LABEL_: email
     _LOGIN_FIELD_PLACEHOLDER_: meu@email.com
@@ -115,10 +144,11 @@ dictionary:
     _CHECKOUT_PROGRESS_STEP_FINALIZE_TEXT_: Conclusão
 
     _CHECKOUT_STEP_REVIEW_TITLE_: Revise suas compras
-    _CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_: Item
-    _CHECKOUT_STEP_REVIEW_UNIT_PRICE_TH_: Preço Unitário
-    _CHECKOUT_STEP_REVIEW_COUNT_TH_: Quantidade
-    _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: Preço Total
+    _CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_: item
+    _CHECKOUT_STEP_REVIEW_UNIT_PRICE_TH_: preço unit.
+    _CHECKOUT_STEP_REVIEW_COUNT_TH_: qtd.
+    _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: total
+    _CHECKOUT_STEP_REVIEW_COUPON_ALREADY_APPLIED_TOAST_MESSAGE_: cupom já aplicado
     
     _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
     _NEW_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
@@ -144,19 +174,22 @@ dictionary:
 
     # Create product page
     _CREATE_PRODUCT_PAGE_TITLE_: Novo Produto
-    _CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_: Nome
+    _CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_: nome
     _CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_: tomate do himaláia
-    _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_LABEL_: Identificador
+    _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_LABEL_: identificador
     _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_PLACEHOLDER_: tomate-do-himalaia
-    _CREATE_PRODUCT_PAGE_OWNER_FIELD_LABEL_: Dono do Produto
-    _CREATE_PRODUCT_PAGE_OWNER_FIELD_PLACEHOLDER_: dono@email.com
-    _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_: Descrição
+    _CREATE_PRODUCT_PAGE_BRAND_FIELD_LABEL_: marca
+    _CREATE_PRODUCT_PAGE_BRAND_FIELD_PLACEHOLDER_: -- selecionar --
+    _CREATE_PRODUCT_PAGE_BRAND_FIELD_CREATE_OPTION_LABEL_: criar marca "{{value}}"
+    _CREATE_PRODUCT_PAGE_BRAND_OWNERS_FIELD_LABEL_: donos da marca
+    _CREATE_PRODUCT_PAGE_BRAND_OWNERS_FIELD_PLACEHOLDER_: dono@email.com
+    _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
     _CREATE_PRODUCT_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: descrição genérica sobre o tomate do himaláia para ajudar em pesquisas
-    _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_LABEL_: Preço (R$)
+    _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_LABEL_: preço (R$)
     _CREATE_PRODUCT_PAGE_PRICE_VALUE_FIELD_PLACEHOLDER_: 50,00
-    _CREATE_PRODUCT_PAGE_STOCK_FIELD_LABEL_: Estoque
+    _CREATE_PRODUCT_PAGE_STOCK_FIELD_LABEL_: estoque
     _CREATE_PRODUCT_PAGE_STOCK_FIELD_PLACEHOLDER_: 500
-    _CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_: Tags
+    _CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_: tags
     _CREATE_PRODUCT_PAGE_TAGS_FIELD_PLACEHOLDER_: -- selecionar --
     _CREATE_PRODUCT_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
     _PRODUCT_CREATE_SUCCESS_: Produto criado com sucesso.
@@ -171,6 +204,30 @@ dictionary:
     _NEW_TAG_MODAL_PREVIEW_FIELD_LABEL_: Preview
     _TAG_CREATE_SUCCESS_: Tag criada com sucesso.
 
+    _CREATE_ALERT_PAGE_TITLE_: Novo Alerta
+    _CREATE_ALERT_PAGE_USERS_FIELD_LABEL_: usuários
+    _CREATE_ALERT_PAGE_USERS_FIELD_PLACEHOLDER_: user@email.com
+    _CREATE_ALERT_PAGE_MESSAGE_FIELD_LABEL_: mensagem
+    _CREATE_ALERT_PAGE_MESSAGE_FIELD_PLACEHOLDER_: opa...saca só :)
+    _CREATE_ALERT_PAGE_OPTIONS_FIELD_LABEL_: opções
+    _CREATE_ALERT_PAGE_OPTION_VALUE_TH_: valor
+    _CREATE_ALERT_PAGE_OPTION_LABEL_TH_: label
+    _CREATE_ALERT_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_: valor
+    _CREATE_ALERT_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_: label
+
+    _CREATE_COUPON_PAGE_TITLE_: Criar cupom
+    _CREATE_COUPON_PAGE_NAME_ID_LABEL_: nome identificador
+    _CREATE_COUPON_PAGE_NAME_ID_PLACEHOLDER_: meu-super-cupom
+    _CREATE_COUPON_PAGE_USERS_FIELD_LABEL_: usuários
+    _CREATE_COUPON_PAGE_USERS_FIELD_PLACEHOLDER_: usuario@email.com
+    _CREATE_COUPON_PAGE_MAX_APPLY_COUNT_LABEL_: máximo de aplicações
+    _CREATE_COUPON_PAGE_VALUE_LABEL_: valor do cupom
+    _CREATE_COUPON_PAGE_VALUE_TYPE_LABEL_: tipo do valor
+    _CREATE_COUPON_PAGE_VALUE_TYPE_FIELD_PLACEHOLDER_: -- selecionar --
+    _CREATE_COUPON_PAGE_DESCRIPTION_LABEL_: descrição
+    _CREATE_COUPON_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: esse é o cupom maluco beleza que vai bombar :)
+    _CREATE_COUPON_PAGE_SUBMIT_BUTTON_TEXT_: criar
+
     # Orders Page
     _ORDERS_PAGE_TITLE_: Meus Pedidos
     _ORDERS_PAGE_CREATED_AT_TH_: data de criação
@@ -178,11 +235,24 @@ dictionary:
     _ORDERS_PAGE_ITEMS_COUNT_TH_: número de items
     _ORDERS_PAGE_PRICE_VALUE_TH_: preço
     _ORDERS_PAGE_STATUS_TH_: status
-    _ORDERS_PAGE_NO_DATA_FOUND_TEXT_: Nenhum pedido realizado ainda
+    _ORDERS_PAGE_NO_DATA_FOUND_TEXT_: você ainda não realizou nenhum pedido
+
+    # Lists Page
+    _LISTS_PAGE_TITLE_: Minhas Listas
+    _LISTS_PAGE_NAME_TH_: nome
+    _LISTS_PAGE_ITEMS_COUNT_TH_: num. itens
+    _LISTS_PAGE_PRICE_TH_: preço total
+    _LISTS_PAGE_LAST_PURCHASED_AT_TH_: comprado em
+    _LISTS_PAGE_NO_DATA_FOUND_TEXT_: você ainda não criou nenhuma lista
+    _LISTS_PAGE_LOAD_BUTTON_LABEL_: utilizar
+    _LISTS_PAGE_OVERRIDE_WARNING_MODAL_TITLE_: Atenção
+    _LISTS_PAGE_OVERRIDE_WARNING_MODAL_BODY_: Existem produtos selecionados atualmente na sua cesta. O carregamento dessa lista eliminará todos esses produtos selecionados para dar lugar aos produtos da lista. Tem certeza que deseja continuar?
 
     # Catalog Item Page
     _CATALOG_ITEM_PAGE_NAME_FIELD_LABEL_: nome
     _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+    _CATALOG_ITEM_PAGE_EDIT_LABEL_: editar
+    _CATALOG_ITEM_PAGE_SAVE_LABEL_: salvar
 
     # Invitation Page
     _INVITATION_PAGE_TITLE_: Solicite seu convite
@@ -193,6 +263,13 @@ dictionary:
     _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
     _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.
 
+    # Alerts Page
+    _ALERTS_PAGE_TITLE_: Alertas
+    _ALERTS_PAGE_NO_DATA_FOUND_MESSAGE_: Não há alertas ainda
+
+    # Alert Messages
+    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_AWAITING_USER_AVAILABILITY_: Seu pedido <b>#{{order.count}}</b> sairá amanhã! Você estará em casa?
+    _ALERT_SELECTED_OPTION_TEXT_: "Opção selecionada : <b>{{selectedOption}}</b>"
 
     # Basket Card
     _BASKET_CARD_ITEMS_TEXT_: "{{numItems}} itens"
@@ -215,4 +292,5 @@ dictionary:
     _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.
     _AUTH_ERROR_2_: Nome de usuário, email ou senha incorretos.
     _USER_ERROR_6_: Email já cadastrado.
+    _COUPON_ERROR_3_: Você já utilizou esse cupom antes.
     _ERROR_UNKNOWN_: Ops.. Algo misterioso aconteceu! :(

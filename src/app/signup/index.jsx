@@ -10,7 +10,7 @@ import Field from "darch/src/field";
 import Spinner from "darch/src/spinner";
 import Button from "darch/src/button";
 import Grid from "darch/src/grid";
-import logo from "assets/images/logo_icon.png";
+import logo from "assets/images/logo_icon_100x100.png";
 import {Api,Auth} from "common";
 import styles from "./styles";
 import SignupStore from "./store";

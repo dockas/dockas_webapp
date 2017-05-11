@@ -8,9 +8,10 @@ import {LoggerFactory} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Bar from "darch/src/bar";
 import Dropdown from "darch/src/dropdown";
-import logoIcon from "assets/images/logo_400x88.png";
+import Label from "darch/src/label";
+import logoIcon from "assets/images/logo_227x50.png";
 import styles from "./styles";
-import {Basket} from "common";
+import {Basket,Alert} from "common";
 
 let Logger = new LoggerFactory("home.page");
 
@@ -61,7 +62,17 @@ class Component extends React.Component {
 
         mixpanel.track("start checkout button clicked");
         
-        this.props.router.push("/checkout");
+        // If user are not logged, then prompt it to login or to
+        // create an account.
+        if(!this.props.user) {
+            this.props.router.push({
+                pathname: "/signin",
+                query: {redirect: "/checkout"}
+            });
+        }
+        else {
+            this.props.router.push("/checkout");
+        }
     }
 
     render() {
@@ -78,6 +89,16 @@ class Component extends React.Component {
                             <Bar.Item>
                                 <Link to="/">
                                     <img className={styles.logo} src={logoIcon} />
+
+                                    <span style={{
+                                        marginLeft: "5px",
+                                        display: "inline-block",
+                                        verticalAlign: "top",
+                                        position: "relative",
+                                        top: "0px"
+                                    }}>
+                                        <Label color="danger" scale={0.7}>beta</Label>
+                                    </span>
                                 </Link>
                             </Bar.Item>
                         </Bar.Menu>
@@ -94,6 +115,28 @@ class Component extends React.Component {
                                     <i18n.Translate text="_NAV_BAR_MESSAGES_ITEM_LABEL_" />
                                 </Link>
                             </Bar.Item>*/}
+
+                            {user ? (
+                                <Bar.Item>
+                                    <Alert.Dropdown />
+                                </Bar.Item>
+                            ) : null}
+
+                            {user ? (
+                                <Bar.Item>
+                                    <Link to="/lists" activeClassName="active">
+                                        <span className="icon-checklist"></span> <i18n.Translate text="_NAV_BAR_LISTS_ITEM_LABEL_" />
+                                    </Link>
+                                </Bar.Item>
+                            ) : null}
+
+                            {user ? (
+                                <Bar.Item>
+                                    <Link to="/orders" activeClassName="active">
+                                        <span className="icon-purchase-order"></span> <i18n.Translate text="_NAV_BAR_ORDERS_ITEM_LABEL_" />
+                                    </Link>
+                                </Bar.Item>
+                            ) : null}
 
                             {user && user.roles.indexOf("admin") >= 0 ? (
                                 <Bar.Item>

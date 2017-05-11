@@ -26,6 +26,8 @@ module.exports = {
                 require("./users/route"),
                 require("./orders/route"),
                 require("./invitations/route"),
+                require("./alerts/route"),
+                require("./coupons/route"),
                 require("./create/route")
             ]);
         });

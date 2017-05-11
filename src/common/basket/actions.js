@@ -3,7 +3,7 @@
 import {createActions} from "redux-actions";
 import {LoggerFactory, Storage} from "darch/src/utils";
 //import Toaster from "darch/src/toaster";
-//import Api from "../utils/api";
+import Api from "../utils/api";
 //import Socket from "../utils/socket";
 
 
@@ -38,6 +38,24 @@ export default createActions({
         });
 
         return product;
+    },
+
+    basketLoadList(list) {
+        var logger = Logger.create("basketLoadList");
+        logger.info("enter", {list});
+
+        return list;
+    },
+
+    async basketApplyCoupon(couponNameId, opts) {
+        var logger = Logger.create("basketApplyCoupon");
+        logger.info("enter", {couponNameId});
+
+        let response = await Api.shared.couponApplyByNameId(couponNameId, opts);
+
+        logger.debug("Api couponApplyByNameId success", response);
+
+        return response.result;
     },
 
     basketSelectAddress(address) {

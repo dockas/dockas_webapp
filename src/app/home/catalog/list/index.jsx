@@ -2,6 +2,7 @@
 
 import React from "react";
 import lodash from "lodash";
+import classNames from "classnames";
 import {LoggerFactory,Redux,Storage} from "darch/src/utils";
 import {connect} from "react-redux";
 import Container from "darch/src/container";
@@ -12,11 +13,34 @@ import Button from "darch/src/button";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
 import Spinner from "darch/src/spinner";
+import Label from "darch/src/label";
+import Text from "darch/src/text";
+import Toaster from "darch/src/toaster";
 import {Api,Product} from "common";
 import styles from "./styles";
+import PriceModal from "../price_modal";
 
-let Logger = new LoggerFactory("catalog.list");
+let Logger = new LoggerFactory("catalog.list", {level: "debug"});
 let storage = new Storage();
+
+/**
+ * This function created a list from the basket data.
+ */
+function basketToList(basket) {
+    let list = {
+        items: []
+    };
+
+    for(let id of Object.keys(basket.items)) {
+        list.items.push({
+            product: id,
+            count: basket.items[id].count
+        });
+    }
+
+    return list;
+}
+
 
 /**
  * Redux map state to props function.
@@ -26,6 +50,8 @@ let storage = new Storage();
  */
 function mapStateToProps(state) {
     return {
+        user: lodash.get(state.user.profiles, state.user.uid),
+        basket: state.basket,
         products: state.product.data,
         productsQuery: state.product.query
     };
@@ -87,7 +113,7 @@ class Component extends React.Component {
         this.setState({searchLoading: true});
 
         let mergedQuery = lodash.assign({}, query, {
-            populate: ["tags"]
+            populate: ["tags","images"]
         });
 
         if(lodash.isEmpty(mergedQuery.name)){
@@ -196,76 +222,178 @@ class Component extends React.Component {
         }
     }
 
+    onProductChangePrice(product) {
+        this.setState({priceModalProduct: product});
+    }
+
+    async onSaveListButtonClick() {
+        let logger = Logger.create("onSaveListButtonClick"),
+            {listId} = this.props.basket;
+
+        logger.info("enter", {listId});
+
+        if(listId) {
+            let list = basketToList(this.props.basket);
+
+            try {
+                let response = await Api.shared.listUpdate(listId, list);
+
+                logger.debug("api listUpdate success", response);
+
+                Redux.dispatch(Toaster.actions.push("success", "_LIST_UPDATE_SUCCESS_TOAST_MESSAGE_"));
+            }
+            catch(error) {
+                logger.error("api listUpdate error", error);
+            }
+        }
+        else {
+            this.setState({createListModalOpen: true});
+        }
+    }
+
+    onCreateListModalDismiss() {
+        this.setState({createListModalOpen: false});
+    }
+
+    async onCreateListSubmit(data) {
+        let {items} = this.props.basket,
+            newState = {createListModalLoading: false},
+            logger = Logger.create("onCreateListSubmit");
+
+        logger.info("enter", data);
+
+        this.setState({createListModalLoading: true});
+
+        // Build the list up
+        let list = {
+            name: data.name,
+            items: []
+        };
+
+        for(let id of Object.keys(items)) {
+            list.items.push({
+                product: id,
+                count: items[id].count
+            });
+        }
+
+        try {
+            let response = await Api.shared.listCreate(list);
+            logger.info("api listCreate success", {response});
+
+            // Set list as the loaded list.
+            newState.loadedList = Object.assign(list, {"_id": response.result});
+            newState.createListModalOpen = false;
+        }
+        catch(error) {
+            logger.error("api listCreate error", error);
+        }
+
+        logger.debug("newState", newState);
+
+        this.setState(newState);
+    }
+
     render() {
-        let {products} = this.props;
-        let {tags,loadingTags,selectedTags} = this.state;
+        let {products,user} = this.props;
+        let {listName} = this.props.basket;
+        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading} = this.state;
 
         return (
             <div className={styles.page}>
                 <Container>
                     <div className={styles.searchContainer}>
-                        <Grid noGap={false}>
-                            <Grid.Cell>
-                                <div className={styles.searchFieldContainer}>
-                                    <Form loading={this.state.searchLoading}
-                                        onSubmit={this.onSearchFormSubmit}>
-                                        <Field.Text
-                                            name="name"
-                                            placeholder="_CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_"
-                                            scale={0.8}
-                                            disabled={this.state.searchLoading}/>
-                                    </Form>
-                                </div>
-                            </Grid.Cell>
+                        <Grid noGap={true}>
                             <Grid.Cell span={2}>
-                                <div className={styles.searchFieldContainer}>
-                                    <Field.Select
-                                        name="tags"
-                                        value={selectedTags}
-                                        onChange={this.onSearchTagsChange}
-                                        placeholder="_CATALOG_LIST_PAGE_SEARCH_TAGS_FIELD_PLACEHOLDER_"
-                                        options={tags}
-                                        loadOptions={this.loadTags}
-                                        loading={loadingTags}
-                                        clearSearchOnSelect={true}
-                                        creatable={false}
-                                        multi={true}
-                                        scale={0.8}
-                                        disabled={this.state.searchLoading}
-                                        loaderComponent={<Spinner.CircSide color="#555" />}/>
-                                </div>
-                            </Grid.Cell>
-                            <Grid.Cell>
-                                <div className={styles.searchFieldContainer}>
-                                    {this.state.searchLoading ? (
-                                        <Spinner.CircSide color="moody" />
-                                    ) : null}
-                                </div>
+                                <Grid noGap={false}>
+                                    <Grid.Cell span={2}>
+                                        <div className={classNames([styles.fieldContainer,styles.searchFieldContainer])}>
+                                            <Form loading={this.state.searchLoading}
+                                                onSubmit={this.onSearchFormSubmit}>
+                                                <Field.Text
+                                                    name="name"
+                                                    placeholder="_CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_"
+                                                    scale={0.8}
+                                                    disabled={this.state.searchLoading}/>
+                                            </Form>
+                                        </div>
+                                    </Grid.Cell>
 
-                                {/*<Button type="submit"
-                                    loadingComponent={
-                                        <span>
-                                            <i18n.Translate text="_LOADING_" />
-                                            <span className={styles.spinnerContainer}>
-                                                <Spinner.Bars color="#fff" />
-                                            </span>
-                                        </span>
-                                    }
-                                    scale={0.8}>
-                                    <i18n.Translate text="_CATALOG_LIST_PAGE_SEARCH_BUTTON_TEXT_" />
-                                </Button>*/}
+                                    <Grid.Cell span={3}>
+                                        <div className={classNames([styles.fieldContainer,styles.searchFieldContainer])}>
+                                            <Field.Select
+                                                name="tags"
+                                                value={selectedTags}
+                                                onChange={this.onSearchTagsChange}
+                                                placeholder="_CATALOG_LIST_PAGE_SEARCH_TAGS_FIELD_PLACEHOLDER_"
+                                                options={tags}
+                                                loadOptions={this.loadTags}
+                                                loading={loadingTags}
+                                                clearSearchOnSelect={true}
+                                                creatable={false}
+                                                multi={true}
+                                                scale={0.8}
+                                                disabled={this.state.searchLoading}
+                                                loaderComponent={<Spinner.CircSide color="#555" />}/>
+                                        </div>
+                                    </Grid.Cell>
+
+                                    <Grid.Cell>
+                                        <div className={classNames([styles.fieldContainer,styles.searchLoadingContainer])}>
+                                            {this.state.searchLoading ? (
+                                                <Spinner.CircSide color="moody" />
+                                            ) : null}
+                                        </div>
+                                    </Grid.Cell>
+                                </Grid>
                             </Grid.Cell>
-                            <Grid.Cell></Grid.Cell>
-                            <Grid.Cell></Grid.Cell>
+
+                            <Grid.Cell>
+                                <div className={classNames([styles.fieldContainer,styles.actionButtonsContainer])}>
+                                    {user && user.roles.indexOf("admin") >= 0 ? (
+                                        <Button to="/admin/create/product" scale={0.8} color="warning"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_" /></Button>
+                                    ) : null}
+                                    
+                                    {user ? <Button scale={0.8} onClick={this.onSaveListButtonClick}><i18n.Translate text="_CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_" /></Button> : null}
+                                </div>
+                            </Grid.Cell>
+                        </Grid>
+                    </div>
+
+                    <div className={styles.filtersContainer}>
+                        <Grid noGap={false}>
+                            <Grid.Cell span={2}>
+                                {user ? (
+                                    <Label scale={0.8} color={filterOnlySelected?"moody":"#eeeeee"} onClick={() => {this.setState({filterOnlySelected: !filterOnlySelected});}}>
+                                        <i18n.Translate text="_CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_" />
+                                    </Label>  
+                                ) : null}
+                            </Grid.Cell>
+
+                            <Grid.Cell>
+                                {listName ? (
+                                    <div className={styles.listNameContainer}>
+                                        <Label layout="outline" color="moody" scale={0.8}>{listName}</Label>
+                                    </div>
+                                ) : null}
+                            </Grid.Cell>
                         </Grid>
                     </div>
 
                     <Grid spots={10} noGap={true} bordered={true}>
                         {products ? (
+                            /*Array(50).fill(products[0]).map((product, idx) => {
+                                return (
+                                    <Grid.Cell key={idx} span={2}>
+                                        <Product.Card data={product} onChangePrice={this.onProductChangePrice} />
+                                    </Grid.Cell>
+                                );
+                            })*/
+
                             products.map((product) => {
                                 return (
                                     <Grid.Cell key={product._id} span={2}>
-                                        <Product.Card data={product} />
+                                        <Product.Card data={product} onChangePrice={this.onProductChangePrice} />
                                     </Grid.Cell>
                                 );
                             })
@@ -274,6 +402,54 @@ class Component extends React.Component {
                         )}
                     </Grid>
                 </Container>
+
+                <Modal open={this.state.createListModalOpen} onDismiss={this.onCreateListModalDismiss}>
+                    <Modal.Header>
+                        <h3 style={{margin: 0}}>
+                            <i18n.Translate text="_CREATE_LIST_MODAL_TITLE_" />
+                        </h3>
+                    </Modal.Header>
+
+                    <Form onSubmit={this.onCreateListSubmit} loading={createListModalLoading}>
+                        <Modal.Body>
+                            <Field.Section>
+                                <Text scale={0.8}>
+                                    <i18n.Translate text="_CREATE_LIST_MODAL_NAME_FIELD_LABEL_" />
+                                </Text>
+                                <div>
+                                    <Field.Text name="name"
+                                        placeholder="_CREATE_LIST_MODAL_NAME_FIELD_PLACEHOLDER_"
+                                        validators="$required"/>
+                                    <Field.Error for="name"
+                                        validator="$required"
+                                        message="_FIELD_ERROR_REQUIRED_"/>
+                                </div>
+                            </Field.Section>
+                        </Modal.Body>
+
+                        <Modal.Footer align="right">
+                            <span className={styles.buttonContainer}>
+                                <Button scale={1} color="danger" onClick={this.onCreateListModalDismiss}>
+                                    <i18n.Translate text="_CANCEL_" />
+                                </Button>
+                            </span>
+
+                            <span className={styles.buttonContainer}>
+                                <Button type="submit"scale={1}
+                                    loadingComponent={
+                                        <span>
+                                            <i18n.Translate text="_SAVING_" format="lower" />
+                                            <span style={{marginLeft: "5px"}}>
+                                                <Spinner.Bars color="#fff" />
+                                            </span>
+                                        </span>
+                                    }>
+                                    <i18n.Translate text="_SAVE_" />
+                                </Button>
+                            </span>
+                        </Modal.Footer>
+                    </Form>
+                </Modal>
 
                 <Modal open={this.state.infoModalOpen}>
                     <Modal.Header>
@@ -293,6 +469,23 @@ class Component extends React.Component {
                         </Button>
                     </Modal.Footer>
                 </Modal>
+
+                <PriceModal open={!!priceModalProduct}
+                    product={priceModalProduct} 
+                    onComplete={(result) => {
+                        let logger = Logger.create("onPriceModalComplete");
+                        logger.info("enter", result);
+
+                        let newState = {priceModalProduct: null};
+
+                        if(result) {
+                            // Next setState gonna trigger the ui change for this.
+                            this.state.priceModalProduct.priceValue = result.value;
+                        }
+
+                        this.setState(newState);
+                    }}
+                />
             </div>
         );
     }

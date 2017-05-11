@@ -1,7 +1,8 @@
 import {createActions} from "redux-actions";
-import {LoggerFactory} from "darch/src";
+import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
-//import Socket from "../utils/socket";
+import Socket from "../utils/socket";
+import AlertActions from "../alert/actions";
 
 let Logger = new LoggerFactory("common.auth.actions", {level:"error"});
 
@@ -21,7 +22,12 @@ export default createActions({
         logger.debug("Api http setAuthToken success");
 
         // Sign socket
-        //Socket.shared.sign(signinResponse.result);
+        Socket.shared.sign(signinResponse.result);
+
+        // Get user new alerts count
+        await Redux.dispatch(
+            AlertActions.alertNewCount()
+        );
 
         // Get user profile.
         let userMeResponse = await Api.shared.userMe(opts);

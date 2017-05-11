@@ -1,20 +1,16 @@
 import React from "react";
 import {LoggerFactory} from "darch/src/utils";
-import styles from "./styles";
 
-let Logger = new LoggerFactory("product.badge");
+let Logger = new LoggerFactory("lists.detail");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "product.badge";
+    static displayName = "lists.detail";
     static defaultProps = {};
-    
-    static propTypes = {
-        count : React.PropTypes.number
-    };
+    static propTypes = {};
 
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
@@ -23,8 +19,8 @@ export default class Component extends React.Component {
 
     render() {
         return (
-            <div className={styles.badge}>
-                {this.props.count}
+            <div>
+                List Detail
             </div>
         );
     }

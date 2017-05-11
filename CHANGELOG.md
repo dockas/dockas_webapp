@@ -20,3 +20,17 @@ ENH : Add mainImage, images, owner fields to product creation.
 ENH : Show open orders to admin orders table and filters.
 FEA : Add invitation validation to signup page.
 FIX : Fix file hostname for stage environment.
+ENH : Add support phones in default config file.
+ENH : Remove products from admin nav bar.
+ENH : Add icons to admin nav bar itens.
+ENH : Add brand selection/creation within product creation page.
+ENH : Add order status update buttons in admin orders page.
+ENH : Add edition components to product detail page.
+ENH : Add list support (page, creation, load).
+ENH : Add discount coupon to checkout review page.
+ENH : Add My Orders and My Lists in main nav bar alongside Alerts and Account.
+ENH : Use 100x100 logo version in signin/signup pages (to prevent huge resize blink when page load).
+ENH : Set new logo and favicon images.
+ENH : Add alert support with socket.io integration.
+FEA : Create an independent badge component within commom modules.
+ENH : Add price update modal within Product.Card component.

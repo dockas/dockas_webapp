@@ -11,7 +11,7 @@ import Grid from "darch/src/grid";
 import i18n from "darch/src/i18n";
 import Spinner from "darch/src/spinner";
 import styles from "./styles";
-import logo from "assets/images/logo_icon.png";
+import logo from "assets/images/logo_icon_100x100.png";
 import {Auth} from "common";
 
 let Logger = new LoggerFactory("signin", {level: "debug"});

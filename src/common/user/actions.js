@@ -1,8 +1,9 @@
 import {createActions} from "redux-actions";
 import lodash from "lodash";
-import {LoggerFactory} from "darch/src";
+import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
-//import Socket from "../utils/socket";
+import Socket from "../utils/socket";
+import AlertActions from "../alert/actions";
 
 let Logger = new LoggerFactory("common.user.actions", {level:"debug"});
 
@@ -18,9 +19,16 @@ export default createActions({
             let userMeResponse = await Api.shared.userMe();
             logger.debug("Api userMe success", {userMeResponse});
 
-            //let authToken = await Api.shared.http.getAuthToken();
-            //Socket.shared.sign(authToken);
+            let authToken = await Api.shared.http.getAuthToken();
+            console.log("auth token", authToken);
+            Socket.shared.sign(authToken);
 
+            // Count new alerts.
+            await Redux.dispatch(
+                AlertActions.alertNewCount()
+            );
+
+            // Return user profile
             return userMeResponse.result;
         }
     },

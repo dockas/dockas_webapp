@@ -20,7 +20,11 @@ export default class Socket {
         if(shared) {Socket.shared = this;}
 
         this.io.on("connected", (data) => {
-            logger.debug("connected", data);
+            logger.debug("connected", {
+                data, 
+                disconnected: this.disconnected,
+                signed: this.signed
+            });
 
             // Reconnect
             if(this.disconnected) {
@@ -38,6 +42,8 @@ export default class Socket {
             // Gets connected when signed, so resign.
             if(this.signed) {
                 Api.shared.http.getAuthToken().then((token) => {
+                    logger.debug("re-sign", {token});
+
                     this.sign(token);
                 });
             }

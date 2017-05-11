@@ -1,8 +1,31 @@
 .search-container
-    margin-bottom: 20px;
-    
     > div > div
         padding-left: 0;
     
-    .search-field-container
+    .field-container 
         margin-top: 20px;
+    
+    /*.search-loading-container
+        padding-left: 10px;*/
+    
+    .action-buttons-container
+        text-align: right;
+        
+        > * + *
+            margin-left: 10px;
+
+.filters-container
+    margin-top: 5px;
+    margin-bottom: 20px;
+
+.button-container + .button-container
+    margin-left: 10px;
+
+.list-name-container
+    text-align: right;
+    
+    span
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;

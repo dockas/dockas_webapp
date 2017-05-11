@@ -5,3 +5,5 @@ export Product from "./product";
 export Basket from "./basket";
 export Paypal from "./paypal";
 export Order from "./order";
+export Alert from "./alert";
+export Badge from "./badge";

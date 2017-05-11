@@ -8,7 +8,7 @@ import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
 import Label from "darch/src/label";
 import Spinner from "darch/src/spinner";
-import Tabs from "darch/src/tabs";
+//import Tabs from "darch/src/tabs";
 import Bar from "../bar";
 import actions from "./actions";
 import styles from "./styles";
@@ -52,12 +52,40 @@ class Component extends React.Component {
 
         Redux.dispatch(actions.adminOrdersFind({
             populate: ["user","items[].product"],
-            status: "open",
+            status: [ // all but closed
+                "open", 
+                "awaiting_user_availability", 
+                "user_available", 
+                "user_unavailable",
+                "confirmed",
+                "boxed",
+                "delivering"
+            ],
             createdAt: {
                 lower: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
                 upper: moment().day("Friday").endOf("day").toISOString() // to next friday
             }
         }));
+    }
+
+    onStatusUpdateClick(id, status) {
+        return () => {
+            Redux.dispatch(actions.adminOrdersStatusUpdate(id, status));
+        };
+    }
+
+    getStatusClassName(order, status) {
+        let logger = Logger.create("getStatusClassName");
+        logger.info("enter", {orderStatus: order.status, status});
+
+        if(status == "awaiting_user_availability") {
+            if(order.status == "awaiting_user_availability") {return styles.semiActive;}
+            else if(order.status == "user_available") { return styles.active; }
+            else if(order.status == "user_unavailable") { return styles.inactive; }
+        }
+        else if(order.status == status) {
+            return styles.active;
+        }
     }
 
     renderOrdersTable() {
@@ -92,7 +120,14 @@ class Component extends React.Component {
                                     </td>
                                     
                                     <td>{order.status}</td>
-                                    <td></td>
+                                    
+                                    <td className={styles.buttonsContainer}>
+                                        <a className={this.getStatusClassName(order, "awaiting_user_availability")} onClick={this.onStatusUpdateClick(order._id, "awaiting_user_availability")}><span className="icon-circled-question"></span></a>
+                                        <a className={this.getStatusClassName(order, "confirmed")} onClick={this.onStatusUpdateClick(order._id, "confirmed")}><span className="icon-circled-ok"></span></a>
+                                        <a className={this.getStatusClassName(order, "boxed")} onClick={this.onStatusUpdateClick(order._id, "boxed")}><span className="icon-circled-box"></span></a>
+                                        <a className={this.getStatusClassName(order, "delivering")} onClick={this.onStatusUpdateClick(order._id, "delivering")}><span className="icon-circled-truck"></span></a>
+                                        <a className={this.getStatusClassName(order, "closed")} onClick={this.onStatusUpdateClick(order._id, "closed")}><span className="icon-circled-thumbs-up"></span></a>
+                                    </td>
                                 </tr>
                             );
                         })
@@ -199,9 +234,7 @@ class Component extends React.Component {
 
         return (
             <div>
-                <Bar>
-                    <Tabs.Item align="right" color="moody" to="/admin/create/product"><i18n.Translate text="_ADMIN_BAR_ORDERS_SEND_ACTION_LABEL_" /></Tabs.Item>
-                </Bar>
+                <Bar />
 
                 <Container>
                     <div className={styles.filtersContainer}>

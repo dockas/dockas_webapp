@@ -6,6 +6,7 @@ import {withRouter} from "react-router";
 import lodash from "lodash";
 import {LoggerFactory} from "darch/src/utils";
 import Button from "darch/src/button";
+//import Label from "darch/src/label";
 //import Modal from "darch/src/modal";
 import i18n from "darch/src/i18n";
 import styles from "./styles";
@@ -75,14 +76,22 @@ class Component extends React.Component {
      * This function is responsible for generating the component's view.
      */
     render() {
-        let {items, totalPrice} = this.props.basket;
+        let {items,totalPrice,totalDiscount} = this.props.basket;
         let {uid,buttonLabel} = this.props;
+        let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
+        let totalPriceWithDiscount = totalPrice - appliedDiscount;
 
         return uid ? (
             <div>
                 <div className={styles.card}>
+                    {/*list ? (
+                        <div className={styles.listNameContainer}>
+                            <Label layout="outline" color="moody" scale={0.7}>{list.name}</Label>
+                        </div>
+                    ) : null*/}
+
                     <div>
-                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} /></span>
+                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat(totalPriceWithDiscount.toFixed(2))} numDecimals={2} /></span>
                         <span className={styles.items}>
                             <span className={styles.separator}>/</span>
                             {lodash.size(items) == 1 ? (

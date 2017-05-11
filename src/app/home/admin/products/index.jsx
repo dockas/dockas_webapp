@@ -1,5 +1,6 @@
 import React from "react";
 import config from "config";
+import lodash from "lodash";
 import {LoggerFactory} from "darch/src/utils";
 import Container from "darch/src/container";
 import Tabs from "darch/src/tabs";
@@ -26,7 +27,7 @@ export default class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        let findResponse = await Api.shared.productFind({populate: ["tags","creator"]});
+        let findResponse = await Api.shared.productFind({populate: ["tags","creator","images"]});
 
         this.setState({
             products: findResponse.results
@@ -46,7 +47,9 @@ export default class Component extends React.Component {
         return (
             <div>
                 <Bar>
-                    <Tabs.Item align="right" color="moody" to="/admin/create/product"><i18n.Translate text="_ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_" /></Tabs.Item>
+                    <Tabs.Item align="right" color="moody" to="/admin/create/product">
+                        {/*<span className="icon-squared-plus"></span> */}<i18n.Translate text="_ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_" />
+                    </Tabs.Item>
                 </Bar>
 
                 <Container>
@@ -64,14 +67,20 @@ export default class Component extends React.Component {
                         <tbody>
                             {this.state.products && this.state.products.length ? (
                                 this.state.products.map((product) => {
+                                    let mainImage = lodash.find(product.images, (image) => {
+                                        return image._id == product.mainImage;
+                                    });
+
                                     return (
                                         <tr key={product._id}>
                                             <td>
-                                                <div className={styles.image} style={{
-                                                    backgroundImage: `url(//${config.hostnames.file}/images/${product.mainImage})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center"
-                                                }}></div>
+                                                {mainImage ? (
+                                                    <div className={styles.image} style={{
+                                                        backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
+                                                        backgroundSize: "cover",
+                                                        backgroundPosition: "center"
+                                                    }}></div>
+                                                ) : null}
                                             </td>
 
                                             <td>{product.name}</td>

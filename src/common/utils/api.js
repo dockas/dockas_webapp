@@ -93,12 +93,16 @@ export default class Api {
         return this.request("POST", "product", data, opts);
     }
 
+    productUpdate(id, data, opts) {
+        return this.request("PUT", `product/${id}`, data, opts);
+    }
+
     productFind(query, opts) {
         return this.request("GET", "product", query, opts);
     }
 
-    productFindByNameId(nameId, opts) {
-        return this.request("GET", `product/nameId/${nameId}`, null, opts);
+    productFindByNameId(nameId, query, opts) {
+        return this.request("GET", `product/nameId/${nameId}`, query, opts);
     }
 
     productPriceUpdate(id, data, opts) {
@@ -125,6 +129,10 @@ export default class Api {
         return this.request("GET", "order", query, opts);
     }
 
+    orderStatusUpdate(id, status, opts) {
+        return this.request("PUT", `order/${id}/status`, {status}, opts);
+    }
+
     invitationCreate(data, opts) {
         return this.request("POST", "invitation", data, opts);
     }
@@ -139,5 +147,57 @@ export default class Api {
 
     invitationSend(id, opts) {
         return this.request("POST", `invitation/${id}`, null, opts);
+    }
+
+    alertCreate(data, opts) {
+        return this.request("POST", "alert", data, opts);
+    }
+
+    alertFind(query, opts) {
+        return this.request("GET", "alert", query, opts);
+    }
+
+    alertUpdate(id, data, opts) {
+        return this.request("PUT", `alert/${id}`, data, opts);
+    }
+
+    alertCount(query, opts) {
+        return this.request("GET", "alert/count", query, opts);
+    }
+
+    couponCreate(data, opts) {
+        return this.request("POST", "coupon", data, opts);
+    }
+
+    couponFind(query, opts) {
+        return this.request("GET", "coupon", query, opts);
+    }
+
+    couponApplyByNameId(id, opts) {
+        return this.request("POST", `coupon/nameId/${id}`, null, opts);
+    }
+
+    listCreate(data, opts) {
+        return this.request("POST", "list", data, opts);
+    }
+
+    listFind(query, opts) {
+        return this.request("GET", "list", query, opts);
+    }
+
+    listUpdate(id, data, opts) {
+        return this.request("PUT", `list/${id}`, data, opts);
+    }
+
+    brandCreate(data, opts) {
+        return this.request("POST", "brand", data, opts);
+    }
+
+    brandFind(query, opts) {
+        return this.request("GET", "brand", query, opts);
+    }
+
+    brandUpdate(id, data, opts) {
+        return this.request("PUT", `brand/${id}`, data, opts);
     }
 }

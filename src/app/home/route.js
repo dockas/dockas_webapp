@@ -15,6 +15,8 @@ module.exports = {
                 require("./orders/route"),
                 require("./checkout/route"),
                 require("./invitation/route"),
+                require("./alerts/route"),
+                require("./lists/route"),
                 require("./admin/route")
             ]);
         });

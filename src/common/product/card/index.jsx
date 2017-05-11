@@ -1,5 +1,6 @@
 import React from "react";
 import config from "config";
+import lodash from "lodash";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
@@ -7,7 +8,7 @@ import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
 import {Basket} from "common";
 import styles from "./styles";
-import Badge from "../badge";
+import Badge from "../../badge";
 
 let Logger = new LoggerFactory("common.product.card");
 
@@ -19,6 +20,7 @@ let Logger = new LoggerFactory("common.product.card");
  */
 function mapStateToProps(state) {
     return {
+        user: lodash.get(state.user.profiles, state.user.uid),
         uid: state.user.uid,
         basket: state.basket
     };
@@ -37,8 +39,14 @@ let mapDispatchToProps = {
 class Component extends React.Component {
     /** React properties **/
     static displayName = "common.product.card";
-    static defaultProps = {};
-    static propTypes = {};
+
+    static defaultProps = {
+        onChangePrice: () => {}
+    };
+
+    static propTypes = {
+        onChangePrice: React.PropTypes.func
+    };
 
     state = {};
 
@@ -107,14 +115,24 @@ class Component extends React.Component {
         return tags;        
     }
 
+    onChangePriceBtnClicked(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        
+        this.props.onChangePrice(this.props.data);
+    }
+
     /**
      * This function is responsible for generating the component's view.
      */
     render() {
-        let {data,uid} = this.props;
+        let {data,uid,user} = this.props;
         let {showOverlay} = this.state;
 
         let item = this.props.basket.items[data._id];
+        let mainImage = lodash.find(data.images, (image) => {
+            return image._id == data.mainImage;
+        });
 
         return (
             <div className={styles.card} 
@@ -122,15 +140,17 @@ class Component extends React.Component {
                 onMouseLeave={this.onMouseLeave}
                 onClick={this.goToProductDetail}>
                 {item ? (
-                    <Badge count={item.count} />
+                    <Badge className={styles.badge} count={item.count} borderWidth={8} />
                 ) : null}
 
                 <div className={styles.imageContainer}>
-                    <div className={styles.image} style={{
-                        backgroundImage: `url(//${config.hostnames.file}/images/${data.mainImage})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center"
-                    }}></div>
+                    {mainImage ? (
+                        <div className={styles.image} style={{
+                            backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center"
+                        }}></div>
+                    ) : null}
 
                     {uid && showOverlay ? (
                         <div className={styles.overlay}>
@@ -146,6 +166,12 @@ class Component extends React.Component {
 
                 <div className={styles.price}>
                     <i18n.Number prefix="R$" value={data.priceValue} numDecimals={2}/>
+
+                    {user && user.roles.indexOf("admin") >= 0 ? (
+                        <a className={styles.changePriceButton} onClick={this.onChangePriceBtnClicked} title="change price">
+                            <span className="icon-price-tag"></span>
+                        </a>
+                    ) : null}
                 </div>
 
                 <div className={styles.name}>

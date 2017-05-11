@@ -105,6 +105,9 @@ class Component extends React.Component {
     render() {
         let logger = Logger.create("render");
         let {user,basket} = this.props;
+        let {totalPrice,totalDiscount} = basket;
+        let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
+        let totalPriceWithDiscount = totalPrice - appliedDiscount;
 
         logger.info("enter", basket);
 
@@ -124,7 +127,7 @@ class Component extends React.Component {
                         </div>
                     ) : (
                         <div className={styles.paypalBtnContainer}>
-                            <Paypal value={parseFloat(basket.totalPrice.toFixed(2))} 
+                            <Paypal value={parseFloat(totalPriceWithDiscount.toFixed(2))} 
                                 user={user}
                                 selectedAddress={basket.address}
                                 onComplete={this.onPaymentComplete} />

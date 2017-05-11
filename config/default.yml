@@ -33,5 +33,12 @@ support:
       phone: (37)99121-9019
     - name: Danilo
       phone: (31)99710-3611
-    - name: Felipe
-      phone: (31)9999-9999
+    #- name: Felipe
+    #  phone: (31)9999-9999
+
+coupon:
+    types:
+        - value: percentual
+          label: "%"
+        - value: monetary
+          label: "R$"

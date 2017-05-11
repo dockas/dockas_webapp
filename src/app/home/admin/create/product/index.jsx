@@ -105,14 +105,38 @@ class Component extends React.Component {
         this.flow = flow;
     }
 
-    async onUploadSuccess(fileData) {
-        let productResponse,
-            logger = Logger.create("onUploadSuccess");
+    onUploadStart() {
+        let logger = Logger.create("onUploadStart");
+        logger.info("enter");
+    }
 
-        logger.info("enter", fileData);
+    async onUploadSuccess(fileData, fid) {
+        let logger = Logger.create("onUploadSuccess");
+        logger.info("enter", {fileData, fid});
 
-        this.data.mainImage = fileData.path;
-        this.data.images = [fileData.path];
+        //this.data.mainImage = fileData._id;
+        this.data.images = this.data.images || [];
+        this.data.images.push(fileData._id);
+
+        if(lodash.get(this.state, "mainImage.id") == fid) {
+            this.data.mainImage = fileData._id;
+        }
+
+        // Update images
+        /*let idx = lodash.findIndex(this.state.images, (image) => {
+            return image.id = fid;
+        });
+
+        let newImages = this.state.images;
+
+        if(idx >= 0 && newImages.length && idx < newImages.length) {
+            newImages.splice(idx, 1, {
+                id: fileData._id,
+                url: `${config.hostnames.file}/images/${fileData.path}`
+            });
+        }
+
+        this.setState({images: newImages});*/
 
         // Handle creation of new tags.
         /*let promises = [];
@@ -152,12 +176,38 @@ class Component extends React.Component {
                 return logger.error("api tagCreate all error", error);
             }
         }*/
+    }
+
+    async onUploadComplete() {
+        let productResponse,
+            logger = Logger.create("onUploadComplete");
+
+        logger.info("enter", this.data);
+
+        // Create brand
+        if(this.state.brandToCreate) {
+            logger.debug("creating brand");
+
+            try {
+                let response = await Api.shared.brandCreate({
+                    name: this.state.brandToCreate,
+                    owners: this.data.owners
+                });
+
+                logger.info("api brandCreate success", response);
+
+                this.data.brand = response.result;
+                delete this.data.owners;
+            }
+            catch(error) {
+                return logger.error("api brandCreate error", error);
+            }
+        }
 
         // Save product.
         try {
             productResponse = await Redux.dispatch(Product.actions.productCreate(this.data));
-
-            console.log("productResponse", productResponse);
+            logger.info("action productCreate success", productResponse);
         }
         catch(error) {
             return logger.error("api productCreate error", error);
@@ -174,8 +224,8 @@ class Component extends React.Component {
             return logger.error("api priceCreate error", error);
         }
 
-        // Everithing is done... go to admin
-        this.props.router.replace("/admin");
+        // Everithing is done... go to catalog
+        this.props.router.replace("/");
     }
 
     /**
@@ -242,6 +292,37 @@ class Component extends React.Component {
     }
 
     /**
+     * This function loads brands.
+     */
+    async loadBrands(value) {
+        let logger = Logger.create("loadBrands");
+        logger.info("enter", {value});
+
+        if(lodash.isEmpty(value)) {return;}
+
+        this.setState({loadingBrands: true});
+
+        try {
+            let response = await Api.shared.brandFind({
+                name: value
+            });
+
+            logger.debug("api brandFind success", response);
+
+            // Process brands
+            let brands = response.results.map((brand) => {
+                return {value: brand._id, label: brand.name};
+            });
+
+            this.setState({brands, loadingBrands: false});
+        }
+        catch(error) {
+            logger.error("api brandFind error", error);
+            this.setState({loadingBrands: false});
+        }
+    }
+
+    /**
      * This function loads users.
      */
     async loadUsers(value) {
@@ -293,9 +374,39 @@ class Component extends React.Component {
         );
     }
 
+    onUploaderImagesLoad(images) {
+        console.log(["onUploaderImagesLoad", images]);
+
+        let newState = {},
+            currentImages = this.state.images || [];
+
+        if((!currentImages || !currentImages.length) && images && images.length) {
+            newState.mainImage = images[0];
+        }
+
+        newState.images = currentImages.concat(images);
+
+        console.log(["onUploaderImagesLoad concated", newState.images]);
+
+        this.setState(newState);
+    }
+
+    selectMainImage(image) {
+        this.setState({mainImage: image});
+    }
+
+    onCreateBrand(value) {
+        let logger = Logger.create("onCreateBrand");
+        logger.info("enter", {value});
+
+        this.setState({brandToCreate: value});
+
+        return {value, label: value};
+    }
+
     render() {
         let {tags,loadingTags,newTagModalOpen} = this.state;
-        let {users,loadingUsers} = this.state;
+        let {users,loadingUsers,brands,loadingBrands,brandToCreate} = this.state;
 
         console.log("STATETAO", this.state);
 
@@ -318,7 +429,13 @@ class Component extends React.Component {
                             {this.state.authToken ? (
                                 <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
                                     onFlowInit={this.onFlowInit}
-                                    onUploadSuccess={this.onUploadSuccess}/>
+                                    onUploadSuccess={this.onUploadSuccess}
+                                    onUploadComplete={this.onUploadComplete}
+                                    onSelectMainImage={this.selectMainImage}
+                                    mainImage={this.state.mainImage}
+                                    onImagesLoad={this.onUploaderImagesLoad}
+                                    images={this.state.images}
+                                    showAddMoreButton={false}/>
                             ) : null}
 
                             {/*<div className={styles.image}>
@@ -361,11 +478,15 @@ class Component extends React.Component {
                                                             name="nameId"
                                                             placeholder="_CREATE_PRODUCT_PAGE_NAME_ID_FIELD_PLACEHOLDER_"
                                                             scale={1}
-                                                            validators="id"/>
+                                                            validators="id|$required"/>
                                                         <Field.Error
                                                             for="nameId"
                                                             validator="id"
                                                             message="_FIELD_ERROR_ID_"/>
+                                                        <Field.Error
+                                                            for="nameId"
+                                                            validator="$required"
+                                                            message="_FIELD_ERROR_REQUIRED_"/>
                                                     </div>
                                                 </Field.Section>
                                             </Grid.Cell>
@@ -374,22 +495,54 @@ class Component extends React.Component {
 
                                     <Field.Section>
                                         <Text scale={0.8}>
-                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_OWNER_FIELD_LABEL_" />
+                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_BRAND_FIELD_LABEL_" />
                                         </Text>
                                         <div>
                                             <Field.Select
-                                                name="owner"
-                                                placeholder="_CREATE_PRODUCT_PAGE_OWNER_FIELD_PLACEHOLDER_"
-                                                options={users}
-                                                loadOptions={this.loadUsers}
-                                                loading={loadingUsers}
+                                                name="brand"
+                                                placeholder="_CREATE_PRODUCT_PAGE_BRAND_FIELD_PLACEHOLDER_"
+                                                options={brands}
+                                                loadOptions={this.loadBrands}
+                                                loading={loadingBrands}
                                                 clearSearchOnSelect={true}
-                                                creatable={false}
+                                                creatable={true}
+                                                onCreateOption={this.onCreateBrand}
+                                                createOptionLabel="_CREATE_PRODUCT_PAGE_BRAND_FIELD_CREATE_OPTION_LABEL_"
                                                 multi={false}
                                                 scale={1}
-                                                loaderComponent={<Spinner.CircSide color="#555" />}/>
+                                                loaderComponent={<Spinner.CircSide color="#555" />}
+                                                validators="$required"/>
+                                            <Field.Error
+                                                for="brand"
+                                                validator="$required"
+                                                message="_FIELD_ERROR_REQUIRED_"/>
                                         </div>
                                     </Field.Section>
+
+                                    {brandToCreate ? (
+                                        <Field.Section>
+                                            <Text scale={0.8}>
+                                                <i18n.Translate text="_CREATE_PRODUCT_PAGE_BRAND_OWNERS_FIELD_LABEL_" />
+                                            </Text>
+                                            <div>
+                                                <Field.Select
+                                                    name="owners"
+                                                    placeholder="_CREATE_PRODUCT_PAGE_BRAND_OWNERS_FIELD_PLACEHOLDER_"
+                                                    options={users}
+                                                    loadOptions={this.loadUsers}
+                                                    loading={loadingUsers}
+                                                    clearSearchOnSelect={true}
+                                                    creatable={false}
+                                                    multi={true}
+                                                    scale={1}
+                                                    loaderComponent={<Spinner.CircSide color="#555" />}/>
+                                                <Field.Error
+                                                    for="owners"
+                                                    validator="$required"
+                                                    message="_FIELD_ERROR_REQUIRED_"/>
+                                            </div>
+                                        </Field.Section>
+                                    ) : null}
 
                                     <Field.Section>
                                         <Text scale={0.8}>

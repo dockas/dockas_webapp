@@ -11,7 +11,7 @@ import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
-import {Api,User,Product,Basket,Order} from "common";
+import {Api,User,Socket,Product,Basket,Order,Alert} from "common";
 
 let Logger = new LoggerFactory("main");
 
@@ -34,10 +34,19 @@ Form.registerValidator({
     new Api({shared: true});
 
     // Create new shared socket instance.
-    /*new Socket({
+    new Socket({
         url: config.hostnames.socket,
         shared: true
+    });
+
+    // Log on socket events.
+    /*Socket.shared.on("alert:created", (data) => {
+        console.info("alert:created", data);
     });*/
+
+    Socket.shared.on("sign:success", () => {
+        console.info("sign:success");
+    });
 
     // Create redux store with app reducers
     new Redux({
@@ -48,9 +57,14 @@ Form.registerValidator({
         product: Product.reducer,
         basket: Basket.reducer,
         order: Order.reducer,
+        alert: Alert.reducer,
 
         adminOrders: require("app/home/admin/orders/reducer")
     }, {shared: true});
+
+    // Start listen to socket events
+    Alert.listenSocketEvents();
+    Order.listenSocketEvents();
 
     // Create an enhanced history that syncs navigation events with the store
     const history = syncHistoryWithStore(browserHistory, Redux.shared.store);

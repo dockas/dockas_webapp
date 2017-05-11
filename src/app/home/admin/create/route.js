@@ -10,7 +10,9 @@ module.exports = {
     getChildRoutes(partialNextState, cb) {
         require.ensure([], (require) => {
             cb(null, [
-                require("./product/route")
+                require("./product/route"),
+                require("./alert/route"),
+                require("./coupon/route")
             ]);
         });
     }

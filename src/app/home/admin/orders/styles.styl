@@ -1,3 +1,5 @@
+@require "~darch/src/styles/variables"
+
 .product-image
     height: 1.5em;
     width: 1.5em;
@@ -12,3 +14,24 @@
     span + span,
     div + span
         margin-left: 5px;
+
+.buttons-container
+    font-size: 1.6em;
+    
+    a
+        color: #ccc;
+        
+        &:hover
+            color: #ccc;
+    
+    a + a
+        margin-left: 10px;
+
+.semi-active
+    color: $color-moody !important;
+
+.active
+    color: #F9690E !important;
+
+.inactive
+    color: $color-danger !important;

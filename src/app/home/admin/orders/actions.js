@@ -25,5 +25,16 @@ export default createActions({
         logger.debug("Api productFind success", findResponse);
 
         return findResponse.results;
+    },
+
+    async adminOrdersStatusUpdate(id, status, opts) {
+        var logger = Logger.create("adminOrdersUpdateStatus");
+        logger.info("enter", {id, status});
+
+        let response = await Api.shared.orderStatusUpdate(id, status, opts);
+
+        logger.debug("Api orderStatusUpdate success", response);
+
+        return response.result;
     }
 });

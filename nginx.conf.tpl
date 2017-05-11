@@ -52,3 +52,25 @@ server {
 
     root                        PWD_PATH/../api_rest/files;
 }
+
+# Socket SSL server definition
+server {
+    listen                      80;
+    listen                      443 ssl;
+    server_name                 socket.dockas.dev;
+
+    ssl_certificate             PWD_PATH/.ssl/fullchain.pem;
+    ssl_certificate_key         PWD_PATH/.ssl/privkey.pem;
+
+    client_max_body_size 10M;
+
+    location / {
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        
+        proxy_pass              http://localhost:9898/;
+    }
+}
