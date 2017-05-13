@@ -1,6 +1,9 @@
 @require "~darch/src/styles/variables";
 @require "~darch/src/styles/utils";
 
+:global(.basket-card-visible)
+    padding-bottom: 200px;
+
 .card 
     padding: 20px;
     position: fixed;
@@ -9,8 +12,16 @@
     background: white;
     z-index: 100;
     
-    border: 1px solid #f1f1f1;
-    shadow(0px 1px 8px #bbb);
+    @media (min-width: $screen-tablet-min)
+        border: 1px solid #f1f1f1;
+        shadow(0px 1px 8px #bbb);
+    
+    @media (max-width: $screen-phone-max)
+        left: 0;
+        bottom: 0;
+        right: 0;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
 
 .price
     font-size: 1.5em;

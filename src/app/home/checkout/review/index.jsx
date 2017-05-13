@@ -3,7 +3,7 @@ import lodash from "lodash";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 import config from "config";
-import {LoggerFactory, Redux} from "darch/src/utils";
+import {LoggerFactory, Redux, Style} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Container from "darch/src/container";
@@ -47,9 +47,31 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
+    state = {};
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        window.addEventListener("resize", this.handleWindowResize);
+
+        this.handleWindowResize();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    handleWindowResize() {
+        let logger = Logger.create("handleWindowResize");
+
+        let {screenSize} = this.state;
+        let currentScreenSize = Style.screenForWindowWidth(window.innerWidth);
+
+        if(currentScreenSize != screenSize) {
+            logger.info("enter", {screenSize, currentScreenSize});
+            this.setState({screenSize: currentScreenSize});
+        }
     }
 
     onAddButtonClick(product) {
@@ -104,11 +126,12 @@ class Component extends React.Component {
     }
 
     render() {
+        let {screenSize} = this.state;
         let {totalPrice,totalDiscount,coupons} = this.props.basket;
         let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
         let totalPriceWithDiscount = totalPrice - appliedDiscount;
 
-        console.log(["price evaluation", totalPrice, totalDiscount, totalPriceWithDiscount]);
+        console.log(["screen size", screenSize]);
 
         return (
             <div className={styles.page}>
@@ -124,13 +147,13 @@ class Component extends React.Component {
                                             <Grid.Cell span={2}>
                                                 <Field.Text
                                                     name="nameId"
-                                                    scale={0.8}
+                                                    scale={screenSize == "phone"?1:0.8}
                                                     placeholder="cupom de desconto"
                                                 />
                                             </Grid.Cell>
 
                                             <Grid.Cell>
-                                                <Button scale={0.8} block={true} type="submit">aplicar</Button>
+                                                <Button scale={screenSize == "phone"?1:0.8} block={true} type="submit">aplicar</Button>
                                             </Grid.Cell>
                                         </Grid>
                                     </Form>
@@ -147,92 +170,98 @@ class Component extends React.Component {
                                 </div>
 
                                 <div className={styles.itemsContainer}>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_" /></th>
-                                                <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_UNIT_PRICE_TH_" /></th>
-                                                <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_COUNT_TH_" /></th>
-                                                <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_" /></th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {lodash.map(this.props.basket.items, (item) => {
-                                                let mainImage = lodash.find(item.product.images, (image) => {
-                                                    return image._id == item.product.mainImage;
-                                                });
+                                    <div className="table-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_" /></th>
+                                                    <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_UNIT_PRICE_TH_" /></th>
+                                                    <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_COUNT_TH_" /></th>
+                                                    <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_" /></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {lodash.map(this.props.basket.items, (item) => {
+                                                    let mainImage = lodash.find(item.product.images, (image) => {
+                                                        return image._id == item.product.mainImage;
+                                                    });
 
-                                                return (
-                                                    <tr key={item.product._id}>
-                                                        <td>
-                                                            {mainImage ? (
-                                                                <div className={styles.image} style={{
-                                                                    backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
-                                                                    backgroundSize: "cover",
-                                                                    backgroundPosition: "center"
-                                                                }}></div>
-                                                            ) : null}
-                                                            
-                                                            {item.product.name}
-                                                        </td>
-                                                        <td><i18n.Number value={item.product.priceValue} numDecimals={2} currency={true} /></td>
-                                                        <td>{item.count}</td>
-                                                        <td><i18n.Number value={item.count * item.product.priceValue} numDecimals={2} currency={true} /></td>
-                                                        <td>
-                                                            <Button onClick={this.onRemoveButtonClick(item.product)} color="danger" scale={0.8}>-1</Button>
-                                                            <Button onClick={this.onAddButtonClick(item.product)} color="moody" scale={0.8}>+1</Button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
+                                                    return (
+                                                        <tr key={item.product._id}>
+                                                            <td>
+                                                                {mainImage ? (
+                                                                    <div className={styles.image} style={{
+                                                                        backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
+                                                                        backgroundSize: "cover",
+                                                                        backgroundPosition: "center"
+                                                                    }}></div>
+                                                                ) : null}
+                                                                
+                                                                {item.product.name}
+                                                            </td>
+                                                            <td><i18n.Number value={item.product.priceValue} numDecimals={2} currency={true} /></td>
+                                                            <td>{item.count}</td>
+                                                            <td><i18n.Number value={item.count * item.product.priceValue} numDecimals={2} currency={true} /></td>
+                                                            <td>
+                                                                <Button onClick={this.onRemoveButtonClick(item.product)} color="danger" scale={0.8}>-1</Button>
+                                                                <Button onClick={this.onAddButtonClick(item.product)} color="moody" scale={0.8}>+1</Button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </Grid.Cell>
 
                         <Grid.Cell>
-                            <div className={styles.sidebarContainer}>
-                                <div className={styles.checkoutBox}>
-                                    <h4 className={styles.title}>RESUMO</h4>
+                            {screenSize != "phone" ? (
+                                <div className={styles.sidebarContainer}>
+                                    <div className={styles.checkoutBox}>
+                                        <h4 className={styles.title}>RESUMO</h4>
 
-                                    {appliedDiscount > 0.00 ? (
-                                        <div className={styles.discountInfoContainer}>
-                                            <div className={styles.originalTotalPriceContainer}>
-                                                <Text scale={0.8}>
-                                                    <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} />
-                                                </Text>
+                                        {appliedDiscount > 0.00 ? (
+                                            <div className={styles.discountInfoContainer}>
+                                                <div className={styles.originalTotalPriceContainer}>
+                                                    <Text scale={0.8}>
+                                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} />
+                                                    </Text>
+                                                </div>
+
+                                                <div className={styles.appliedDiscountContainer}>
+                                                    <Text scale={0.8}>
+                                                        <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat(appliedDiscount.toFixed(2))} numDecimals={2} />
+                                                    </Text>
+                                                </div>
+                                            </div>
+                                        ) : null}
+
+                                        <div className={styles.totalPriceContainer}>
+                                            <div>
+                                                <Text scale={0.8}><u>total</u>:</Text>
                                             </div>
 
-                                            <div className={styles.appliedDiscountContainer}>
-                                                <Text scale={0.8}>
-                                                    <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat(appliedDiscount.toFixed(2))} numDecimals={2} />
-                                                </Text>
+                                            <div className={styles.priceValue}>
+                                                <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount).toFixed(2))} numDecimals={2} />
                                             </div>
                                         </div>
-                                    ) : null}
 
-                                    <div className={styles.totalPriceContainer}>
-                                        <div>
-                                            <Text scale={0.8}><u>total</u>:</Text>
+                                        <div className={styles.buttonContainer}>
+                                            <Button block={true} color="success" onClick={this.onBasketButtonClick}>Continuar</Button>
                                         </div>
-
-                                        <div className={styles.priceValue}>
-                                            <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount).toFixed(2))} numDecimals={2} />
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.buttonContainer}>
-                                        <Button block={true} color="success" onClick={this.onBasketButtonClick}>Continuar</Button>
                                     </div>
                                 </div>
-                            </div>
+                            ) : null}        
                         </Grid.Cell>
                     </Grid>
                 </Container>
 
-                {/*<Basket.Card onClick={this.onBasketButtonClick} buttonLabel="_BASKET_CARD_CONTINUE_BUTTON_TEXT_" />*/}
+                {screenSize == "phone" ? (
+                    <Basket.Card onClick={this.onBasketButtonClick} buttonLabel="_BASKET_CARD_CONTINUE_BUTTON_TEXT_" />
+                ) : null}
             </div>
         );
     }

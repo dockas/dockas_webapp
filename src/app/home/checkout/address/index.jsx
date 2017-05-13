@@ -2,7 +2,7 @@ import React from "react";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 import lodash from "lodash";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
@@ -45,6 +45,8 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
+    state = {};
+
     cityOptions = [
         {value: "Belo Horizonte", label: "Belo Horizonte"}
     ];
@@ -60,6 +62,26 @@ class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        window.addEventListener("resize", this.handleWindowResize);
+
+        this.handleWindowResize();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    handleWindowResize() {
+        let logger = Logger.create("handleWindowResize");
+
+        let {screenSize} = this.state;
+        let currentScreenSize = Style.screenForWindowWidth(window.innerWidth);
+
+        if(currentScreenSize != screenSize) {
+            logger.info("enter", {screenSize, currentScreenSize});
+            this.setState({screenSize: currentScreenSize});
+        }
     }
 
     onBasketButtonClick() {
@@ -126,7 +148,7 @@ class Component extends React.Component {
     }
 
     render() {
-        let {newAddressModalOpen,newAddressModalLoading,selectedAddress} = this.state;
+        let {newAddressModalOpen,newAddressModalLoading,selectedAddress,screenSize} = this.state;
         let {user} = this.props;
 
         return (
@@ -136,11 +158,19 @@ class Component extends React.Component {
                         <h3 className={styles.title}>
                             <i18n.Translate text="_CHECKOUT_STEP_ADDRESS_TITLE_" />
 
-                            <div className={styles.addAddressButtonContainer}>
-                                <Button onClick={this.openNewAddressModal} scale={0.9}>Adicionar Novo Endereço</Button>
-                            </div>
+                            {screenSize != "phone" ? (
+                                <div className={styles.addAddressButtonContainer}>
+                                    <Button onClick={this.openNewAddressModal} scale={0.9}>Adicionar Novo Endereço</Button>
+                                </div>
+                            ) : null}
                         </h3>
                     </div>
+
+                    {screenSize == "phone" ? (
+                        <div className={styles.addAddressButtonContainerPhone}>
+                            <Button onClick={this.openNewAddressModal} scale={1}>Adicionar Novo Endereço</Button>
+                        </div>
+                    ) : null}
 
                     <div>
                         {user.addresses && user.addresses.length ? (
@@ -305,18 +335,29 @@ class Component extends React.Component {
                             </Field.Section>
                         </Modal.Body>
                         <Modal.Footer align="right">
-                            <Button type="submit"
-                                loadingComponent={
-                                    <span>
-                                        <i18n.Translate text="_SAVING_" format="lower" />
-                                        <span className={styles.spinnerContainer}>
-                                            <Spinner.Bars color="#fff" />
+
+                            <div className="field-gap">
+                                <Button color="danger" onClick={() => {
+                                    this.setState({newAddressModalOpen: false});
+                                }}>
+                                    <i18n.Translate text="_CANCEL_" format="lower" />
+                                </Button>
+                            </div>
+
+                            <div className="field-gap">
+                                <Button type="submit"
+                                    loadingComponent={
+                                        <span>
+                                            <i18n.Translate text="_SAVING_" format="lower" />
+                                            <span className={styles.spinnerContainer}>
+                                                <Spinner.Bars color="#fff" />
+                                            </span>
                                         </span>
-                                    </span>
-                                }
-                                scale={1}>
-                                <i18n.Translate text="_SAVE_" format="lower" />
-                            </Button>
+                                    }
+                                    scale={1}>
+                                    <i18n.Translate text="_SAVE_" format="lower" />
+                                </Button>
+                            </div>
                         </Modal.Footer>
                     </Form>
                 </Modal>

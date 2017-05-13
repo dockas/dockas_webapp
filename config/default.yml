@@ -13,6 +13,8 @@ siteinfo:
     logo_icon_url: //dockas.com/assets/images/logo_icon.png
     logo_favicon_url: //dockas.com/assets/images/favicon.png
 
+isBeta: true
+
 hostnames:
     webapp: dockas.com
     api: api.dockas.com

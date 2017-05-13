@@ -39,3 +39,10 @@ BUG : Correct a bug with ProximaNova ligh woff font name.
 BUG : Redirect to invitation page when user does not provided a invitation token in signup page.
 BUG : Make users the default page of admin area.
 BUG : Populate brand and check brand owner instead of product owners inside product detail page.
+ENH : Add isBeta config variable to specify wether Beta mark shoul be rendered or not.
+ENH : Wrap all tables in table-container div to enhance responsiveness.
+ENH : Show only icon in admin nav bar when in phone screen.
+ENH : Create alert page that gonna be accessible from phone screens.
+ENH : Set all page links directly to main nav bar menu when in phone screen.
+ENH : Many enhancement in responsiveness.
+FEA : New location common module.

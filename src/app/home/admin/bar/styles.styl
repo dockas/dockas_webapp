@@ -1,6 +1,11 @@
+@require "~darch/src/styles/variables"
+
 .bar
     margin-bottom: 50px;
     
     span[class*="icon-"] + span
         margin-left: 5px;
         
+.label
+    @media (max-width: $screen-phone-max)
+        display: none;

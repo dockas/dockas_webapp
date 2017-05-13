@@ -174,76 +174,78 @@ class Component extends React.Component {
                         <i18n.Translate text="_LISTS_PAGE_TITLE_" />
                     </h2>
 
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th><i18n.Translate text="_LISTS_PAGE_NAME_TH_" /></th>
-                                <th><i18n.Translate text="_LISTS_PAGE_ITEMS_COUNT_TH_" /></th>
-                                <th><i18n.Translate text="_LISTS_PAGE_PRICE_TH_" /></th>
-                                <th><i18n.Translate text="_LISTS_PAGE_LAST_PURCHASED_AT_TH_" /></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-
-                        {initializing ? (
-                            <tbody>
+                    <div className="table-container">
+                        <table className={styles.table}>
+                            <thead>
                                 <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    <th></th>
+                                    <th><i18n.Translate text="_LISTS_PAGE_NAME_TH_" /></th>
+                                    <th><i18n.Translate text="_LISTS_PAGE_ITEMS_COUNT_TH_" /></th>
+                                    <th><i18n.Translate text="_LISTS_PAGE_PRICE_TH_" /></th>
+                                    <th><i18n.Translate text="_LISTS_PAGE_LAST_PURCHASED_AT_TH_" /></th>
+                                    <th></th>
                                 </tr>
-                            </tbody>
-                        ) : lists && lists.length ? (
-                            lists.map((list) => {
-                                return (
-                                    <tbody key={list._id}>
-                                        <tr>
-                                            <td className={styles.plusCell} style={{background: showListDetails[list._id]?"#f9f9f9":""}}>
-                                                <a onClick={this.toggleListDetails(list)}>
-                                                    {showListDetails[list._id] ? (
-                                                        <span className="icon-squared-minus"></span>
-                                                    ) : (
-                                                        <span className="icon-squared-plus"></span>
-                                                    )}
-                                                </a>
-                                            </td>
-                                            <td>{list.name}</td>
-                                            <td>{list.items.length}</td>
-                                            <td><i18n.Number prefix="R$" numDecimals={2} value={this.evalPrice(list)} /></td>
-                                            <td>{list.lastPurchasedAt ? <i18n.Moment date={list.lastPurchasedAt} /> : "-"}</td>
-                                            <td>
-                                                <Button scale={0.8} onClick={this.onLoadListButtonClick(list)}>
-                                                    <i18n.Translate text="_LISTS_PAGE_LOAD_BUTTON_LABEL_" />
-                                                </Button>
-                                            </td>
-                                        </tr>
+                            </thead>
 
-                                        {showListDetails[list._id] ? (
-                                            list.items.map((item) => {
-                                                return (
-                                                    <tr key={item.product._id} className={styles.itemRow}>
-                                                        <td></td>
-                                                        <td>{item.product.name}</td>
-                                                        <td>{item.count} x <i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue}/></td>
-                                                        <td><i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue*item.count}/></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </tr>
-                                                );
-                                            })
-                                        ) : null}
-                                    </tbody>
-                                );
-                            })
-                        ) : (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}>
-                                        <i18n.Translate text="_LISTS_PAGE_NO_DATA_FOUND_TEXT_" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        ) }
-                    </table>
+                            {initializing ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    </tr>
+                                </tbody>
+                            ) : lists && lists.length ? (
+                                lists.map((list) => {
+                                    return (
+                                        <tbody key={list._id}>
+                                            <tr>
+                                                <td className={styles.plusCell} style={{background: showListDetails[list._id]?"#f9f9f9":""}}>
+                                                    <a onClick={this.toggleListDetails(list)}>
+                                                        {showListDetails[list._id] ? (
+                                                            <span className="icon-squared-minus"></span>
+                                                        ) : (
+                                                            <span className="icon-squared-plus"></span>
+                                                        )}
+                                                    </a>
+                                                </td>
+                                                <td>{list.name}</td>
+                                                <td>{list.items.length}</td>
+                                                <td><i18n.Number prefix="R$" numDecimals={2} value={this.evalPrice(list)} /></td>
+                                                <td>{list.lastPurchasedAt ? <i18n.Moment date={list.lastPurchasedAt} /> : "-"}</td>
+                                                <td>
+                                                    <Button scale={0.8} onClick={this.onLoadListButtonClick(list)}>
+                                                        <i18n.Translate text="_LISTS_PAGE_LOAD_BUTTON_LABEL_" />
+                                                    </Button>
+                                                </td>
+                                            </tr>
+
+                                            {showListDetails[list._id] ? (
+                                                list.items.map((item) => {
+                                                    return (
+                                                        <tr key={item.product._id} className={styles.itemRow}>
+                                                            <td></td>
+                                                            <td>{item.product.name}</td>
+                                                            <td>{item.count} x <i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue}/></td>
+                                                            <td><i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue*item.count}/></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            ) : null}
+                                        </tbody>
+                                    );
+                                })
+                            ) : (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}>
+                                            <i18n.Translate text="_LISTS_PAGE_NO_DATA_FOUND_TEXT_" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            ) }
+                        </table>
+                    </div>
                 </Container>
 
                 <Modal open={overrideWarningModalOpen}>

@@ -51,50 +51,52 @@ export default class Component extends React.Component {
                 </Bar>
                 
                 <Container>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_NAME_ID_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_MAX_APPLY_COUNT_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_APPLIERS_COUNT_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_VALUE_TH_" /></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {initializing ? (
+                    <div className="table-container">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <td colSpan="5" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_NAME_ID_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_MAX_APPLY_COUNT_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_APPLIERS_COUNT_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_COUPONS_PAGE_VALUE_TH_" /></th>
+                                    <th></th>
                                 </tr>
-                            ) : coupons && coupons.length ? (
-                                coupons.map((coupon) => {
-                                    return (
-                                        <tr key={coupon._id}>
-                                            <td>{coupon.nameId}</td>
-                                            <td>{coupon.maxApplyCount}</td>
-                                            <td>{coupon.appliers.length}</td>
-                                            <td>
-                                                {coupon.valueType == "monetary" ? (
-                                                    <i18n.Number prefix="R$" value={parseFloat(coupon.value.toFixed(2))} numDecimals={2} />
-                                                ) : coupon.valueType == "percentual" ? (
-                                                    <i18n.Number sufix="%" value={parseFloat(coupon.value.toFixed(2))} numDecimals={2} />
-                                                ) : coupon.value}
-                                            </td>
-                                            
-                                            <td></td>
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}>
-                                        <i18n.Translate text="_ADMIN_COUPONS_PAGE_NO_DATA_FOUND_TEXT_" />
-                                    </td>
-                                </tr>
-                            )}
-                            
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {initializing ? (
+                                    <tr>
+                                        <td colSpan="5" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    </tr>
+                                ) : coupons && coupons.length ? (
+                                    coupons.map((coupon) => {
+                                        return (
+                                            <tr key={coupon._id}>
+                                                <td>{coupon.nameId}</td>
+                                                <td>{coupon.maxApplyCount}</td>
+                                                <td>{coupon.appliers.length}</td>
+                                                <td>
+                                                    {coupon.valueType == "monetary" ? (
+                                                        <i18n.Number prefix="R$" value={parseFloat(coupon.value.toFixed(2))} numDecimals={2} />
+                                                    ) : coupon.valueType == "percentual" ? (
+                                                        <i18n.Number sufix="%" value={parseFloat(coupon.value.toFixed(2))} numDecimals={2} />
+                                                    ) : coupon.value}
+                                                </td>
+                                                
+                                                <td></td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}>
+                                            <i18n.Translate text="_ADMIN_COUPONS_PAGE_NO_DATA_FOUND_TEXT_" />
+                                        </td>
+                                    </tr>
+                                )}
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </Container>
             </div>
         );

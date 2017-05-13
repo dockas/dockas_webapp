@@ -107,36 +107,38 @@ class Component extends React.Component {
                 <Bar />
 
                 <Container>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><i18n.Translate text="_ADMIN_USERS_PAGE_FULL_NAME_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_USERS_PAGE_EMAIL_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_USERS_PAGE_ROLE_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_USERS_PAGE_CREATED_AT_TH_" /></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.users && this.state.users.length ? this.state.users.map((user) => {
-                                return (
-                                    <tr key={user._id}>
-                                        <td>{user.fullName}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.roles.join(",")}</td>
-                                        <td>
-                                            {user.createdAt ? <i18n.Moment date={user.createdAt} /> : null}
-                                        </td>
-                                        <td>
-                                            <a onClick={this.onSetRoleButtonClicked(user)} style={{fontSize: "1.4em"}} title="change role">
-                                                <span className="icon-user-checked"></span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                );
-                            }) : null}
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i18n.Translate text="_ADMIN_USERS_PAGE_FULL_NAME_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_USERS_PAGE_EMAIL_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_USERS_PAGE_ROLE_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_USERS_PAGE_CREATED_AT_TH_" /></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.users && this.state.users.length ? this.state.users.map((user) => {
+                                    return (
+                                        <tr key={user._id}>
+                                            <td>{user.fullName}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.roles.join(",")}</td>
+                                            <td>
+                                                {user.createdAt ? <i18n.Moment date={user.createdAt} /> : null}
+                                            </td>
+                                            <td>
+                                                <a onClick={this.onSetRoleButtonClicked(user)} style={{fontSize: "1.4em"}} title="change role">
+                                                    <span className="icon-user-checked"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    );
+                                }) : null}
+                            </tbody>
+                        </table>
+                    </div>
                 </Container>
 
                 <Modal open={this.state.changeRoleModalOpen} onDismiss={() => {

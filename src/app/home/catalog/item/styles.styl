@@ -1,3 +1,5 @@
+@require "~darch/src/styles/variables"
+
 .page
     margin-top: -20pt;
     
@@ -32,8 +34,9 @@
     top: -70px;
 
 .body-container
-    padding-left: 40px;
-    padding-top: 20px;
+    @media(min-width: $screen-tablet-min)
+        padding-left: 40px;
+        padding-top: 20px;
 
 .remove-btn-container
     padding-right: 10px;
@@ -46,6 +49,13 @@
     margin-top: 40px;
     text-align: center;
     line-height: 1.1;
+
+.price-container-phone
+    > div
+        margin-bottom: -5px;
+        
+        > span
+            font-weight: 800;
 
 .total-price-container
     text-align: center;

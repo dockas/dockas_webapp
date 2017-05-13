@@ -78,7 +78,7 @@ export default handleActions({
         logger.info("enter", {state: state, action: action});
 
         let profile = state.profiles[state.uid];
-        profile.addresses.push(action.payload);
+        profile.addresses = action.payload.addresses;
 
         return lodash.assign(
             {},
@@ -98,7 +98,7 @@ export default handleActions({
         logger.info("enter", {state: state, action: action});
 
         let profile = state.profiles[state.uid];
-        lodash.remove(profile.addresses, (a) => { return a.id == action.payload; });
+        profile.addresses = action.payload.addresses;
 
         return lodash.assign(
             {},

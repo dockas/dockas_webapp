@@ -46,6 +46,14 @@ class Component extends React.Component {
 
     state = {};
 
+    statusSort = [
+        "user_available",
+        "confirmed",
+        "boxed",
+        "delivering",
+        "closed"
+    ];
+
     async componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
@@ -78,62 +86,78 @@ class Component extends React.Component {
         let logger = Logger.create("getStatusClassName");
         logger.info("enter", {orderStatus: order.status, status});
 
+        let statusIdx = this.statusSort.indexOf(status);
+        let orderStatusIdx = this.statusSort.indexOf(order.status);
+
+        logger.debug("indexes", {statusIdx, orderStatusIdx});
+
         if(status == "awaiting_user_availability") {
+            if(order.status == "awaiting_user_availability") {return styles.semiActive;}
+            else if(order.status == "user_unavailable") { return styles.inactive; }
+        }
+
+        if(orderStatusIdx >= statusIdx) {
+            return styles.active;
+        }
+
+        /*if(status == "awaiting_user_availability") {
             if(order.status == "awaiting_user_availability") {return styles.semiActive;}
             else if(order.status == "user_available") { return styles.active; }
             else if(order.status == "user_unavailable") { return styles.inactive; }
         }
         else if(order.status == status) {
             return styles.active;
-        }
+        }*/
     }
 
     renderOrdersTable() {
         let {orders} = this.props;
 
         return (
-            <table>
-                <thead>
-                    <tr>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_USER_TH_" /></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_ADDRESS_TH_" /></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_" /></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_CREATED_AT_TH_" /></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_STATUS_TH_" /></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders && orders.length ? (
-                        orders.map((order) => {
-                            let address = lodash.find(order.user.addresses, (address) => {
-                                return address.id = order.address;
-                            });
+            <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_USER_TH_" /></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_ADDRESS_TH_" /></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_" /></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_CREATED_AT_TH_" /></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_STATUS_TH_" /></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {orders && orders.length ? (
+                            orders.map((order) => {
+                                let address = lodash.find(order.user.addresses, (address) => {
+                                    return address.id = order.address;
+                                });
 
-                            return (
-                                <tr key={order._id}>
-                                    <td>{order.user.fullName}</td>
-                                    <td>{address.address}, {address.number} {address.complement||""} - {address.neighborhood}</td>
-                                    <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
-                                    <td>
-                                        <i18n.Moment date={order.createdAt} />
-                                    </td>
-                                    
-                                    <td>{order.status}</td>
-                                    
-                                    <td className={styles.buttonsContainer}>
-                                        <a className={this.getStatusClassName(order, "awaiting_user_availability")} onClick={this.onStatusUpdateClick(order._id, "awaiting_user_availability")}><span className="icon-circled-question"></span></a>
-                                        <a className={this.getStatusClassName(order, "confirmed")} onClick={this.onStatusUpdateClick(order._id, "confirmed")}><span className="icon-circled-ok"></span></a>
-                                        <a className={this.getStatusClassName(order, "boxed")} onClick={this.onStatusUpdateClick(order._id, "boxed")}><span className="icon-circled-box"></span></a>
-                                        <a className={this.getStatusClassName(order, "delivering")} onClick={this.onStatusUpdateClick(order._id, "delivering")}><span className="icon-circled-truck"></span></a>
-                                        <a className={this.getStatusClassName(order, "closed")} onClick={this.onStatusUpdateClick(order._id, "closed")}><span className="icon-circled-thumbs-up"></span></a>
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    ) : null}
-                </tbody>
-            </table>
+                                return (
+                                    <tr key={order._id}>
+                                        <td>{order.user.fullName}</td>
+                                        <td>{address.address}, {address.number} {address.complement||""} - {address.neighborhood}</td>
+                                        <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
+                                        <td>
+                                            <i18n.Moment date={order.createdAt} />
+                                        </td>
+                                        
+                                        <td>{order.status}</td>
+                                        
+                                        <td className={styles.buttonsContainer}>
+                                            <a className={this.getStatusClassName(order, "awaiting_user_availability")} onClick={this.onStatusUpdateClick(order._id, "awaiting_user_availability")}><span className="icon-circled-question"></span></a>
+                                            <a className={this.getStatusClassName(order, "confirmed")} onClick={this.onStatusUpdateClick(order._id, "confirmed")}><span className="icon-circled-ok"></span></a>
+                                            <a className={this.getStatusClassName(order, "boxed")} onClick={this.onStatusUpdateClick(order._id, "boxed")}><span className="icon-circled-box"></span></a>
+                                            <a className={this.getStatusClassName(order, "delivering")} onClick={this.onStatusUpdateClick(order._id, "delivering")}><span className="icon-circled-truck"></span></a>
+                                            <a className={this.getStatusClassName(order, "closed")} onClick={this.onStatusUpdateClick(order._id, "closed")}><span className="icon-circled-thumbs-up"></span></a>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        ) : null}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 
@@ -156,34 +180,36 @@ class Component extends React.Component {
         }
 
         return (
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRODUCT_NAME_TH_" /></th>
-                        <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRODUCT_COUNT_TH_" /></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {lodash.size(products) ? (
-                        lodash.map(products, (product) => {
-                            return (
-                                <tr key={product.data._id}>
-                                    <td>
-                                        <div className={styles.productImage} style={{
-                                            backgroundImage: `url(//${config.hostnames.file}/images/${product.data.mainImage})`,
-                                            backgroundSize: "cover",
-                                            backgroundPosition: "center"
-                                        }}></div>
-                                    </td>
-                                    <td>{product.data.name}</td>
-                                    <td>{product.count}</td>
-                                </tr>
-                            );
-                        })
-                    ) : null}
-                </tbody>
-            </table>
+            <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRODUCT_NAME_TH_" /></th>
+                            <th><i18n.Translate text="_ADMIN_ORDERS_PAGE_PRODUCT_COUNT_TH_" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {lodash.size(products) ? (
+                            lodash.map(products, (product) => {
+                                return (
+                                    <tr key={product.data._id}>
+                                        <td>
+                                            <div className={styles.productImage} style={{
+                                                backgroundImage: `url(//${config.hostnames.file}/images/${product.data.mainImage})`,
+                                                backgroundSize: "cover",
+                                                backgroundPosition: "center"
+                                            }}></div>
+                                        </td>
+                                        <td>{product.data.name}</td>
+                                        <td>{product.count}</td>
+                                    </tr>
+                                );
+                            })
+                        ) : null}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 

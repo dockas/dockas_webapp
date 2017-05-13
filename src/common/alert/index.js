@@ -5,6 +5,7 @@ let Logger = new LoggerFactory("alert", {level: "debug"});
 
 export default class Alert {
     static Dropdown = require("./dropdown");
+    static Card = require("./dropdown/card");
 
     static actions = require("./actions");
     static reducer = require("./reducer");

@@ -2,7 +2,8 @@
 server {
     listen                      80;
     listen                      443 ssl;
-    server_name                 dockas.dev;
+    listen                      8081;
+    server_name                 localhost dockas.dev;
 
     ssl_certificate             PWD_PATH/.ssl/fullchain.pem;
     ssl_certificate_key         PWD_PATH/.ssl/privkey.pem;

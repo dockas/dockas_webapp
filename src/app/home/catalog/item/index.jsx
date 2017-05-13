@@ -10,7 +10,7 @@ import Text from "darch/src/text";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Uploader from "darch/src/uploader";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import {Api,Product,Basket,Badge} from "common";
 import styles from "./styles";
 
@@ -61,7 +61,6 @@ class Component extends React.Component {
 
         // Try to get product from products store.
         let product = lodash.find(this.props.products, (product) => {
-            console.log(["product", product, nameId]);
             return product.nameId == nameId;
         });
 
@@ -102,6 +101,27 @@ class Component extends React.Component {
         } 
 
         this.setState(newState);
+
+        // Window resize
+        window.addEventListener("resize", this.handleWindowResize);
+
+        this.handleWindowResize();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    handleWindowResize() {
+        let logger = Logger.create("handleWindowResize");
+
+        let {screenSize} = this.state;
+        let currentScreenSize = Style.screenForWindowWidth(window.innerWidth);
+
+        if(currentScreenSize != screenSize) {
+            logger.info("enter", {screenSize, currentScreenSize});
+            this.setState({screenSize: currentScreenSize});
+        }
     }
 
     onSubmit(data, formName) {
@@ -173,8 +193,6 @@ class Component extends React.Component {
     }
 
     onUploaderImagesLoad(images) {
-        console.log(["onUploaderImagesLoad", images]);
-
         let newState = {},
             currentImages = this.state.images || [];
 
@@ -183,8 +201,6 @@ class Component extends React.Component {
         }
 
         newState.images = currentImages.concat(images);
-
-        console.log(["onUploaderImagesLoad concated", newState.images]);
 
         this.setState(newState);
     }
@@ -212,14 +228,13 @@ class Component extends React.Component {
 
     render() {
         let {uid,user} = this.props;
-        let {initializing,product,editing,saving,images,mainImage} = this.state;
+        let {items} = this.props.basket;
+        let {initializing,product,editing,saving,images,mainImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
         
-        let item = lodash.find(this.props.basket.items, (item) => {
+        let item = lodash.find(items, (item) => {
             return item.product.nameId == nameId;
         });
-
-        console.log(["product item", item, this.props.basket]);
 
         return (
             <div className={styles.page}>
@@ -254,23 +269,27 @@ class Component extends React.Component {
                                             ) : null*/}
                                         </div>
 
-                                        <div className={styles.priceContainer}>
-                                            <Text scale={2}>
-                                                <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} /></b>
-                                            </Text>
-                                        </div>
-
-                                        <div className={styles.totalPriceContainer}>
-                                            {item ? (
-                                                <Text scale={0.8} color="#999999">
-                                                    ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={item.count * product.priceValue} /></b> )
+                                        {screenSize != "phone" ? (
+                                            <div className={styles.priceContainer}>
+                                                <Text scale={2}>
+                                                    <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} /></b>
                                                 </Text>
-                                            ) : (
-                                                <Text scale={0.8} color="#999999">••••</Text>
-                                            )}
-                                        </div>
+                                            </div>
+                                        ) : null}
 
-                                        {uid ? (
+                                        {screenSize != "phone" ? (
+                                            <div className={styles.totalPriceContainer}>
+                                                {item ? (
+                                                    <Text scale={0.8} color="#999999">
+                                                        ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={item.count * product.priceValue} /></b> )
+                                                    </Text>
+                                                ) : (
+                                                    <Text scale={0.8} color="#999999">••••</Text>
+                                                )}
+                                            </div>
+                                        ) : null}
+
+                                        {uid && screenSize != "phone" ? (
                                             <div className={styles.addBtnContainer}>
                                                 <Grid noGap={true}>
                                                     {item? (
@@ -303,6 +322,26 @@ class Component extends React.Component {
                                             
                                             <div><Text scale={1.5}>{product.name}</Text></div>
                                         </Field.Section>
+
+                                        {screenSize == "phone" ? (
+                                            <Field.Section>
+                                                <Text scale={0.8} color="moody">
+                                                    <i18n.Translate text="_CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_" />
+                                                </Text>
+                                                <div className={styles.priceContainerPhone}>
+                                                    <Text scale={2}>
+                                                        <i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} />
+                                                    </Text>
+                                                </div>
+                                                {item ? (
+                                                    <div>
+                                                        <Text scale={0.8} color="#999999">
+                                                            ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={item.count * product.priceValue} /></b> )
+                                                        </Text>
+                                                    </div>
+                                                ) : null}
+                                            </Field.Section>
+                                        ) : null}
 
                                         <Field.Section>
                                             <Form name="description" loading={saving.description} onSubmit={this.onSubmit}>

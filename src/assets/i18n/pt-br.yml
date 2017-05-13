@@ -35,7 +35,7 @@ dictionary:
     # Nav bar
     _NAV_BAR_ACCOUNT_ITEM_LABEL_: perfil
     _NAV_BAR_ORDERS_ITEM_LABEL_: meus pedidos
-    _NAV_BAR_LOGOUT_ITEM_LABEL_: sair
+    _NAV_BAR_SIGNOUT_ITEM_LABEL_: sair
     _NAV_BAR_SIGNIN_ITEM_LABEL_: entrar
     _NAV_BAR_ADMIN_ITEM_LABEL_: admin
     _NAV_BAR_ALERTS_ITEM_LABEL_: alertas
@@ -152,16 +152,16 @@ dictionary:
     
     _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
     _NEW_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
-    _NEW_ADDRESS_MODAL_LABEL_FIELD_LABEL_: Identificador
+    _NEW_ADDRESS_MODAL_LABEL_FIELD_LABEL_: identificador
     _NEW_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
-    _NEW_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: CEP
-    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: Endereço
+    _NEW_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: cep
+    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: rndereço
     _NEW_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
-    _NEW_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: Número
+    _NEW_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: número
     _NEW_ADDRESS_MODAL_NUMBER_FIELD_PLACEHOLDER_: "4938"
-    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: Complemento
+    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: complemento
     _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_PLACEHOLDER_: Apto 402
-    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: Bairro
+    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: bairro
     _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
     _NEW_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
     _NEW_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
@@ -253,6 +253,7 @@ dictionary:
     _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
     _CATALOG_ITEM_PAGE_EDIT_LABEL_: editar
     _CATALOG_ITEM_PAGE_SAVE_LABEL_: salvar
+    _CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_: preço
 
     # Invitation Page
     _INVITATION_PAGE_TITLE_: Solicite seu convite
@@ -269,6 +270,10 @@ dictionary:
 
     # Alert Messages
     _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_AWAITING_USER_AVAILABILITY_: Seu pedido <b>#{{order.count}}</b> sairá amanhã! Você estará em casa?
+    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_CONFIRMED_: Seu pedido <b>#{{order.count}}</b> foi confirmado.
+    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_BOXED_: Seu pedido <b>#{{order.count}}</b> já está pronto para ser entregue.
+    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{order.count}}</b> está a caminho da sua casa.
+    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_CLOSED_: Seu pedido <b>#{{order.count}}</b> foi entregue.
     _ALERT_SELECTED_OPTION_TEXT_: "Opção selecionada : <b>{{selectedOption}}</b>"
 
     # Basket Card

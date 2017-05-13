@@ -71,50 +71,50 @@ class Component extends React.Component {
                         <i18n.Translate text="_ORDERS_PAGE_TITLE_" />
                     </h2>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><i18n.Translate text="_ORDERS_PAGE_CREATED_AT_TH_" /></th>
-                                <th><i18n.Translate text="_ORDERS_PAGE_ADDRESS_TH_" /></th>
-                                <th><i18n.Translate text="_ORDERS_PAGE_ITEMS_COUNT_TH_" /></th>
-                                <th><i18n.Translate text="_ORDERS_PAGE_PRICE_VALUE_TH_" /></th>
-                                <th><i18n.Translate text="_ORDERS_PAGE_STATUS_TH_" /></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {initializing ? (
+                    <div className="table-container">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_CREATED_AT_TH_" /></th>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_ADDRESS_TH_" /></th>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_ITEMS_COUNT_TH_" /></th>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_PRICE_VALUE_TH_" /></th>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_STATUS_TH_" /></th>
+                                    <th></th>
                                 </tr>
-                            ) : orders && orders.length ? (
-                                orders.map((order) => {
-                                    let address = lodash.find(user.addresses, (address) => {
-                                        return address.id == order.address;
-                                    });
+                            </thead>
+                            <tbody>
+                                {initializing ? (
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    </tr>
+                                ) : orders && orders.length ? (
+                                    orders.map((order) => {
+                                        let address = lodash.find(user.addresses, (address) => {
+                                            return address.id == order.address;
+                                        });
 
-                                    return (
-                                        <tr key={order._id}>
-                                            <td><i18n.Moment date={order.createdAt} /></td>
-                                            <td>{address.label}</td>
-                                            <td>{order.items.length}</td>
-                                            <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
-                                            <td>{order.status}</td>
-                                            <td></td>
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}>
-                                        <i18n.Translate text="_ORDERS_PAGE_NO_DATA_FOUND_TEXT_" />
-                                    </td>
-                                </tr>
-                            ) }
-                        </tbody>
-                    </table>
-                    
-                    
+                                        return (
+                                            <tr key={order._id}>
+                                                <td><i18n.Moment date={order.createdAt} /></td>
+                                                <td>{address.label}</td>
+                                                <td>{order.items.length}</td>
+                                                <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
+                                                <td>{order.status}</td>
+                                                <td></td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}>
+                                            <i18n.Translate text="_ORDERS_PAGE_NO_DATA_FOUND_TEXT_" />
+                                        </td>
+                                    </tr>
+                                ) }
+                            </tbody>
+                        </table>
+                    </div>
                 </Container>
             </div>
         );

@@ -1,5 +1,11 @@
+@require "~darch/src/styles/variables"
+
 $color = #0c77f8
 
 .page
     //color: black
     //background: $color
+
+h1,h2,h3,h4,h5,h6
+    @media(max-width: $screen-phone-max)
+        text-align: left;

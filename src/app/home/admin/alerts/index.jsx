@@ -72,49 +72,51 @@ export default class Component extends React.Component {
                 </Bar>
                 
                 <Container>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_USERS_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_ALERTS_TYPE_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_ALERTS_MESSAGE_TH_" /></th>
-                                <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_CREATED_AT_TH_" /></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/*initializing ? (
+                    <div className="table-container">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <td colSpan="5" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_USERS_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_ALERTS_TYPE_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_ALERTS_MESSAGE_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_CREATED_AT_TH_" /></th>
+                                    <th></th>
                                 </tr>
-                            ) : invitations && invitations.length ? (
-                                invitations.map((invitation) => {
-                                    return (
-                                        <tr key={invitation._id}>
-                                            <td>{invitation.email}</td>
-                                            <td>{invitation.sentCount}</td>
-                                            <td>{invitation.sentAt ? (<i18n.Moment date={invitation.sentAt} />) : "-"}</td>
-                                            <td>{invitation.status ? invitation.status : "open"}</td>
-                                            <td>
-                                                {invitation.status != "closed" ? (
-                                                    <a onClick={this.onSendBtnClick(invitation)} style={{fontSize: "1.4em"}} title="send">
-                                                        <span className="icon-paper-plane"></span>
-                                                    </a>
-                                                ) : null}
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}>
-                                        <i18n.Translate text="_ADMIN_INVITATIONS_PAGE_NO_DATA_FOUND_TEXT_" />
-                                    </td>
-                                </tr>
-                            )*/}
-                            
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {/*initializing ? (
+                                    <tr>
+                                        <td colSpan="5" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    </tr>
+                                ) : invitations && invitations.length ? (
+                                    invitations.map((invitation) => {
+                                        return (
+                                            <tr key={invitation._id}>
+                                                <td>{invitation.email}</td>
+                                                <td>{invitation.sentCount}</td>
+                                                <td>{invitation.sentAt ? (<i18n.Moment date={invitation.sentAt} />) : "-"}</td>
+                                                <td>{invitation.status ? invitation.status : "open"}</td>
+                                                <td>
+                                                    {invitation.status != "closed" ? (
+                                                        <a onClick={this.onSendBtnClick(invitation)} style={{fontSize: "1.4em"}} title="send">
+                                                            <span className="icon-paper-plane"></span>
+                                                        </a>
+                                                    ) : null}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className={styles.infoCellContainer}>
+                                            <i18n.Translate text="_ADMIN_INVITATIONS_PAGE_NO_DATA_FOUND_TEXT_" />
+                                        </td>
+                                    </tr>
+                                )*/}
+                                
+                            </tbody>
+                        </table>
+                    </div>
                 </Container>
             </div>
         );

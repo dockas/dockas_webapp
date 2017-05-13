@@ -11,7 +11,7 @@ import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
-import {Api,User,Socket,Product,Basket,Order,Alert} from "common";
+import {Api,User,Socket,Product,Basket,Order,Alert,Location} from "common";
 
 let Logger = new LoggerFactory("main");
 
@@ -58,6 +58,7 @@ Form.registerValidator({
         basket: Basket.reducer,
         order: Order.reducer,
         alert: Alert.reducer,
+        location: Location.reducer,
 
         adminOrders: require("app/home/admin/orders/reducer")
     }, {shared: true});
@@ -81,7 +82,9 @@ Form.registerValidator({
         </Provider>
     );
 
-    history.listen( () =>  {
+    history.listen( (data) =>  {
+        Redux.dispatch(Location.actions.locationChange(data));
+        
         mixpanel.track("page opened", {
             pathname: window.location.pathname
         });

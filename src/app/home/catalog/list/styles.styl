@@ -1,22 +1,31 @@
+@require "~darch/src/styles/variables"
+
 .search-container
     > div > div
         padding-left: 0;
     
-    .field-container 
-        margin-top: 20px;
+    //.field-container 
+        //margin-top: 20px;
     
     /*.search-loading-container
         padding-left: 10px;*/
     
     .action-buttons-container
         text-align: right;
-        
-        > * + *
-            margin-left: 10px;
+            
+        /*@media (max-width: $screen-phone-max)
+            display: none;*/
 
-.filters-container
+.aux-container
     margin-top: 5px;
     margin-bottom: 20px;
+    
+    .filters-container
+        @media (max-width: $screen-phone-max)
+            display: none;
+    
+    .search-loading-container
+        display: inline-block;
 
 .button-container + .button-container
     margin-left: 10px;

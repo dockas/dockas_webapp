@@ -85,7 +85,15 @@ html(lang="pt-br")
 
             document.getElementsByTagName("head")[0].appendChild(script);
 
+            /*document.onload = function() {
+                setTimeout(function() {
+                    console.log("MALACOS");
+                    document.getElementById("loader").style.visibility = "visible";
+                }, 500);
+            };*/
+
         style.
+
             .loader.page-center {
                 position: absolute;
                 top: 50%;
@@ -93,7 +101,56 @@ html(lang="pt-br")
                 -webkit-transform: translate(-50%, -50%);
                 transform: translate(-50%, -50%);
             }
-            .loader .dot {
+
+            .loader{
+                /*font-size: 40px !important;*/
+                width: 40px;
+                height: 48px;
+                border: 1px rgba(0,0,0,1) solid;
+                border-radius: 0px 0px 10px 10px;
+                position: relative;
+                /*margin: 36px auto;*/
+            }
+            .loader:after, .loader:before{
+                position: absolute;
+                content: "";
+            }
+            .loader:after{
+                width: 16px;
+                height: 24px;
+                border: 1px #000 solid;
+                border-left: none;
+                border-radius: 0px 40px 40px 0px;
+                left: 40px;
+            }
+            .loader:before{
+                width: 1px;
+                height: 12px;
+                background-color: rgba(0,0,0,1);
+                top: -20px;
+                left: 8px;
+                box-shadow: 10px 0px 0px 0px rgba(0,0,0,1),
+                            10px -10px 0px 0px rgba(0,0,0,1),
+                            20px 0px 0px 0px rgba(0,0,0,1);
+                -webkit-animation: steam 1s linear infinite alternate;
+                   -moz-animation: steam 1s linear infinite alternate;
+                        animation: steam 1s linear infinite alternate;
+            }
+
+            @-webkit-keyframes steam{
+                0%{height: 0px;}
+                100%{height: 12px;}            
+            }
+            @-moz-keyframes steam{
+                0%{height: 0px}
+                100%{height: 12px;}            
+            }
+            @keyframes steam{
+                0%{height: 0px}
+                100%{height: 12px;}
+            }
+
+            /*.loader .dot {
                 width: 10px;
                 height: 10px;
                 border: 2px solid #446CB3;
@@ -132,15 +189,12 @@ html(lang="pt-br")
                 100% {
                     opacity: 0;
                 }
-            }
+            }*/
 
     body.darch
         div#loader-overlay(style="position: fixed; top: 0; left: 0; z-index: 10000; width: 100%; height: 100%;")
             div.background(style="position: absolute; top: 0; left: 0; background: #fff; opacity: 0.5; width: 100%; height: 100%")
-            div.loader.page-center
-                div.dot
-                div.dot
-                div.dot
+            div#loader.loader.page-center
         div#main-page
             h1
 
@@ -148,5 +202,5 @@ html(lang="pt-br")
 
         if jivo_widget_id
             script.
-                (function(){ var widget_id = jivo_widget_id;var d=document;var w=window;function l(){
+                (function(){ var widget_id = "#{jivo_widget_id}";var d=document;var w=window;function l(){
                 var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '//code.jivosite.com/script/widget/'+widget_id; var ss = document.getElementsByTagName('script')[0]; ss.parentNode.insertBefore(s, ss);}if(d.readyState=='complete'){l();}else{if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();

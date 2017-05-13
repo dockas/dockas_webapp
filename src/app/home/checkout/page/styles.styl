@@ -1,3 +1,4 @@
+@require "~darch/src/styles/animation";
 @require "~darch/src/styles/variables";
 
 .progress-steps
@@ -34,6 +35,12 @@
 
     .step-title
         color: #ddd;
+        
+        @media(max-width: $screen-phone-max)
+            transform(rotate(-45deg));
+            position: relative;
+            top: 20px;
+            display: inline-block;
     
     li.active
         .step-bullete

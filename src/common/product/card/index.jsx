@@ -48,7 +48,9 @@ class Component extends React.Component {
         onChangePrice: React.PropTypes.func
     };
 
-    state = {};
+    state = {
+        screenSize: "desktop"
+    };
 
     /**
      * LYFECICLE : This function is called when component
@@ -57,6 +59,20 @@ class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        this.handleWindowResize();
+    }
+
+    handleWindowResize() {
+        let logger = Logger.create("handleWindowResize");
+
+        let {screenSize} = this.state;
+        let currentScreenSize = Style.screenForWindowWidth(window.innerWidth);
+
+        if(currentScreenSize != screenSize) {
+            logger.info("enter", {screenSize, currentScreenSize});
+            this.setState({screenSize: currentScreenSize});
+        }
     }
 
     onMouseEnter() {
@@ -127,7 +143,7 @@ class Component extends React.Component {
      */
     render() {
         let {data,uid,user} = this.props;
-        let {showOverlay} = this.state;
+        let {showOverlay,screenSize} = this.state;
 
         let item = this.props.basket.items[data._id];
         let mainImage = lodash.find(data.images, (image) => {
@@ -152,12 +168,12 @@ class Component extends React.Component {
                         }}></div>
                     ) : null}
 
-                    {uid && showOverlay ? (
+                    {uid && (showOverlay || screenSize == "phone") ? (
                         <div className={styles.overlay}>
-                            {item ? (<Button scale={0.6} color="danger" onClick={this.onRemoveBtnClick}>
+                            {item ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onRemoveBtnClick}>
                                 <span className="icon-minus-strong"></span>
                             </Button>) : null}
-                            <Button scale={0.6} color="success" onClick={this.onAddBtnClick}>
+                            <Button scale={screenSize == "phone" ? 0.8 : 0.6} color="success" onClick={this.onAddBtnClick}>
                                 <span className="icon-plus-strong"></span> <i18n.Translate text="_ADD_" />
                             </Button>
                         </div>

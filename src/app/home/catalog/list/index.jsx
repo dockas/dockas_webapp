@@ -3,7 +3,7 @@
 import React from "react";
 import lodash from "lodash";
 import classNames from "classnames";
-import {LoggerFactory,Redux,Storage} from "darch/src/utils";
+import {LoggerFactory,Redux,Storage,Style} from "darch/src/utils";
 import {connect} from "react-redux";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
@@ -104,6 +104,26 @@ class Component extends React.Component {
         catch(error) {
             logger.error("api tagFind error", error);
         }
+
+        window.addEventListener("resize", this.handleWindowResize);
+
+        this.handleWindowResize();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    handleWindowResize() {
+        let logger = Logger.create("handleWindowResize");
+
+        let {screenSize} = this.state;
+        let currentScreenSize = Style.screenForWindowWidth(window.innerWidth);
+
+        if(currentScreenSize != screenSize) {
+            logger.info("enter", {screenSize, currentScreenSize});
+            this.setState({screenSize: currentScreenSize});
+        }
     }
 
     async loadProducts(query) {
@@ -123,13 +143,6 @@ class Component extends React.Component {
         if(!query || lodash.isEmpty(query.tags)) {
             delete mergedQuery.tags;
         }
-
-        console.log([
-            "mergedQuery", 
-            this.props.productsQuery,
-            query,
-            mergedQuery
-        ]);
 
         // Retrieve products
         try {
@@ -297,14 +310,14 @@ class Component extends React.Component {
     render() {
         let {products,user} = this.props;
         let {listName} = this.props.basket;
-        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading} = this.state;
+        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading} = this.state;
 
         return (
             <div className={styles.page}>
                 <Container>
                     <div className={styles.searchContainer}>
                         <Grid noGap={true}>
-                            <Grid.Cell span={2}>
+                            <Grid.Cell span={1}>
                                 <Grid noGap={false}>
                                     <Grid.Cell span={2}>
                                         <div className={classNames([styles.fieldContainer,styles.searchFieldContainer])}>
@@ -313,7 +326,7 @@ class Component extends React.Component {
                                                 <Field.Text
                                                     name="name"
                                                     placeholder="_CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_"
-                                                    scale={0.8}
+                                                    scale={screenSize == "phone"?1:0.8}
                                                     disabled={this.state.searchLoading}/>
                                             </Form>
                                         </div>
@@ -332,42 +345,52 @@ class Component extends React.Component {
                                                 clearSearchOnSelect={true}
                                                 creatable={false}
                                                 multi={true}
-                                                scale={0.8}
+                                                scale={screenSize == "phone"?1:0.8}
                                                 disabled={this.state.searchLoading}
                                                 loaderComponent={<Spinner.CircSide color="#555" />}/>
                                         </div>
                                     </Grid.Cell>
 
-                                    <Grid.Cell>
-                                        <div className={classNames([styles.fieldContainer,styles.searchLoadingContainer])}>
-                                            {this.state.searchLoading ? (
-                                                <Spinner.CircSide color="moody" />
-                                            ) : null}
-                                        </div>
-                                    </Grid.Cell>
+                                    {/*this.state.searchLoading ? (
+                                        <Grid.Cell>
+                                            <div className={classNames([styles.fieldContainer,styles.searchLoadingContainer])}>
+                                                    <Spinner.CircSide color="moody" />
+                                            </div>
+                                        </Grid.Cell>
+                                    ) : <span></span>*/}
                                 </Grid>
                             </Grid.Cell>
 
                             <Grid.Cell>
                                 <div className={classNames([styles.fieldContainer,styles.actionButtonsContainer])}>
                                     {user && user.roles.indexOf("admin") >= 0 ? (
-                                        <Button to="/admin/create/product" scale={0.8} color="warning"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_" /></Button>
+                                        <div className="field-gap"><Button to="/admin/create/product" scale={screenSize == "phone"?1:0.8} color="warning"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_" /></Button></div>
                                     ) : null}
                                     
-                                    {user ? <Button scale={0.8} onClick={this.onSaveListButtonClick}><i18n.Translate text="_CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_" /></Button> : null}
+                                    {user ? <div className="field-gap"><Button scale={screenSize == "phone"?1:0.8} onClick={this.onSaveListButtonClick}><i18n.Translate text="_CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_" /></Button></div> : null}
                                 </div>
                             </Grid.Cell>
                         </Grid>
                     </div>
 
-                    <div className={styles.filtersContainer}>
+                    <div className={styles.auxContainer}>
                         <Grid noGap={false}>
                             <Grid.Cell span={2}>
-                                {user ? (
-                                    <Label scale={0.8} color={filterOnlySelected?"moody":"#eeeeee"} onClick={() => {this.setState({filterOnlySelected: !filterOnlySelected});}}>
-                                        <i18n.Translate text="_CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_" />
-                                    </Label>  
-                                ) : null}
+                                <div className={styles.filtersContainer}>
+                                    {user ? (
+                                        <div className="field-gap">
+                                            <Label scale={0.8} color={filterOnlySelected?"moody":"#eeeeee"} onClick={() => {this.setState({filterOnlySelected: !filterOnlySelected});}}>
+                                                <i18n.Translate text="_CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_" />
+                                            </Label>
+                                        </div>
+                                    ) : null}
+
+                                    {searchLoading ? (
+                                        <div className={classNames(["field-gap",styles.fieldContainer,styles.searchLoadingContainer])}>
+                                            <Spinner.CircSide color="moody" />
+                                        </div>
+                                    ) : null}
+                                </div>
                             </Grid.Cell>
 
                             <Grid.Cell>
@@ -413,7 +436,7 @@ class Component extends React.Component {
                     <Form onSubmit={this.onCreateListSubmit} loading={createListModalLoading}>
                         <Modal.Body>
                             <Field.Section>
-                                <Text scale={0.8}>
+                                <Text scale={screenSize == "phone" ? 1 : 0.8}>
                                     <i18n.Translate text="_CREATE_LIST_MODAL_NAME_FIELD_LABEL_" />
                                 </Text>
                                 <div>
@@ -428,13 +451,13 @@ class Component extends React.Component {
                         </Modal.Body>
 
                         <Modal.Footer align="right">
-                            <span className={styles.buttonContainer}>
+                            <div className="field-gap">
                                 <Button scale={1} color="danger" onClick={this.onCreateListModalDismiss}>
                                     <i18n.Translate text="_CANCEL_" />
                                 </Button>
-                            </span>
+                            </div>
 
-                            <span className={styles.buttonContainer}>
+                            <div className="field-gap">
                                 <Button type="submit"scale={1}
                                     loadingComponent={
                                         <span>
@@ -446,7 +469,7 @@ class Component extends React.Component {
                                     }>
                                     <i18n.Translate text="_SAVE_" />
                                 </Button>
-                            </span>
+                            </div>
                         </Modal.Footer>
                     </Form>
                 </Modal>

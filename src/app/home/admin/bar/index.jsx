@@ -29,11 +29,11 @@ export default class Component extends React.Component {
 
                     <Tabs layout="simple" bordered={false}>
                         {/*<Tabs.Item to="/admin/products" onlyActiveOnIndex={true}><span className="icon-box-filled"></span><i18n.Translate text="_ADMIN_BAR_PRODUCTS_LABEL_" /></Tabs.Item>*/}
-                        <Tabs.Item to="/admin/users"><span className="icon-user"></span><i18n.Translate text="_ADMIN_BAR_USERS_LABEL_" /></Tabs.Item>
-                        <Tabs.Item to="/admin/orders"><span className="icon-purchase-order"></span><i18n.Translate text="_ADMIN_BAR_ORDERS_LABEL_" /></Tabs.Item>
-                        <Tabs.Item to="/admin/invitations"><span className="icon-ticket"></span><i18n.Translate text="_ADMIN_BAR_INVITATIONS_LABEL_" /></Tabs.Item>
-                        <Tabs.Item to="/admin/alerts"><span className="icon-bell-2"></span><i18n.Translate text="_ADMIN_BAR_ALERTS_LABEL_" /></Tabs.Item>
-                        <Tabs.Item to="/admin/coupons"><span className="icon-cutting-coupon"></span><i18n.Translate text="_ADMIN_BAR_COUPONS_LABEL_" /></Tabs.Item>
+                        <Tabs.Item to="/admin/users"><span className="icon-user"></span><span className={styles.label}><i18n.Translate text="_ADMIN_BAR_USERS_LABEL_" /></span></Tabs.Item>
+                        <Tabs.Item to="/admin/orders"><span className="icon-purchase-order"></span><span className={styles.label}><i18n.Translate text="_ADMIN_BAR_ORDERS_LABEL_" /></span></Tabs.Item>
+                        <Tabs.Item to="/admin/invitations"><span className="icon-ticket"></span><span className={styles.label}><i18n.Translate text="_ADMIN_BAR_INVITATIONS_LABEL_" /></span></Tabs.Item>
+                        <Tabs.Item to="/admin/alerts"><span className="icon-bell-2"></span><span className={styles.label}><i18n.Translate text="_ADMIN_BAR_ALERTS_LABEL_" /></span></Tabs.Item>
+                        <Tabs.Item to="/admin/coupons"><span className="icon-cutting-coupon"></span><span className={styles.label}><i18n.Translate text="_ADMIN_BAR_COUPONS_LABEL_" /></span></Tabs.Item>
 
                         {this.props.children}
                     </Tabs>
