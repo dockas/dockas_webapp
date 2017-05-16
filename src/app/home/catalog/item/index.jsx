@@ -12,6 +12,7 @@ import Button from "darch/src/button";
 import Uploader from "darch/src/uploader";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import {Api,Product,Basket,Badge} from "common";
+import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("catalog.item");
@@ -84,7 +85,7 @@ class Component extends React.Component {
             // Process images
             let images = [];
 
-            for(let image of product.images) {
+            for(let image of product.images||[]) {
                 images.push({
                     id: image._id, 
                     url: `//${config.hostnames.file}/images/${image.path}`
@@ -258,7 +259,9 @@ class Component extends React.Component {
                                                 mainImage={mainImage}
                                                 onImagesLoad={this.onUploaderImagesLoad}
                                                 images={images}
-                                                showAddMoreButton={true}/>
+                                                defaulImageUrl={placeholderImg}
+                                                showAddMoreButton={true}
+                                                preventUpload={(user && user.roles.indexOf("admin") < 0)}/>
 
                                             {/*mainImage ? (
                                                 <div className={styles.mainImage} style={{

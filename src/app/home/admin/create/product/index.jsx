@@ -404,16 +404,97 @@ class Component extends React.Component {
         return {value, label: value};
     }
 
+    onCSVInputChange(target) {
+        return (evt) => {
+            let logger = Logger.create("onCSVInputChange");
+            logger.info("enter", {target});
+
+            let files = evt.target.files;
+
+            console.log(["file", files]);
+
+            var reader = new FileReader();
+            reader.onload = async () => {
+                let csvStr = reader.result;
+
+                // Send to api.
+                switch(target) {
+                    case "products": {
+                        try {
+                            let result = await Api.shared.productCreateFromCSV({csv: csvStr});
+                            logger.info("api productCreateFromCSV success", result);
+
+                            Redux.dispatch(Toaster.actions.push("success", "_PRODUCTS_CREATE_SUCCESS_"));
+                        }
+                        catch(error) {
+                            logger.error("api productCreateFromCSV error", error);
+                        }
+                        break;
+                    }
+
+                    case "brands": {
+                        try {
+                            let result = await Api.shared.brandCreateFromCSV({csv: csvStr});
+                            logger.info("api brandCreateFromCSV success", result);
+
+                            Redux.dispatch(Toaster.actions.push("success", "_BRANDS_CREATE_SUCCESS_"));
+                        }
+                        catch(error) {
+                            logger.error("api brandCreateFromCSV error", error);
+                        }
+                        break;
+                    }
+
+                    case "tags": {
+                        try {
+                            let result = await Api.shared.tagCreateFromCSV({csv: csvStr});
+                            logger.info("api tagCreateFromCSV success", result);
+
+                            Redux.dispatch(Toaster.actions.push("success", "_TAGS_CREATE_SUCCESS_"));
+                        }
+                        catch(error) {
+                            logger.error("api tagCreateFromCSV error", error);
+                        }
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+                
+            };
+
+            reader.readAsText(files[0], "utf-8");
+        };
+    }
+
     render() {
         let {tags,loadingTags,newTagModalOpen} = this.state;
         let {users,loadingUsers,brands,loadingBrands,brandToCreate} = this.state;
 
-        console.log("STATETAO", this.state);
+        let inputFileStyle={
+            width: "0.1px",
+            height: "0.1px",
+            opacity: 0,
+            overflow: "hidden",
+            position: "absolute",
+            zIndex: -1
+        };
 
         return (
             <div className={styles.page}>
                 <Container size="md">
-                    <h3 className="headline"><i18n.Translate text="_CREATE_PRODUCT_PAGE_TITLE_" /></h3>
+                    <h3 className="headline">
+                        <i18n.Translate text="_CREATE_PRODUCT_PAGE_TITLE_" />
+
+                        <div style={{float: "right"}}>
+                            <span className={styles.fileInputButton}>
+                                <label style={{fontSize: "18px"}} htmlFor="productCSV">CSV</label>
+                                <input name="productCSV" id="productCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("products")} style={inputFileStyle} />
+                            </span>
+                        </div>
+                    </h3>
 
                     {/*<Button type="submit"
                         scale={1}
@@ -494,8 +575,15 @@ class Component extends React.Component {
                                     </Field.Section>
 
                                     <Field.Section>
-                                        <Text scale={0.8}>
+                                        <Text scale={0.8} block={true}>
                                             <i18n.Translate text="_CREATE_PRODUCT_PAGE_BRAND_FIELD_LABEL_" />
+
+                                            <div style={{float: "right"}}>
+                                                <span className={styles.fileInputButton}>
+                                                    <label htmlFor="brandCSV">CSV</label>
+                                                    <input name="brandCSV" id="brandCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("brands")} style={inputFileStyle} />
+                                                </span>
+                                            </div>
                                         </Text>
                                         <div>
                                             <Field.Select
@@ -598,7 +686,16 @@ class Component extends React.Component {
                                         <Text width="100%" scale={0.8}>
                                             <i18n.Translate text="_CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_" />
 
-                                            <a onClick={this.openNewTagModal} style={{float: "right", cursor: "pointer"}}>Adicionar</a>
+                                            <div style={{float: "right"}}>
+                                                <a onClick={this.openNewTagModal} style={{cursor: "pointer"}}>Adicionar</a>
+
+                                                <span style={{margin: "0px 5px"}}>•</span>
+
+                                                <span className={styles.fileInputButton}>
+                                                    <label htmlFor="tagCSV">CSV</label>
+                                                    <input name="tagCSV" id="tagCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("tags")} style={inputFileStyle} />
+                                                </span>
+                                            </div>
                                         </Text>
                                         <div>
                                             <Field.Select

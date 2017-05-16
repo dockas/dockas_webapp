@@ -46,3 +46,7 @@ ENH : Create alert page that gonna be accessible from phone screens.
 ENH : Set all page links directly to main nav bar menu when in phone screen.
 ENH : Many enhancement in responsiveness.
 FEA : New location common module.
+ENH : Add image placeholderPath to default config.
+FEA : Enable to create tags,brands and products from a CSV file in product create page.
+BUG : Fix a bug when product has no images at all in catalog item page.
+ENH : Show placeholder image in product card component when there is no mainImage.

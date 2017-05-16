@@ -6,6 +6,7 @@ import {withRouter} from "react-router";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
+import placeholderImg from "assets/images/placeholder.png";
 import {Basket} from "common";
 import styles from "./styles";
 import Badge from "../../badge";
@@ -166,7 +167,14 @@ class Component extends React.Component {
                             backgroundSize: "cover",
                             backgroundPosition: "center"
                         }}></div>
-                    ) : null}
+                    ) : (
+                        <div className={styles.image} style={{
+                            backgroundImage: `url(${placeholderImg})`,
+                            backgroundColor: "#f9f9f9",
+                            backgroundSize: "cover",
+                            backgroundPosition: "center"
+                        }}></div>
+                    )}
 
                     {uid && (showOverlay || screenSize == "phone") ? (
                         <div className={styles.overlay}>

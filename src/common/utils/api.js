@@ -93,6 +93,10 @@ export default class Api {
         return this.request("POST", "product", data, opts);
     }
 
+    productCreateFromCSV(data, opts) {
+        return this.request("POST", "product/csv", data, opts);
+    }
+
     productUpdate(id, data, opts) {
         return this.request("PUT", `product/${id}`, data, opts);
     }
@@ -111,6 +115,10 @@ export default class Api {
 
     tagCreate(data, opts) {
         return this.request("POST", "tag", data, opts);
+    }
+
+    tagCreateFromCSV(data, opts) {
+        return this.request("POST", "tag/csv", data, opts);
     }
 
     tagFind(query, opts) {
@@ -191,6 +199,10 @@ export default class Api {
 
     brandCreate(data, opts) {
         return this.request("POST", "brand", data, opts);
+    }
+
+    brandCreateFromCSV(data, opts) {
+        return this.request("POST", "brand/csv", data, opts);
     }
 
     brandFind(query, opts) {

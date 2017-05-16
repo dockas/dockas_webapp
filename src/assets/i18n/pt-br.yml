@@ -193,6 +193,7 @@ dictionary:
     _CREATE_PRODUCT_PAGE_TAGS_FIELD_PLACEHOLDER_: -- selecionar --
     _CREATE_PRODUCT_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
     _PRODUCT_CREATE_SUCCESS_: Produto criado com sucesso.
+    _PRODUCTS_CREATE_SUCCESS_: Produtos criados com sucesso.
 
     _NEW_TAG_MODAL_TITLE_: Adicionar Nova Tag
     _NEW_TAG_MODAL_NAME_FIELD_LABEL_: nome
@@ -203,6 +204,10 @@ dictionary:
     _NEW_TAG_MODAL_BACKGROUNDCOLOR_FIELD_PLACEHOLDER_: 446CB3
     _NEW_TAG_MODAL_PREVIEW_FIELD_LABEL_: Preview
     _TAG_CREATE_SUCCESS_: Tag criada com sucesso.
+    _TAGS_CREATE_SUCCESS_: Tags criadas com sucesso.
+
+    _BRAND_CREATE_SUCCESS_: Marca criada com sucesso.
+    _BRANDS_CREATE_SUCCESS_: Marcas criadas com sucesso.
 
     _CREATE_ALERT_PAGE_TITLE_: Novo Alerta
     _CREATE_ALERT_PAGE_USERS_FIELD_LABEL_: usuários

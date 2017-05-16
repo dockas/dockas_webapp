@@ -21,6 +21,9 @@ hostnames:
     socket: socket.dockas.com
     file: file.dockas.com
 
+images:
+    placeholderPath: placeholder.png
+
 paypal:
     sandbox: "Ac95bP9cLOVq7YzUbyMNabCBWH3p1frTjzZ74a_a1DH-VFdenOtrrTD2z6qG7FLRFszgFvyu4bWh0NMa"
     production: "AdgyTk-1bkskjMaVHZeWUzIeCkEBIKr0jsOtQAXDx4rKZoaNcaU8Nq5RAHEzqj_ipfHFDVboeuNtcnyW"
