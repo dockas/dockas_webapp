@@ -56,3 +56,4 @@ ENH : Add CSV to create companies in product create page.
 ENH : Change all lower/upper range fields to new gt/lt/gte/lte.
 ENH : Add empty statistics route to product detail page and to brand detail page (visible only to brand/company owners).
 FEA : Add infinite scroll to catalog list page.
+ENH : Add data option to productUpdate action that enables force setting of some product fields.
