@@ -147,8 +147,8 @@ class Component extends React.Component {
         let {showOverlay,screenSize} = this.state;
 
         let item = this.props.basket.items[data._id];
-        let mainImage = lodash.find(data.images, (image) => {
-            return image._id == data.mainImage;
+        let mainProfileImage = lodash.find(data.profileImages, (image) => {
+            return image._id == data.mainProfileImage;
         });
 
         return (
@@ -161,9 +161,9 @@ class Component extends React.Component {
                 ) : null}
 
                 <div className={styles.imageContainer}>
-                    {mainImage ? (
+                    {mainProfileImage ? (
                         <div className={styles.image} style={{
-                            backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
+                            backgroundImage: mainProfileImage.url ? `url(${mainProfileImage.url})` : `url(//${config.hostnames.file}/images/${mainProfileImage.path})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center"
                         }}></div>

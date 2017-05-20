@@ -1,0 +1,101 @@
+@require "~darch/src/styles/variables"
+
+.page
+    margin-top: -20pt;
+    
+.banner
+    width: 100%;
+    position: relative;
+    //background: #f5f5f5;
+    background-image: url("https://images.unsplash.com/photo-1480413258216-ff003d179d65?dpr=2&auto=format&fit=crop&w=1500&h=1000&q=80&cs=tinysrgb&crop=&bg=");
+    background-position: center;
+    background-size: cover;
+    
+    .banner-overlay
+        background: rgba(0,0,0,0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    
+    .banner-body-container
+        height: 300px;
+        pisition: relative;
+        
+        .banner-body
+            color: white;
+            position: absolute;
+            bottom: 20px;
+            left: 40px;
+
+.tabs-body-container
+    margin: 30px 0;
+    
+    .tabs-body
+        //margin-left: -15px;
+        
+        li + li
+            margin-left: 10px;
+            
+        /*li a 
+            border-bottom-width: 4px;
+
+        li a:global(.active)
+            color: white;
+            border-bottom-color: white;*/
+
+.main-image-container
+    padding: 30px 10px 0 10px;
+    position: relative;
+    
+    .main-image
+        width: 100%;
+        padding-top: 100%; /* 1:1 Aspect Ratio */
+        position: relative;
+
+.badge
+    position: absolute;
+    top: 10px;
+    right: -15px;
+    z-index: 2;
+
+.add-btn-container
+    margin-top: 30px;
+    
+    button
+        width: 100%;
+
+.sidebar-container
+    position: relative;
+    //top: -70px;
+    
+    /*@media(min-width: $screen-tablet-min)
+        top: -140px;*/
+
+.body-container
+    @media(min-width: $screen-tablet-min)
+        padding-left: 40px;
+        padding-top: 20px;
+
+.remove-btn-container
+    padding-right: 10px;
+    
+    button
+        padding-left: 10px;
+        padding-right: 10px;
+
+.price-container
+    margin-top: 40px;
+    text-align: center;
+    line-height: 1.1;
+
+.price-container-phone
+    > div
+        margin-bottom: -5px;
+        
+        > span
+            font-weight: 800;
+
+.total-price-container
+    text-align: center;

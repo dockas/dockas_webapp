@@ -7,6 +7,13 @@ import Api from "../utils/api";
 let Logger = new LoggerFactory("common.product.actions");
 
 export default createActions({
+    productSelect(product) {
+        var logger = Logger.create("productSelect");
+        logger.info("enter", product);
+
+        return product;
+    },
+
     async productCreate(data, opts) {
         var logger = Logger.create("productCreate");
         logger.info("enter", data);
@@ -22,14 +29,29 @@ export default createActions({
         return createResponse.result;
     },
 
-    async productFind(query, opts) {
+    async productFind(query, opts={}) {
         var logger = Logger.create("productFind");
         logger.info("enter", query);
 
-        let findResponse = await Api.shared.productFind(query, opts);
+        let findResponse = await Api.shared.productFind(query, opts.reqOpts);
 
         logger.debug("Api productCreate success", findResponse);
 
-        return {data: findResponse.results, query};
+        return {data: findResponse.results, query, opts};
+    },
+
+    async productUpdate(id, data, opts={}) {
+        var logger = Logger.create("productUpdate");
+        logger.info("enter", {id, data});
+
+        let updateResponse = await Api.shared.productUpdate(id, data, opts.reqOpts);
+
+        logger.debug("Api productUpdate success", updateResponse);
+
+        Redux.dispatch(
+            Toaster.actions.push("success", "_PRODUCT_UPDATE_SUCCESS_")
+        );
+
+        return {data: updateResponse.result, opts};
     },
 });

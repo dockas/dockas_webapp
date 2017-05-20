@@ -8,3 +8,4 @@ export Order from "./order";
 export Alert from "./alert";
 export Badge from "./badge";
 export Location from "./location";
+export Brand from "./brand";

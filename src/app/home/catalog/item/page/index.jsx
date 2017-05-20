@@ -4,18 +4,17 @@ import config from "config";
 import {connect} from "react-redux";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
-import Field from "darch/src/field";
-import Form from "darch/src/form";
 import Text from "darch/src/text";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Uploader from "darch/src/uploader";
+import Tabs from "darch/src/tabs";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import {Api,Product,Basket,Badge} from "common";
 import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("catalog.item");
+let Logger = new LoggerFactory("catalog.item.page");
 
 /**
  * Redux map state to props function.
@@ -26,6 +25,7 @@ let Logger = new LoggerFactory("catalog.item");
 function mapStateToProps(state) {
     return {
         products: state.product.data,
+        product: state.product.selected,
         basket: state.basket,
         uid: state.user.uid,
         user: state.user.uid?state.user.profiles[state.user.uid]:null
@@ -44,7 +44,7 @@ let mapDispatchToProps = {
  */
 class Component extends React.Component {
     /** React properties **/
-    static displayName = "catalog.item";
+    static displayName = "catalog.item.page";
     static defaultProps = {};
     static propTypes = {};
 
@@ -55,7 +55,7 @@ class Component extends React.Component {
 
     async componentDidMount() {
         let logger = Logger.create("componentDidMount");
-        logger.info("enter", {location: this.props});
+        logger.info("enter", {params: this.props.params});
 
         let newState = {initializing: false};
         let nameId = lodash.get(this.props, "params.id");
@@ -71,7 +71,7 @@ class Component extends React.Component {
 
             try {
                 let findResponse = await Api.shared.productFindByNameId(nameId, {
-                    populate: ["images","tags","brand"]
+                    populate: ["profileImages","tags","brand","brand.company"]
                 });
                 
                 product = findResponse.result;
@@ -82,24 +82,34 @@ class Component extends React.Component {
         }
         
         if(product) {
-            // Process images
-            let images = [];
+            // Process profile images
+            let profileImages = [];
 
-            for(let image of product.images||[]) {
-                images.push({
-                    id: image._id, 
-                    url: `//${config.hostnames.file}/images/${image.path}`
+            for(let image of product.profileImages||[]) {
+                profileImages.push({
+                    _id: image._id, 
+                    url: image.url?image.url:`//${config.hostnames.file}/images/${image.path}`
                 });
             }
 
-            let mainImage = lodash.find(images, (image) => {
-                return image.id == product.mainImage;
+            let mainProfileImage = lodash.find(profileImages, (image) => {
+                return image._id == product.mainProfileImage;
             });
 
-            newState.product = product;
-            newState.mainImage = mainImage;
-            newState.images = images;
-        } 
+            newState.mainProfileImage = mainProfileImage;
+            newState.profileImages = profileImages;
+
+            // Select product
+            Redux.dispatch(Product.actions.productSelect(product));
+        }
+
+        try {
+            newState.authToken = await Api.shared.http.getAuthToken();
+            logger.info("api http getAuthToken success", newState.authToken);
+        }
+        catch(error) {
+            logger.error("api http getAuthToken error", error);
+        }
 
         this.setState(newState);
 
@@ -129,10 +139,12 @@ class Component extends React.Component {
         let logger = Logger.create("onSubmit");
         logger.info("enter", {data, formName});
 
+        if(!this.props.product) {return;}
+
         let changed = false;
 
         for(let key of Object.keys(data)) {
-            if(this.state.product[key] != data[key]) {
+            if(this.props.product[key] != data[key]) {
                 changed = true;
                 break;
             }
@@ -150,8 +162,8 @@ class Component extends React.Component {
         this.setState(newState);
     }
 
-    onFlowInit(flow) {
-        let logger = Logger.create("onFlowInit");
+    onUploaderInit(flow) {
+        let logger = Logger.create("onUploaderInit");
         logger.info("enter");
 
         this.flow = flow;
@@ -162,64 +174,105 @@ class Component extends React.Component {
         logger.info("enter");
     }
 
-    async onUploadSuccess(fileData, fid) {
-        let logger = Logger.create("onUploadSuccess");
+    async onFileUploadSuccess(fileData, fid) {
+        let logger = Logger.create("onFileUploadSuccess");
         logger.info("enter", {fileData, fid});
 
+        console.log(["console onFileUploadSuccess", fileData, fid]);
+
         // Update images
-        let idx = lodash.findIndex(this.state.images, (image) => {
-            return image.id = fid;
+        let idx = lodash.findIndex(this.state.profileImages, (image) => {
+            return image._id == fid;
         });
 
-        let newImages = this.state.images;
+        console.log(["console onFileUploadSuccess : idx", idx]);
 
-        if(idx >= 0 && newImages.length && idx < newImages.length) {
-            newImages.splice(idx, 1, {
-                id: fileData._id,
-                url: `${config.hostnames.file}/images/${fileData.path}`
-            });
+        let profileImages = this.oldProfileImages = this.state.profileImages;
+        let mainProfileImage = this.oldMainProfileImage = this.state.mainProfileImage;
+
+        logger.debug("idx", {idx});
+
+        if(idx >= 0 && profileImages.length && idx < profileImages.length) {
+            console.log(["console onFileUploadSuccess : let's update profile images"]);
+
+            let oldImage = profileImages[idx];
+            let newImage = {
+                _id: fileData._id,
+                url: `//${config.hostnames.file}/images/${fileData.path}`
+            };
+
+            console.log(["console onUploadSuccess : oldImage, newImage", oldImage, newImage]);
+
+            if(oldImage._id == mainProfileImage._id) {
+                mainProfileImage = newImage;
+            }
+
+            console.log(["console onUploadSuccess : images before splice", lodash.map(profileImages, "_id")]);
+
+            profileImages.splice(idx, 1, newImage);
+
+            console.log(["console onUploadSuccess : images aftre splice", lodash.map(profileImages, "_id")]);
         }
 
-        this.setState({images: newImages});
+        this.setState({mainProfileImage, profileImages});
     }
 
     async onUploadComplete() {
         let logger = Logger.create("onUploadComplete");
 
+        console.log(["console onUploadComplete", this.state]);
+
         logger.info("enter", this.data);
 
         this.updateProduct({
-            images: this.state.images
+            mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
+            profileImages: lodash.map(this.state.profileImages, (image) => {
+                console.log("console onUploadComplete : image", image);
+
+                return image._id;
+            })
+        }, {
+            tags: this.props.product.tags,
+            profileImages: this.oldProfileImages,
+            mainProfileImage: this.oldMainProfileImage
         });
     }
 
     onUploaderImagesLoad(images) {
-        let newState = {},
-            currentImages = this.state.images || [];
+        let profileImages = this.state.profileImages.concat(images);
 
-        if((!currentImages || !currentImages.length) && images && images.length) {
-            newState.mainImage = images[0];
-        }
-
-        newState.images = currentImages.concat(images);
-
-        this.setState(newState);
+        this.setState({
+            profileImages,
+            mainProfileImage: this.state.mainProfileImage || profileImages[0]
+        }, () => {
+            this.flow.upload();
+        });
     }
 
-    selectMainImage(image) {
-        this.setState({mainImage: image});
+    selectMainProfileImage(image) {
+        this.updateProduct({
+            mainProfileImage: image._id,
+        }).then(() => {
+            this.setState({mainProfileImage: image});
+        });
     }
 
-    async updateProduct(data) {
+    async updateProduct(data, oldData) {
         let productResponse,
-            productId = lodash.get(this.state, "product.id"),
+            productId = lodash.get(this.props, "product._id"),
             logger = Logger.create("onUploadComplete");
+
+        if(!productId){return;}
 
         logger.info("enter", data);
 
         // Update product.
         try {
-            productResponse = await Redux.dispatch(Product.actions.productUpdate(productId, data));
+            productResponse = await Redux.dispatch(
+                Product.actions.productUpdate(productId, data, {
+                    data: oldData
+                })
+            );
             logger.debug("api productUpdate success", productResponse);
         }
         catch(error) {
@@ -228,10 +281,13 @@ class Component extends React.Component {
     }
 
     render() {
-        let {uid,user} = this.props;
+        let {uid,user,product} = this.props;
         let {items} = this.props.basket;
-        let {initializing,product,editing,saving,images,mainImage,screenSize} = this.state;
+        let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
+        let isOwner = (user && user.roles.indexOf("admin") >= 0) 
+            || (uid && product.brand.owners && product.brand.owners.indexOf(uid) >= 0)
+            || (uid && product.brand.company && product.brand.company.owners && product.brand.company.owners.indexOf(uid) >= 0);
         
         let item = lodash.find(items, (item) => {
             return item.product.nameId == nameId;
@@ -239,7 +295,49 @@ class Component extends React.Component {
 
         return (
             <div className={styles.page}>
-                <div className={styles.banner}></div>
+                {/*<div className={styles.banner}>
+                    <div className={styles.bannerOverlay}></div>
+                    {screenSize != "phone" ? (
+                        <Container>
+                            {product ? (
+                                <Grid>
+                                    <Grid.Cell>
+                                    </Grid.Cell>
+
+                                    <Grid.Cell span={4}>
+                                        <div className={styles.bannerBodyContainer}>
+                                            <div className={styles.bannerBody}>
+                                                <Text scale={1.5}>{product.name}</Text>
+                                            </div>
+                                        </div>
+                                    </Grid.Cell>
+                                </Grid>
+                            ) : (null)}
+                        </Container>
+                    ) : (
+                        null
+                    )}
+
+                    <Container>
+                        {product ? (
+                            <Grid>
+                                <Grid.Cell>
+                                </Grid.Cell>
+
+                                <Grid.Cell span={4}>
+                                    <div className={styles.tabsBodyContainer}>
+                                        <div className={styles.tabsBody}>
+                                            <Tabs bordered={false}>
+                                                <Tabs.Item to={`/item/${nameId}`}>Info</Tabs.Item>
+                                                <Tabs.Item to={`/item/${nameId}/statistics`}>Estatísticas</Tabs.Item>
+                                            </Tabs>
+                                        </div>
+                                    </div>
+                                </Grid.Cell>
+                            </Grid>
+                        ) : (null)}
+                    </Container>
+                </div>*/}
 
                 <div className={styles.mainContent}>
                     <Container>
@@ -250,18 +348,21 @@ class Component extends React.Component {
                                         {item ? <Badge className={styles.badge} count={item.count} borderWidth={8} /> : null}
 
                                         <div className={styles.mainImageContainer}>
-                                            <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
+                                            <Uploader.Main authToken={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
                                                 uploadOnSubmitted={true}
-                                                onFlowInit={this.onFlowInit}
-                                                onUploadSuccess={this.onUploadSuccess}
+                                                onInit={this.onUploaderInit}
+                                                onFileUploadSuccess={this.onFileUploadSuccess}
                                                 onUploadComplete={this.onUploadComplete}
-                                                onSelectMainImage={this.selectMainImage}
-                                                mainImage={mainImage}
+                                                onSelectMainImage={this.selectMainProfileImage}
+                                                mainImage={mainProfileImage}
                                                 onImagesLoad={this.onUploaderImagesLoad}
-                                                images={images}
+                                                images={profileImages}
                                                 defaulImageUrl={placeholderImg}
                                                 showAddMoreButton={true}
-                                                preventUpload={(user && user.roles.indexOf("admin") < 0)}/>
+                                                showSelectMainProfileImageButton={isOwner}
+                                                borderColor="white"
+                                                borderWidth="7px"
+                                                editing={isOwner}/>
 
                                             {/*mainImage ? (
                                                 <div className={styles.mainImage} style={{
@@ -318,64 +419,21 @@ class Component extends React.Component {
                                 
                                 <Grid.Cell span={4}>
                                     <div className={styles.bodyContainer}>
-                                        <Field.Section>
-                                            <Text scale={0.8} color="moody">
-                                                <i18n.Translate text="_CATALOG_ITEM_PAGE_NAME_FIELD_LABEL_" />
-                                            </Text>
-                                            
-                                            <div><Text scale={1.5}>{product.name}</Text></div>
-                                        </Field.Section>
 
-                                        {screenSize == "phone" ? (
-                                            <Field.Section>
-                                                <Text scale={0.8} color="moody">
-                                                    <i18n.Translate text="_CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_" />
-                                                </Text>
-                                                <div className={styles.priceContainerPhone}>
-                                                    <Text scale={2}>
-                                                        <i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} />
-                                                    </Text>
-                                                </div>
-                                                {item ? (
-                                                    <div>
-                                                        <Text scale={0.8} color="#999999">
-                                                            ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={item.count * product.priceValue} /></b> )
-                                                        </Text>
-                                                    </div>
-                                                ) : null}
-                                            </Field.Section>
-                                        ) : null}
+                                        <div className={styles.nameContainer}>
+                                            <Text scale={1.5}>{product.name}</Text>
+                                        </div>
 
-                                        <Field.Section>
-                                            <Form name="description" loading={saving.description} onSubmit={this.onSubmit}>
-                                                <div>
-                                                    <Text scale={0.8} color="moody">
-                                                        <i18n.Translate text="_CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_" />
-                                                    </Text>
+                                        <div className={styles.tabsBodyContainer}>
+                                            <div className={styles.tabsBody}>
+                                                <Tabs bordered={true}>
+                                                    <Tabs.Item to={`/item/${nameId}`}>Info</Tabs.Item>
+                                                    {isOwner?<Tabs.Item to={`/item/${nameId}/statistics`}>Estatísticas</Tabs.Item>:null}
+                                                </Tabs>
+                                            </div>
+                                        </div>
 
-                                                    {(user && user.roles.indexOf("admin") >= 0) || (product.brand.owners && product.brand.owners.indexOf(uid) >= 0) ? (
-                                                        !editing.description ? (
-                                                            <span> • <a style={{fontSize: "0.8em"}} onClick={() => {this.setState({editing: Object.assign(editing, {description: true})});}}><i18n.Translate text="_CATALOG_ITEM_PAGE_EDIT_LABEL_" /></a></span>
-                                                        ) : (
-                                                            <span> • <Button textCase="lower" scale={0.8} type="submit" layout="link"><i18n.Translate text="_CATALOG_ITEM_PAGE_SAVE_LABEL_" /></Button></span>
-                                                        )
-                                                    ) : null}
-                                                </div>
-
-                                                <div>
-                                                    {editing.description ? (
-                                                            <Field.TextArea
-                                                                name="description"
-                                                                rows={2}
-                                                                value={product.description}
-                                                                name="description"
-                                                                scale={1} />
-                                                    ) : (
-                                                        <Text scale={1}>{product.description}</Text>
-                                                    )}
-                                                </div>
-                                            </Form>
-                                        </Field.Section>
+                                        {this.props.children}
                                     </div>
                                 </Grid.Cell>
                             </Grid>

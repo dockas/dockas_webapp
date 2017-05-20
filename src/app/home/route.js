@@ -11,6 +11,7 @@ module.exports = {
         require.ensure([], (require) => {
             cb(null, [
                 require("./catalog/route"),
+                require("./brand/route"),
                 require("./account/route"),
                 require("./orders/route"),
                 require("./checkout/route"),

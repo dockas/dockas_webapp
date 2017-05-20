@@ -18,6 +18,7 @@ import Text from "darch/src/text";
 import Toaster from "darch/src/toaster";
 import {Api,Product} from "common";
 import styles from "./styles";
+import Scroller from "./scroller";
 import PriceModal from "../price_modal";
 
 let Logger = new LoggerFactory("catalog.list", {level: "debug"});
@@ -87,9 +88,6 @@ class Component extends React.Component {
             this.setState({infoModalOpen: true});
         }
 
-        // Retrieve products
-        this.loadProducts();
-
         // Retrieve popular tags
         try {
             let response = await Api.shared.tagFind();
@@ -106,12 +104,37 @@ class Component extends React.Component {
         }
 
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
+
+        this.scroller = new Scroller({
+            onLoad: async (count) => {
+                let {products} = this.props;
+                products = products || [];
+
+                let query = {
+                    limit: count==0||!products.length?30:products.length,
+                    name: {
+                        gt: count==0||!products.length ? 
+                            "#" :
+                            products[products.length-1].name
+                    }
+                };
+
+                if(products.length) {
+                    query.priority = {
+                        lte: products[products.length-1].priority
+                    };
+                }
+
+                await this.loadProducts(query);
+            },
+            offset: 500
+        });
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleWindowResize);
+        this.scroller.destroy();
     }
 
     handleWindowResize() {
@@ -126,14 +149,18 @@ class Component extends React.Component {
         }
     }
 
-    async loadProducts(query) {
+    async loadProducts(query, {isSearch=false, concat=true}={}) {
         let logger = Logger.create("loadProducts");
         logger.info("enter", query);
 
-        this.setState({searchLoading: true});
+        this.setState({
+            searchLoading: isSearch,
+            productsLoading: !isSearch
+        });
 
         let mergedQuery = lodash.assign({}, query, {
-            populate: ["tags","images","brand"]
+            sort: {"priority": -1, "name": 1},
+            populate: ["tags","profileImages","brand","brand.company"]
         });
 
         if(lodash.isEmpty(mergedQuery.name)){
@@ -147,14 +174,17 @@ class Component extends React.Component {
         // Retrieve products
         try {
             await Redux.dispatch(
-                Product.actions.productFind(mergedQuery)
+                Product.actions.productFind(mergedQuery, {concat})
             );
         }
         catch(error) {
             logger.error("product actions find error", error);
         }
         
-        this.setState({searchLoading: false});
+        this.setState({
+            searchLoading: false,
+            productsLoading: false
+        });
     }
 
     onInfoModalDismiss() {
@@ -194,15 +224,23 @@ class Component extends React.Component {
         let logger = Logger.create("onSearchFormSubmit");
         logger.info("enter", data);
 
-        let query = {tags: lodash.get(this.props,"productsQuery.tags")};
+        let {productsQuery} = this.props;
+        let query = lodash.cloneDeep(productsQuery);
+        query.limit = 30;
+
+        this.searchName = data.name;
 
         if(!lodash.isEmpty(data.name)) {
             query.name = data.name;
+            delete query.priority;
 
             mixpanel.track("product searched by name", {name: data.name});
         }
+        else {
+            query.name = {gte: "#"};
+        }
 
-        this.loadProducts(query);
+        this.loadProducts(query,{isSearch:true, concat: false});
     }
 
     onSearchTagsChange(values) {
@@ -214,10 +252,13 @@ class Component extends React.Component {
 
             this.setState({selectedTags: values});
 
-            let query = {name: lodash.get(this.props,"productsQuery.name")};
+            let {productsQuery} = this.props;
+            let query = lodash.cloneDeep(productsQuery);
+            query.limit = 30;
 
             if(values && values.length) {
                 query.tags = values;
+                query.name = this.searchName || query.name;
 
                 // Send mixpanel event.
                 for(let tagValue of values) {
@@ -230,8 +271,9 @@ class Component extends React.Component {
                     }
                 }
             }
+            else {delete query.tags;}
 
-            this.loadProducts(query);
+            this.loadProducts(query,{isSearch:true, concat: false});
         }
     }
 
@@ -310,12 +352,12 @@ class Component extends React.Component {
     render() {
         let {products,user} = this.props;
         let {listName} = this.props.basket;
-        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading} = this.state;
+        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading} = this.state;
 
         return (
             <div className={styles.page}>
                 <Container>
-                    <div className={styles.searchContainer}>
+                   <div className={styles.searchContainer}>
                         <Grid noGap={true}>
                             <Grid.Cell span={1}>
                                 <Grid noGap={false}>
@@ -354,7 +396,7 @@ class Component extends React.Component {
                                     {/*this.state.searchLoading ? (
                                         <Grid.Cell>
                                             <div className={classNames([styles.fieldContainer,styles.searchLoadingContainer])}>
-                                                    <Spinner.CircSide color="moody" />
+                                                <Spinner.CircSide color="moody" />
                                             </div>
                                         </Grid.Cell>
                                     ) : <span></span>*/}
@@ -420,10 +462,14 @@ class Component extends React.Component {
                                     </Grid.Cell>
                                 );
                             })
-                        ) : (
-                            <span>Loading ...</span>
-                        )}
+                        ) : null}
                     </Grid>
+
+                    {productsLoading ? (
+                        <div className={styles.loadingContainer}>
+                            <Spinner.CircSide color="moody" scale={1.5} />
+                        </div>
+                    ) : null}
                 </Container>
 
                 <Modal open={this.state.createListModalOpen} onDismiss={this.onCreateListModalDismiss}>

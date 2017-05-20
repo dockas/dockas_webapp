@@ -115,19 +115,19 @@ class Component extends React.Component {
         logger.info("enter", {fileData, fid});
 
         //this.data.mainImage = fileData._id;
-        this.data.images = this.data.images || [];
-        this.data.images.push(fileData._id);
+        this.data.profileImages = this.data.profileImages || [];
+        this.data.profileImages.push(fileData._id);
 
-        if(lodash.get(this.state, "mainImage.id") == fid) {
-            this.data.mainImage = fileData._id;
+        if(lodash.get(this.state, "mainProfileImage.id") == fid) {
+            this.data.mainProfileImage = fileData._id;
         }
 
         // Update images
-        /*let idx = lodash.findIndex(this.state.images, (image) => {
+        /*let idx = lodash.findIndex(this.state.profileImages, (image) => {
             return image.id = fid;
         });
 
-        let newImages = this.state.images;
+        let newImages = this.state.profileImages;
 
         if(idx >= 0 && newImages.length && idx < newImages.length) {
             newImages.splice(idx, 1, {
@@ -136,7 +136,7 @@ class Component extends React.Component {
             });
         }
 
-        this.setState({images: newImages});*/
+        this.setState({profileImages: newImages});*/
 
         // Handle creation of new tags.
         /*let promises = [];
@@ -378,21 +378,21 @@ class Component extends React.Component {
         console.log(["onUploaderImagesLoad", images]);
 
         let newState = {},
-            currentImages = this.state.images || [];
+            currentImages = this.state.profileImages || [];
 
         if((!currentImages || !currentImages.length) && images && images.length) {
-            newState.mainImage = images[0];
+            newState.mainProfileImage = images[0];
         }
 
-        newState.images = currentImages.concat(images);
+        newState.profileImages = currentImages.concat(images);
 
-        console.log(["onUploaderImagesLoad concated", newState.images]);
+        console.log(["onUploaderImagesLoad concated", newState.profileImages]);
 
         this.setState(newState);
     }
 
-    selectMainImage(image) {
-        this.setState({mainImage: image});
+    selectMainProfileImage(image) {
+        this.setState({mainProfileImage: image});
     }
 
     onCreateBrand(value) {
@@ -445,6 +445,19 @@ class Component extends React.Component {
                         break;
                     }
 
+                    case "companies": {
+                        try {
+                            let result = await Api.shared.companyCreateFromCSV({csv: csvStr});
+                            logger.info("api companyCreateFromCSV success", result);
+
+                            Redux.dispatch(Toaster.actions.push("success", "_COMPANIES_CREATE_SUCCESS_"));
+                        }
+                        catch(error) {
+                            logger.error("api companyCreateFromCSV error", error);
+                        }
+                        break;
+                    }
+
                     case "tags": {
                         try {
                             let result = await Api.shared.tagCreateFromCSV({csv: csvStr});
@@ -490,7 +503,7 @@ class Component extends React.Component {
 
                         <div style={{float: "right"}}>
                             <span className={styles.fileInputButton}>
-                                <label style={{fontSize: "18px"}} htmlFor="productCSV">CSV</label>
+                                <label style={{fontSize: "18px"}} htmlFor="productCSV">CSV Produtos</label>
                                 <input name="productCSV" id="productCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("products")} style={inputFileStyle} />
                             </span>
                         </div>
@@ -508,14 +521,14 @@ class Component extends React.Component {
                     <Grid>
                         <Grid.Cell>
                             {this.state.authToken ? (
-                                <Uploader token={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
+                                <Uploader.Main token={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
                                     onFlowInit={this.onFlowInit}
                                     onUploadSuccess={this.onUploadSuccess}
                                     onUploadComplete={this.onUploadComplete}
-                                    onSelectMainImage={this.selectMainImage}
-                                    mainImage={this.state.mainImage}
+                                    onSelectMainImage={this.selectMainProfileImage}
+                                    mainImage={this.state.mainProfileImage}
                                     onImagesLoad={this.onUploaderImagesLoad}
-                                    images={this.state.images}
+                                    images={this.state.profileImages}
                                     showAddMoreButton={false}/>
                             ) : null}
 
@@ -580,8 +593,15 @@ class Component extends React.Component {
 
                                             <div style={{float: "right"}}>
                                                 <span className={styles.fileInputButton}>
-                                                    <label htmlFor="brandCSV">CSV</label>
+                                                    <label htmlFor="brandCSV">CSV Marcas</label>
                                                     <input name="brandCSV" id="brandCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("brands")} style={inputFileStyle} />
+                                                </span>
+
+                                                <span className={styles.separator}>•</span>
+
+                                                <span className={styles.fileInputButton}>
+                                                    <label htmlFor="companyCSV">CSV Empresas</label>
+                                                    <input name="companyCSV" id="companyCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("companies")} style={inputFileStyle} />
                                                 </span>
                                             </div>
                                         </Text>
@@ -692,7 +712,7 @@ class Component extends React.Component {
                                                 <span style={{margin: "0px 5px"}}>•</span>
 
                                                 <span className={styles.fileInputButton}>
-                                                    <label htmlFor="tagCSV">CSV</label>
+                                                    <label htmlFor="tagCSV">CSV Tags</label>
                                                     <input name="tagCSV" id="tagCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("tags")} style={inputFileStyle} />
                                                 </span>
                                             </div>

@@ -11,7 +11,7 @@ import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
-import {Api,User,Socket,Product,Basket,Order,Alert,Location} from "common";
+import {Api,User,Socket,Product,Basket,Order,Alert,Location,Brand} from "common";
 
 let Logger = new LoggerFactory("main");
 
@@ -59,6 +59,7 @@ Form.registerValidator({
         order: Order.reducer,
         alert: Alert.reducer,
         location: Location.reducer,
+        brand: Brand.reducer,
 
         adminOrders: require("app/home/admin/orders/reducer")
     }, {shared: true});
@@ -78,7 +79,9 @@ Form.registerValidator({
 
     const routes = (
         <Provider store={Redux.shared.store}>
-            <Router history={history} routes={rootRoute} />
+            <Router onUpdate={() => {
+                window.scrollTo(0, 0);
+            }} history={history} routes={rootRoute} />
         </Provider>
     );
 

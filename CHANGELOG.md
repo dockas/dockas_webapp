@@ -50,3 +50,9 @@ ENH : Add image placeholderPath to default config.
 FEA : Enable to create tags,brands and products from a CSV file in product create page.
 BUG : Fix a bug when product has no images at all in catalog item page.
 ENH : Show placeholder image in product card component when there is no mainImage.
+FEA : Create the brand detail page with banner.
+ENH : Remove banner from product detail page.
+ENH : Add CSV to create companies in product create page.
+ENH : Change all lower/upper range fields to new gt/lt/gte/lte.
+ENH : Add empty statistics route to product detail page and to brand detail page (visible only to brand/company owners).
+FEA : Add infinite scroll to catalog list page.

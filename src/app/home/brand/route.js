@@ -1,6 +1,6 @@
 module.exports = {
-    path: "item/:id",
-    
+    path: "brand",
+
     getComponent(nextState, cb) {
         require.ensure([], (require) => {
             cb(null, require("./page"));
@@ -10,15 +10,14 @@ module.exports = {
     getChildRoutes(partialNextState, cb) {
         require.ensure([], (require) => {
             cb(null, [
-                require("./info/route"),
-                require("./statistics/route")
+                require("./detail/route")
             ]);
         });
-    },
+    }/*,
 
     getIndexRoute(partialNextState, cb) {
         require.ensure([], (require) => {
-            cb(null, require("./info/route"));
+            cb(null, require("./list/route"));
         });
-    }
+    }*/
 };

@@ -70,8 +70,8 @@ class Component extends React.Component {
                 "delivering"
             ],
             createdAt: {
-                lower: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
-                upper: moment().day("Friday").endOf("day").toISOString() // to next friday
+                gte: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
+                lte: moment().day("Friday").endOf("day").toISOString() // to next friday
             }
         }));
     }
@@ -225,8 +225,8 @@ class Component extends React.Component {
         }
         else {
             query.createdAt = {
-                lower: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
-                upper: moment().day("Friday").endOf("day").toISOString() // to next friday
+                gte: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
+                lte: moment().day("Friday").endOf("day").toISOString() // to next friday
             };
         }
 

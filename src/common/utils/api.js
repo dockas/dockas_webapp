@@ -209,7 +209,31 @@ export default class Api {
         return this.request("GET", "brand", query, opts);
     }
 
+    brandFindByNameId(nameId, query, opts) {
+        return this.request("GET", `brand/nameId/${nameId}`, query, opts);
+    }
+
     brandUpdate(id, data, opts) {
         return this.request("PUT", `brand/${id}`, data, opts);
+    }
+
+    companyCreate(data, opts) {
+        return this.request("POST", "company", data, opts);
+    }
+
+    companyCreateFromCSV(data, opts) {
+        return this.request("POST", "company/csv", data, opts);
+    }
+
+    companyFind(query, opts) {
+        return this.request("GET", "company", query, opts);
+    }
+
+    companyFindByNameId(nameId, query, opts) {
+        return this.request("GET", `company/nameId/${nameId}`, query, opts);
+    }
+
+    companyUpdate(id, data, opts) {
+        return this.request("PUT", `company/${id}`, data, opts);
     }
 }

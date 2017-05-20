@@ -18,6 +18,7 @@ module.exports = {
         images: [
             "./src/assets/images/favicon.png",
             "./src/assets/images/logo_400x88.png",
+            "./src/assets/images/background.jpg"
         ],
         i18n: ["./src/assets/i18n/**/*"]
     },
