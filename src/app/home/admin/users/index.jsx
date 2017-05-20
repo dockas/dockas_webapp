@@ -56,7 +56,7 @@ class Component extends React.Component {
 
         let findResponse = await Api.shared.userFind();
 
-        console.log(["USERS", findResponse.results]);
+        //console.log(["USERS", findResponse.results]);
 
         this.setState({
             users: findResponse.results
@@ -65,7 +65,7 @@ class Component extends React.Component {
 
     onSetRoleButtonClicked(user) {
         return () => {
-            console.log(["CHANGE ROLE USER", user]);
+            //console.log(["CHANGE ROLE USER", user]);
             this.setState({
                 changeRoleModalOpen: true,
                 changeRoleUser: user,
@@ -100,7 +100,7 @@ class Component extends React.Component {
     render() {
         let role = lodash.get(this.state, "changeRoleUserRole");
 
-        console.log(["THE ROLE", role, this.userRolesOptions]);
+        //console.log(["THE ROLE", role, this.userRolesOptions]);
 
         return (
             <div>

@@ -117,7 +117,7 @@ class Component extends React.Component {
         let {pathname} = this.props.location;
         let {screenSize} = this.state;
 
-        console.log("PATHNAME", pathname);
+        //console.log("PATHNAME", pathname);
 
         return (
             <div className={styles.page}>

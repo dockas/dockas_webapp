@@ -177,14 +177,14 @@ class Component extends React.Component {
         let logger = Logger.create("onFileUploadSuccess");
         logger.info("enter", {fileData, fid});
 
-        console.log(["console onFileUploadSuccess", fileData, fid]);
+        //console.log(["console onFileUploadSuccess", fileData, fid]);
 
         // Update images
         let idx = lodash.findIndex(this.state.profileImages, (image) => {
             return image._id == fid;
         });
 
-        console.log(["console onFileUploadSuccess : idx", idx]);
+        //console.log(["console onFileUploadSuccess : idx", idx]);
 
         let profileImages = this.state.profileImages;
         let mainProfileImage = this.state.mainProfileImage;
@@ -215,7 +215,7 @@ class Component extends React.Component {
         this.updateBrand({
             mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
             profileImages: lodash.map(this.state.profileImages, (image) => {
-                console.log("console onUploadComplete : image", image);
+                //console.log("console onUploadComplete : image", image);
 
                 return image._id;
             })

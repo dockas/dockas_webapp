@@ -37,8 +37,6 @@ export default class Component extends React.Component {
         let env = process.env.NODE_ENV != "production" ? "sandbox" : "production";
         let {value, currency, onComplete} = this.props;
 
-        console.log("config", config);
-
         paypal.Button.render({
 
             // Set your environment

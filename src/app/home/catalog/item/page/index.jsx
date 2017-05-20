@@ -178,14 +178,14 @@ class Component extends React.Component {
         let logger = Logger.create("onFileUploadSuccess");
         logger.info("enter", {fileData, fid});
 
-        console.log(["console onFileUploadSuccess", fileData, fid]);
+        //console.log(["console onFileUploadSuccess", fileData, fid]);
 
         // Update images
         let idx = lodash.findIndex(this.state.profileImages, (image) => {
             return image._id == fid;
         });
 
-        console.log(["console onFileUploadSuccess : idx", idx]);
+        //console.log(["console onFileUploadSuccess : idx", idx]);
 
         let profileImages = this.oldProfileImages = this.state.profileImages;
         let mainProfileImage = this.oldMainProfileImage = this.state.mainProfileImage;
@@ -193,7 +193,7 @@ class Component extends React.Component {
         logger.debug("idx", {idx});
 
         if(idx >= 0 && profileImages.length && idx < profileImages.length) {
-            console.log(["console onFileUploadSuccess : let's update profile images"]);
+            //console.log(["console onFileUploadSuccess : let's update profile images"]);
 
             let oldImage = profileImages[idx];
             let newImage = {
@@ -201,17 +201,17 @@ class Component extends React.Component {
                 url: `//${config.hostnames.file}/images/${fileData.path}`
             };
 
-            console.log(["console onUploadSuccess : oldImage, newImage", oldImage, newImage]);
+            //console.log(["console onUploadSuccess : oldImage, newImage", oldImage, newImage]);
 
             if(oldImage._id == mainProfileImage._id) {
                 mainProfileImage = newImage;
             }
 
-            console.log(["console onUploadSuccess : images before splice", lodash.map(profileImages, "_id")]);
+            //console.log(["console onUploadSuccess : images before splice", lodash.map(profileImages, "_id")]);
 
             profileImages.splice(idx, 1, newImage);
 
-            console.log(["console onUploadSuccess : images aftre splice", lodash.map(profileImages, "_id")]);
+            //console.log(["console onUploadSuccess : images aftre splice", lodash.map(profileImages, "_id")]);
         }
 
         this.setState({mainProfileImage, profileImages});
@@ -220,14 +220,14 @@ class Component extends React.Component {
     async onUploadComplete() {
         let logger = Logger.create("onUploadComplete");
 
-        console.log(["console onUploadComplete", this.state]);
+        //console.log(["console onUploadComplete", this.state]);
 
         logger.info("enter", this.data);
 
         this.updateProduct({
             mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
             profileImages: lodash.map(this.state.profileImages, (image) => {
-                console.log("console onUploadComplete : image", image);
+                //console.log("console onUploadComplete : image", image);
 
                 return image._id;
             })

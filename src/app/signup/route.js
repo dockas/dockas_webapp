@@ -21,7 +21,7 @@ module.exports = {
             .then((response) => {
                 let invitation = response.result;
 
-                console.log("invitation response", invitation);
+                //console.log("invitation response", invitation);
 
                 if(invitation.status == "closed") {
                     Redux.dispatch(Toaster.actions.push("danger", "_ERROR_INVITATION_CLOSED_"));
@@ -33,8 +33,8 @@ module.exports = {
 
                 cb();
             })
-            .catch((error) => {
-                console.error("invitation response error", error);
+            .catch(() => {
+                //console.error("invitation response error", error);
                 replace("/invitation");
                 cb();
             });

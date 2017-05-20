@@ -149,6 +149,7 @@ dictionary:
     _CHECKOUT_STEP_REVIEW_COUNT_TH_: qtd.
     _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: total
     _CHECKOUT_STEP_REVIEW_COUPON_ALREADY_APPLIED_TOAST_MESSAGE_: cupom já aplicado
+    _CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_: continuar
     
     _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
     _NEW_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
@@ -165,6 +166,7 @@ dictionary:
     _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
     _NEW_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
     _NEW_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
+    _NEW_ADDRESS_MODAL_PHONE_FIELD_LABEL_: telefone de contato
 
     _CHECKOUT_STEP_PAYMENT_TITLE_: Realizar o pagamento
     _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
@@ -294,6 +296,7 @@ dictionary:
     _BASKET_CARD_PAY_BUTTON_TEXT_: Continuar
     _BASKET_CARD_FINISH_BUTTON_TEXT_: Encerrar
     _BASKET_CARD_INVITATION_BUTTON_TEXT_: quero comprar
+    _BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_: Mínimo de R$ {{minOrderTotalPrice}}
 
     # Field errors
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
@@ -301,6 +304,7 @@ dictionary:
     _FIELD_ERROR_DIGITS_: Apenas números são permitidos neste campo.
     _FIELD_ERROR_COLOR_: Digite uma cor válida
     _FIELD_ERROR_ID_: Apenas os caracteres a-z (sem acentos), dígitos 0-9 e hífen (-) são permitidos.
+    _FIELD_ERROR_PHONE_: Insira um telefone válido.
 
     # Error messages
     _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.

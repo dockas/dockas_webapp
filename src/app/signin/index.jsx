@@ -36,7 +36,7 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        console.log("OIIII", this.props.location);
+        //console.log("OIIII", this.props.location);
     }
 
     /**

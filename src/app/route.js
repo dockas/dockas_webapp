@@ -1,6 +1,7 @@
 import {LoggerFactory,Redux} from "darch/src/utils";
 import i18n from "darch/src/i18n";
-import {User,Basket} from "common";
+import config from "config";
+import {Api,User,Basket} from "common";
 
 let Logger = new LoggerFactory("app.route");
 
@@ -15,7 +16,12 @@ module.exports = {
         var _initPromise = Promise.all([
             Redux.dispatch(i18n.actions.i18NInit("pt-br")),
             Redux.dispatch(User.actions.userInit()),
-            Redux.dispatch(Basket.actions.basketInit())
+            Redux.dispatch(Basket.actions.basketInit()),
+            Api.shared.configGet().then((sharedConfig) => {
+                //console.log("sharedConfig got", sharedConfig);
+
+                config.shared = sharedConfig;
+            })
         ]);
 
         // Fire callback anyway

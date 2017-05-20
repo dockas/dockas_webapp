@@ -271,7 +271,7 @@ class Component extends React.Component {
         let randomIdx = Math.floor(Math.random() * (max - min)) + min;
         let randomColor = this.tagColors[randomIdx];
 
-        console.log(["RANDOM COLOR", min, max, randomIdx, randomColor]);
+        //console.log(["RANDOM COLOR", min, max, randomIdx, randomColor]);
 
         this.setState({
             newTagModalOpen: true,
@@ -375,7 +375,7 @@ class Component extends React.Component {
     }
 
     onUploaderImagesLoad(images) {
-        console.log(["onUploaderImagesLoad", images]);
+        //console.log(["onUploaderImagesLoad", images]);
 
         let newState = {},
             currentImages = this.state.profileImages || [];
@@ -386,7 +386,7 @@ class Component extends React.Component {
 
         newState.profileImages = currentImages.concat(images);
 
-        console.log(["onUploaderImagesLoad concated", newState.profileImages]);
+        //console.log(["onUploaderImagesLoad concated", newState.profileImages]);
 
         this.setState(newState);
     }
@@ -411,7 +411,7 @@ class Component extends React.Component {
 
             let files = evt.target.files;
 
-            console.log(["file", files]);
+            //console.log(["file", files]);
 
             var reader = new FileReader();
             reader.onload = async () => {
@@ -821,7 +821,7 @@ class Component extends React.Component {
                                             </Text>
                                             <div>
                                                 {this.tagColors.map((color) => {
-                                                    console.log(["SELECTED COLOR", color, this.state.selectedTagColor]);
+                                                    //console.log(["SELECTED COLOR", color, this.state.selectedTagColor]);
                                                     return (<a key={color} onClick={this.selectTagColor(color)} className={classNames([styles.colorBox, (this.state.selectedTagColor == color ? styles.colorBoxActive : "")])} style={{backgroundColor: color}}></a>);
                                                 })}
                                             </div>

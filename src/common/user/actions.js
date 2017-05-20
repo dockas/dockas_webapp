@@ -20,7 +20,7 @@ export default createActions({
             logger.debug("Api userMe success", {userMeResponse});
 
             let authToken = await Api.shared.http.getAuthToken();
-            console.log("auth token", authToken);
+            //console.log("auth token", authToken);
             Socket.shared.sign(authToken);
 
             // Count new alerts.

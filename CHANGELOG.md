@@ -57,3 +57,7 @@ ENH : Change all lower/upper range fields to new gt/lt/gte/lte.
 ENH : Add empty statistics route to product detail page and to brand detail page (visible only to brand/company owners).
 FEA : Add infinite scroll to catalog list page.
 ENH : Add data option to productUpdate action that enables force setting of some product fields.
+ENH : Remove all console log calls.
+ENH : Retrieve shared config from api.
+FEA : Prevent user to checkout bellow a minimum price.
+ENH : Add contact phone to address data and groupe all phone in user profile.

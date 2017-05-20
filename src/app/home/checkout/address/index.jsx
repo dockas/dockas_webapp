@@ -111,6 +111,7 @@ class Component extends React.Component {
         this.setState({newAddressModalLoading: true});
 
         data.postal_code = `${data.postal_code}`;
+        data.phone = `${data.phone}`;
 
         Redux.dispatch(
             User.actions.userAddAddress(data)
@@ -150,6 +151,7 @@ class Component extends React.Component {
     render() {
         let {newAddressModalOpen,newAddressModalLoading,selectedAddress,screenSize} = this.state;
         let {user} = this.props;
+        let phone = user.phones && user.phones.length ? parseInt(user.phones[0]) : undefined;
 
         return (
             <div className={styles.page}>
@@ -329,6 +331,32 @@ class Component extends React.Component {
                                                 for="city"
                                                 validator="$required"
                                                 message="_FIELD_ERROR_REQUIRED_"/>
+                                        </Field.Section>
+                                    </Grid.Cell>
+                                </Grid>
+                            </Field.Section>
+
+                            <Field.Section>
+                                <Grid>
+                                    <Grid.Cell>
+                                        <Field.Section>
+                                            <div className={styles.label}>
+                                                <i18n.Translate text="_NEW_ADDRESS_MODAL_PHONE_FIELD_LABEL_" />
+                                            </div>
+                                            <Field.Number
+                                                name="phone"
+                                                format="(##)#####-####"
+                                                value={phone}
+                                                mask="_"
+                                                validators="$required|phone" />
+                                            <Field.Error
+                                                for="phone"
+                                                validator="$required"
+                                                message="_FIELD_ERROR_REQUIRED_"/>
+                                            <Field.Error
+                                                for="phone"
+                                                validator="phone"
+                                                message="_FIELD_ERROR_PHONE_"/>
                                         </Field.Section>
                                     </Grid.Cell>
                                 </Grid>

@@ -23,6 +23,16 @@ Form.registerValidator({
     }
 });
 
+// Phone form validator
+Form.registerValidator({
+    name: "phone",
+    validate: (value) => {
+        if(!value){return true;}
+
+        return (/^\d{10,}$/).test(`${value}`);
+    }
+});
+
 /****************************************************************
 * App Bootstrap
 ****************************************************************/
@@ -45,7 +55,7 @@ Form.registerValidator({
     });*/
 
     Socket.shared.on("sign:success", () => {
-        console.info("sign:success");
+        //console.info("sign:success");
     });
 
     // Create redux store with app reducers

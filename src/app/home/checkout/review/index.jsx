@@ -11,6 +11,7 @@ import Grid from "darch/src/grid";
 import Text from "darch/src/text";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
+import numberUtils from "darch/src/field/number/utils";
 import Toaster from "darch/src/toaster";
 import Label from "darch/src/label";
 import {Basket} from "common";
@@ -27,7 +28,8 @@ let Logger = new LoggerFactory("checkout.review");
 function mapStateToProps(state) {
     return {
         user: state.user.profiles[state.user.uid],
-        basket: state.basket
+        basket: state.basket,
+        spec: state.i18n.spec
     };
 }
 
@@ -126,12 +128,16 @@ class Component extends React.Component {
     }
 
     render() {
+        let {minOrderTotalPrice} = config.shared;
         let {screenSize} = this.state;
-        let {totalPrice,totalDiscount,coupons} = this.props.basket;
+        let {basket,spec} = this.props;
+        let {totalPrice,totalDiscount,coupons} = basket;
         let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
         let totalPriceWithDiscount = totalPrice - appliedDiscount;
 
-        console.log(["screen size", screenSize]);
+        let priceLowerThanMin = (totalPrice < minOrderTotalPrice);
+
+        //console.log(["screen size", screenSize]);
 
         return (
             <div className={styles.page}>
@@ -250,7 +256,16 @@ class Component extends React.Component {
                                         </div>
 
                                         <div className={styles.buttonContainer}>
-                                            <Button block={true} color="success" onClick={this.onBasketButtonClick}>Continuar</Button>
+                                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={priceLowerThanMin}>
+                                                {!priceLowerThanMin ? (
+                                                    <i18n.Translate text="_CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_" />
+                                                ) : (
+                                                    <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
+                                                        minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice).value,
+                                                        diff: (minOrderTotalPrice - totalPrice)
+                                                    }} />
+                                                )}
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>

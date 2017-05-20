@@ -236,4 +236,8 @@ export default class Api {
     companyUpdate(id, data, opts) {
         return this.request("PUT", `company/${id}`, data, opts);
     }
+
+    configGet(opts) {
+        return this.request("GET", "config", null, opts);
+    }
 }

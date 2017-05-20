@@ -136,7 +136,7 @@ class Component extends React.Component {
                                 return (
                                     <tr key={order._id}>
                                         <td>{order.user.fullName}</td>
-                                        <td>{address.address}, {address.number} {address.complement||""} - {address.neighborhood}</td>
+                                        <td>{address.address}, {address.number} {address.complement||""} - {address.neighborhood} (<u>{address.phone}</u>)</td>
                                         <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
                                         <td>
                                             <i18n.Moment date={order.createdAt} />
@@ -165,10 +165,10 @@ class Component extends React.Component {
         let products = {};
 
         for(let order of this.props.orders||[]) {
-            console.log(["order",order]);
+            //console.log(["order",order]);
 
             for(let item of order.items) {
-                console.log(["item",item]);
+                //console.log(["item",item]);
 
                 products[item.product._id] = products[item.product._id] || {
                     count: 0,

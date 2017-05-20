@@ -4,8 +4,10 @@ import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import lodash from "lodash";
+import config from "config";
 import {LoggerFactory,Style} from "darch/src/utils";
 import Button from "darch/src/button";
+import numberUtils from "darch/src/field/number/utils";
 //import Label from "darch/src/label";
 //import Modal from "darch/src/modal";
 import i18n from "darch/src/i18n";
@@ -22,7 +24,8 @@ let Logger = new LoggerFactory("common.product.card");
 function mapStateToProps(state) {
     return {
         uid: state.user.uid,
-        basket: state.basket
+        basket: state.basket,
+        spec: state.i18n.spec
     };
 }
 
@@ -102,11 +105,14 @@ class Component extends React.Component {
      * This function is responsible for generating the component's view.
      */
     render() {
+        let {minOrderTotalPrice} = config.shared;
         let {screenSize} = this.state;
         let {items,totalPrice,totalDiscount} = this.props.basket;
-        let {uid,buttonLabel} = this.props;
+        let {uid,buttonLabel,spec} = this.props;
         let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
         let totalPriceWithDiscount = totalPrice - appliedDiscount;
+
+        let priceLowerThanMin = (totalPrice < minOrderTotalPrice);
 
         return uid ? (
             <div>
@@ -130,8 +136,15 @@ class Component extends React.Component {
                     </div>
 
                     <div>
-                        <Button scale={screenSize != "phone" ? 0.8 : 1} block={true} color="success" onClick={this.props.onClick} disabled={!lodash.size(items) || this.props.disabled}>
-                            <i18n.Translate text={buttonLabel} />
+                        <Button scale={screenSize != "phone" ? 0.8 : 1} block={true} color="success" onClick={this.props.onClick} disabled={priceLowerThanMin || !lodash.size(items) || this.props.disabled}>
+                            {!priceLowerThanMin ? (
+                                <i18n.Translate text={buttonLabel} />
+                            ) : (
+                                <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
+                                    minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice).value,
+                                    diff: (minOrderTotalPrice - totalPrice)
+                                }} />
+                            )}
                         </Button>
                     </div>
                 </div>

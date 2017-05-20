@@ -72,7 +72,7 @@ class Component extends React.Component {
             }
         };
 
-        console.log("PAYMENT COMPLETE 1", order);
+        //console.log("PAYMENT COMPLETE 1", order);
 
         // Add items to order
         for(let key of Object.keys(items)) {
@@ -83,7 +83,7 @@ class Component extends React.Component {
             });
         }
 
-        console.log("PAYMENT COMPLETE 2", order);
+        //console.log("PAYMENT COMPLETE 2", order);
 
         // Create order
         try {

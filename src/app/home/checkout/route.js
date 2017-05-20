@@ -1,10 +1,10 @@
-import basketHasItemsPol from "policies/basket_has_items";
+import canCheckoutPol from "policies/can_checkout";
 
 module.exports = {
     path: "checkout",
 
     onEnter(nextState, replace, cb) {
-        basketHasItemsPol(nextState,replace).then(cb);
+        canCheckoutPol(nextState,replace).then(cb);
     },
     
     getComponent(nextState, cb) {
