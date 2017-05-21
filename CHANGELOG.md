@@ -66,3 +66,5 @@ ENH : Add first priceGroups item in product card component (alongside price).
 BUG : Correct a bug with tags change and empty search field setting old query name.
 BUG : Correct a bug with access product.brand when product was not loaded yet in catalog item page.
 ENH : Better increment of scroller load count.
+BUG : Correct a bug with set incorrect limit on products load in catalog list page.
+BUG : Correct a bug with tags wraping to multiple lines in product card.

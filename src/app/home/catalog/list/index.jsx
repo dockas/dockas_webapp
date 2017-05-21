@@ -112,9 +112,9 @@ class Component extends React.Component {
                 products = products || [];
 
                 let query = {
-                    limit: count===1||!products.length?30:products.length,
+                    limit: count===1&&products.length?products.length:30,
                     name: {
-                        gt: count===1||!products.length ? 
+                        gt: count===1 ? 
                             "#" :
                             products[products.length-1].name
                     }
