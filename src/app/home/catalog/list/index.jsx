@@ -111,8 +111,10 @@ class Component extends React.Component {
                 let {products} = this.props;
                 products = products || [];
 
+                if(count===1 && products.length) {return;}
+
                 let query = {
-                    limit: count===1&&products.length?products.length:30,
+                    limit: 30,
                     name: {
                         gt: count===1 ? 
                             "#" :

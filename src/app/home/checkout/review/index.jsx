@@ -177,7 +177,7 @@ class Component extends React.Component {
 
                                 <div className={styles.itemsContainer}>
                                     <div className="table-container">
-                                        <table>
+                                        <table className={styles.table}>
                                             <thead>
                                                 <tr>
                                                     <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_" /></th>
@@ -195,7 +195,7 @@ class Component extends React.Component {
 
                                                     return (
                                                         <tr key={item.product._id}>
-                                                            <td>
+                                                            <td className={styles.nameCell}>
                                                                 {mainImage ? (
                                                                     <div className={styles.image} style={{
                                                                         backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
