@@ -27,7 +27,8 @@ export default class Scroller {
 
     async load() {
         this.loading = true;
-        await Promise.resolve(this.onLoad(++this.count));
+        this.count += 1;
+        await Promise.resolve(this.onLoad(this.count));
         this.loading = false;
     }
 
