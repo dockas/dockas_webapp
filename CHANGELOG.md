@@ -64,3 +64,4 @@ ENH : Add contact phone to address data and groupe all phone in user profile.
 ENH : Remove paypal and mapbox keys from config file.
 ENH : Add first priceGroups item in product card component (alongside price).
 BUG : Correct a bug with tags change and empty search field setting old query name.
+BUG : Correct a bug with access product.brand when product was not loaded yet in catalog item page.
