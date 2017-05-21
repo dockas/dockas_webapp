@@ -6,6 +6,7 @@ import {withRouter} from "react-router";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
+import Text from "darch/src/text";
 import placeholderImg from "assets/images/placeholder.png";
 import {Basket} from "common";
 import styles from "./styles";
@@ -189,7 +190,17 @@ class Component extends React.Component {
                 </div>
 
                 <div className={styles.price}>
-                    <i18n.Number prefix="R$" value={data.priceValue} numDecimals={2}/>
+                    <span className={styles.priceValue}><i18n.Number prefix="R$" value={data.priceValue} numDecimals={2}/></span>
+
+                    {data.priceGroups && data.priceGroups.length > 0 ? (
+                        <span style={{marginLeft: "5px"}}>
+                            <Text scale={0.7}>
+                                (<i18n.Number prefix="R$" sufix={data.priceGroups[0].unity} value={data.priceValue * data.priceGroups[0].count} numDecimals={2}/>)
+                            </Text>
+                        </span>
+                    ) : (
+                        null
+                    )}
 
                     {user && user.roles.indexOf("admin") >= 0 ? (
                         <a className={styles.changePriceButton} onClick={this.onChangePriceBtnClicked} title="change price">
