@@ -258,7 +258,7 @@ class Component extends React.Component {
 
             if(values && values.length) {
                 query.tags = values;
-                query.name = this.searchName || query.name;
+                query.name = this.searchName || {gte: "#"};
 
                 // Send mixpanel event.
                 for(let tagValue of values) {
