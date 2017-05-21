@@ -25,11 +25,11 @@ images:
     placeholderPath: placeholder.png
 
 paypal:
-    sandbox: "Ac95bP9cLOVq7YzUbyMNabCBWH3p1frTjzZ74a_a1DH-VFdenOtrrTD2z6qG7FLRFszgFvyu4bWh0NMa"
-    production: "AdgyTk-1bkskjMaVHZeWUzIeCkEBIKr0jsOtQAXDx4rKZoaNcaU8Nq5RAHEzqj_ipfHFDVboeuNtcnyW"
+    sandbox: ""
+    production: ""
 
 mapbox:
-    accessToken: pk.eyJ1IjoiYnJ1bm9zZSIsImEiOiJjaXpoOTRsd3UwMWFxMnhwbG56MTFoNnVqIn0.z8vunE1lGlbIAiW8RSNfYQ
+    accessToken: ""
 
 support:
     - name: Bruno
