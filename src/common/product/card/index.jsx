@@ -7,6 +7,7 @@ import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
 import Text from "darch/src/text";
+import Spinner from "darch/src/spinner";
 import placeholderImg from "assets/images/placeholder.png";
 import {Basket} from "common";
 import styles from "./styles";
@@ -115,18 +116,43 @@ class Component extends React.Component {
         });
     }
 
+    onTagClick(tag) {
+        return (evt) => {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            if(this.state.loadingTag) {return;}
+
+            this.setState({loadingTag: tag});
+
+            Promise.resolve(this.props.onTagClick(tag)).then(() => {
+                this.setState({loadingTag: null});
+            });
+        };
+    }
+
     renderTags() {
         let {data} = this.props;
+        let {loadingTag} = this.state;
         let tags = [];
 
         for(let i = 0; i < data.tags.length && i < 2; i++) {
             let tag = data.tags[i];
+            let color = Style.darkness(tag.color) > 40 ? "#ffffff" : "#000000";
 
             tags.push(
                 <div key={tag._id} className={styles.tag} style={{
                     backgroundColor: tag.color,
-                    color: Style.darkness(tag.color) > 40 ? "#ffffff" : "#000000"
-                }}>{tag.name}</div>
+                    cursor: "pointer",
+                    color: color
+                }} onClick={this.onTagClick(tag)}>
+
+                    {tag == loadingTag ? (
+                        <Spinner.CircSide color={color} />
+                    ) : (
+                        <span>{tag.name}</span>
+                    )}
+                </div>
             );
         }
 

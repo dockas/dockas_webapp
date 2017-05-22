@@ -68,3 +68,8 @@ BUG : Correct a bug with access product.brand when product was not loaded yet in
 ENH : Better increment of scroller load count.
 BUG : Correct a bug with set incorrect limit on products load in catalog list page.
 BUG : Correct a bug with tags wraping to multiple lines in product card.
+BUG : Correct a bug with disalignment os buttons in checkout review page.
+BUG : Correct a bug with loading products twice when there are products already loaded.
+ENH : Set nowrap in product cart price line.
+FEA : Add filter to show only selected products in catalog list. This closes #14.
+ENH : Add tag to tags filter in catalog list page when user click on tag of Product.Card component. This closes #17.

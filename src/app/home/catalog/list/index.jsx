@@ -122,6 +122,14 @@ class Component extends React.Component {
                     }
                 };
 
+                if(this.searchName) {
+                    query.name.regex = this.searchName;
+                }
+
+                if(this.tags) {
+                    query.tags = this.tags;
+                }
+
                 if(products.length) {
                     query.priority = {
                         lte: products[products.length-1].priority
@@ -245,20 +253,25 @@ class Component extends React.Component {
         this.loadProducts(query,{isSearch:true, concat: false});
     }
 
-    onSearchTagsChange(values) {
+    onSearchTagsChange(values, {loadTag=null} = {}) {
         let logger = Logger.create("onSearchTagsChange");
         logger.info("enter", values);
 
         if(!lodash.isEqual(values, this.state.selectedTags)) {
             logger.info("fetching new");
 
-            this.setState({selectedTags: values});
+            this.setState({
+                selectedTags: values,
+                tags: loadTag ? [loadTag] : this.state.tags
+            });
 
             let {productsQuery} = this.props;
             let query = lodash.cloneDeep(productsQuery);
             query.limit = 30;
 
             if(values && values.length) {
+                this.tags = values;
+
                 query.tags = values;
                 query.name = this.searchName || {gte: "#"};
 
@@ -273,10 +286,39 @@ class Component extends React.Component {
                     }
                 }
             }
-            else {delete query.tags;}
+            else {
+                delete query.tags;
+                this.tags = null;
+            }
 
-            this.loadProducts(query,{isSearch:true, concat: false});
+            return this.loadProducts(query,{isSearch:true, concat: false});
         }
+    }
+
+    async showOnlySelected() {
+        let logger = Logger.create("showOnlySelected");
+        logger.info("enter");
+
+        let {filterOnlySelected} = this.state;
+        let newState = {
+            filterOnlySelected: !filterOnlySelected
+        };
+
+        if(filterOnlySelected) {
+            newState.filteredProducts = null;
+        }
+        else {
+            let {items} = this.props.basket;
+            let products = [];
+
+            for(let id of Object.keys(items)) {
+                products.push(items[id].product);
+            }
+
+            newState.filteredProducts = products; 
+        }
+
+        this.setState(newState);
     }
 
     onProductChangePrice(product) {
@@ -354,7 +396,9 @@ class Component extends React.Component {
     render() {
         let {products,user} = this.props;
         let {listName} = this.props.basket;
-        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading} = this.state;
+        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
+
+        products = filteredProducts || products;
 
         return (
             <div className={styles.page}>
@@ -423,7 +467,7 @@ class Component extends React.Component {
                                 <div className={styles.filtersContainer}>
                                     {user ? (
                                         <div className="field-gap">
-                                            <Label scale={0.8} color={filterOnlySelected?"moody":"#eeeeee"} onClick={() => {this.setState({filterOnlySelected: !filterOnlySelected});}}>
+                                            <Label scale={0.8} color={filterOnlySelected?"moody":"#eeeeee"} onClick={this.showOnlySelected}>
                                                 <i18n.Translate text="_CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_" />
                                             </Label>
                                         </div>
@@ -460,7 +504,18 @@ class Component extends React.Component {
                             products.map((product) => {
                                 return (
                                     <Grid.Cell key={product._id} span={2}>
-                                        <Product.Card data={product} onChangePrice={this.onProductChangePrice} />
+                                        <Product.Card data={product} 
+                                            onChangePrice={this.onProductChangePrice}
+                                            onTagClick={(tag) => {
+                                                let values = (this.state.selectedTags||[]).concat([tag._id]);
+                                                let loadTag = {
+                                                    value: tag._id,
+                                                    label: tag.name
+                                                };
+
+                                                return this.onSearchTagsChange(values, {loadTag});
+                                            }}
+                                        />
                                     </Grid.Cell>
                                 );
                             })
