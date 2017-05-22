@@ -73,3 +73,4 @@ BUG : Correct a bug with loading products twice when there are products already 
 ENH : Set nowrap in product cart price line.
 FEA : Add filter to show only selected products in catalog list. This closes #14.
 ENH : Add tag to tags filter in catalog list page when user click on tag of Product.Card component. This closes #17.
+BUG : Correct a bug that allows any user to upload product photos. This closes #27.

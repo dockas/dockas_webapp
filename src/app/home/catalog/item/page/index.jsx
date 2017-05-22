@@ -289,10 +289,8 @@ class Component extends React.Component {
         let {items} = this.props.basket;
         let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
-        let isOwner = (user && user.roles.indexOf("admin") >= 0)
-            || (uid && product && product.brand.owners && product.brand.owners.indexOf(uid) >= 0)
-            || (uid && product && product.brand.company && product.brand.company.owners && product.brand.company.owners.indexOf(uid) >= 0);
-        
+        let isOwner = (user && user.roles.indexOf("admin") >= 0) || !!(uid && product && product.brand.owners && product.brand.owners.indexOf(uid) >= 0) || !!(uid && product && product.brand.company && product.brand.company.owners && product.brand.company.owners.indexOf(uid) >= 0);
+
         let item = lodash.find(items, (item) => {
             return item.product.nameId == nameId;
         });
