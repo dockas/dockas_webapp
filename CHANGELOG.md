@@ -79,3 +79,4 @@ ENH : Replace alert related stuff by notification ones.
 ENH : Handle exhibition of integer product (cents unity) in decimal form.
 ENH : Replace product count field by quantity one.
 FEA : Implement a new checkout payment page with transparent checkout.
+ENH : Remove checkout address step from checkout process (now setled within payment step page).
