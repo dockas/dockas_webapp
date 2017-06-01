@@ -184,7 +184,7 @@ class Component extends React.Component {
                 onMouseLeave={this.onMouseLeave}
                 onClick={this.goToProductDetail}>
                 {item ? (
-                    <Badge className={styles.badge} count={item.count} borderWidth={8} />
+                    <Badge className={styles.badge} count={item.quantity} borderWidth={8} />
                 ) : null}
 
                 <div className={styles.imageContainer}>
@@ -216,12 +216,12 @@ class Component extends React.Component {
                 </div>
 
                 <div className={styles.price}>
-                    <span className={styles.priceValue}><i18n.Number prefix="R$" value={data.priceValue} numDecimals={2}/></span>
+                    <span className={styles.priceValue}><i18n.Number prefix="R$" value={data.priceValue/100} numDecimals={2}/></span>
 
                     {data.priceGroups && data.priceGroups.length > 0 ? (
                         <span style={{marginLeft: "5px"}}>
                             <Text scale={0.7}>
-                                (<i18n.Number prefix="R$" sufix={data.priceGroups[0].unity} value={data.priceValue * data.priceGroups[0].count} numDecimals={2}/>)
+                                (<i18n.Number prefix="R$" sufix={data.priceGroups[0].unity} value={data.priceValue/100 * data.priceGroups[0].quantity} numDecimals={2}/>)
                             </Text>
                         </span>
                     ) : (

@@ -84,7 +84,7 @@ export default class Component extends React.Component {
                                             </td>
 
                                             <td>{product.name}</td>
-                                            <td><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} /></td>
+                                            <td><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue/100} /></td>
                                             <td>{product.creator.fullName}</td>
                                             <td><i18n.Moment date={product.createdAt} /></td>
                                             <td className={styles.actionButtonsContainer}>

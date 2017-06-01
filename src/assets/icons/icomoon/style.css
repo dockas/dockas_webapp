@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?bgzsha');
-  src:  url('fonts/icomoon.eot?bgzsha#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?bgzsha') format('truetype'),
-    url('fonts/icomoon.woff?bgzsha') format('woff'),
-    url('fonts/icomoon.svg?bgzsha#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?4t04v8');
+  src:  url('fonts/icomoon.eot?4t04v8#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?4t04v8') format('truetype'),
+    url('fonts/icomoon.woff?4t04v8') format('woff'),
+    url('fonts/icomoon.svg?4t04v8#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-bank-card:before {
+  content: "\e931";
+}
+.icon-bank-cards:before {
+  content: "\e92b";
+}
+.icon-barcode:before {
+  content: "\e92c";
+}
+.icon-card-amex:before {
+  content: "\e92d";
+}
+.icon-card-discover:before {
+  content: "\e92e";
+}
+.icon-card-mastercard:before {
+  content: "\e92f";
+}
+.icon-card-visa:before {
+  content: "\e930";
+}
 .icon-exit:before {
   content: "\e92a";
 }
@@ -153,4 +174,3 @@
 .icon-circled-thumbs-up:before {
   content: "\e927";
 }
-

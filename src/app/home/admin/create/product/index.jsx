@@ -93,6 +93,7 @@ class Component extends React.Component {
         // Bug with NumberFormat
         // https://github.com/s-yadav/react-number-format/issues/45
         this.data.priceValue = NumberUtils.parseViewToModel(this.props.spec, this.data.priceValue);
+        this.data.priceValue = parseInt((this.data.priceValue * 100).toFixed(0));
 
         // Start uploading photo.
         this.flow.upload();

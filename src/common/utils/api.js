@@ -133,8 +133,16 @@ export default class Api {
         return this.request("POST", "order", data, opts);
     }
 
+    orderCharge(id, data, opts) {
+        return this.request("POST", `order/${id}/charge`, data, opts);
+    }
+
     orderFind(query, opts) {
         return this.request("GET", "order", query, opts);
+    }
+
+    orderFindById(id, opts) {
+        return this.request("GET", `order/${id}`, null, opts);
     }
 
     orderStatusUpdate(id, status, opts) {
@@ -157,20 +165,20 @@ export default class Api {
         return this.request("POST", `invitation/${id}`, null, opts);
     }
 
-    alertCreate(data, opts) {
-        return this.request("POST", "alert", data, opts);
+    notificationCreate(data, opts) {
+        return this.request("POST", "notification", data, opts);
     }
 
-    alertFind(query, opts) {
-        return this.request("GET", "alert", query, opts);
+    notificationFind(query, opts) {
+        return this.request("GET", "notification", query, opts);
     }
 
-    alertUpdate(id, data, opts) {
-        return this.request("PUT", `alert/${id}`, data, opts);
+    notificationUpdate(id, data, opts) {
+        return this.request("PUT", `notification/${id}`, data, opts);
     }
 
-    alertCount(query, opts) {
-        return this.request("GET", "alert/count", query, opts);
+    notificationCount(query, opts) {
+        return this.request("GET", "notification/count", query, opts);
     }
 
     couponCreate(data, opts) {
@@ -235,6 +243,14 @@ export default class Api {
 
     companyUpdate(id, data, opts) {
         return this.request("PUT", `company/${id}`, data, opts);
+    }
+
+    billingSourceAdd(data, opts) {
+        return this.request("POST", "billing/source", data, opts);
+    }
+
+    billingSourceRemove(id, opts) {
+        return this.request("DELETE", `billing/${id}`, null, opts);
     }
 
     configGet(opts) {

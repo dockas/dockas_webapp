@@ -38,7 +38,7 @@ dictionary:
     _NAV_BAR_SIGNOUT_ITEM_LABEL_: sair
     _NAV_BAR_SIGNIN_ITEM_LABEL_: entrar
     _NAV_BAR_ADMIN_ITEM_LABEL_: admin
-    _NAV_BAR_ALERTS_ITEM_LABEL_: alertas
+    _NAV_BAR_NOTIFICATIONS_ITEM_LABEL_: alertas
     _NAV_BAR_LISTS_ITEM_LABEL_: minhas listas
 
     # Catalog Page
@@ -63,11 +63,11 @@ dictionary:
     _ADMIN_BAR_USERS_LABEL_: usuários
     _ADMIN_BAR_ORDERS_LABEL_: pedidos
     _ADMIN_BAR_INVITATIONS_LABEL_: convites
-    _ADMIN_BAR_ALERTS_LABEL_: alertas
+    _ADMIN_BAR_NOTIFICATIONS_LABEL_: alertas
     _ADMIN_BAR_COUPONS_LABEL_: cupons
     _ADMIN_BAR_PRODUCTS_ADD_ACTION_LABEL_: adicionar
     _ADMIN_BAR_ORDERS_SEND_ACTION_LABEL_: enviar
-    _ADMIN_BAR_ALERTS_CREATE_ACTION_LABEL_: adicionar
+    _ADMIN_BAR_NOTIFICATIONS_CREATE_ACTION_LABEL_: adicionar
     _ADMIN_BAR_COUPONS_CREATE_ACTION_LABEL_: criar
 
     _ADMIN_PRODUCTS_PAGE_NAME_TH_: nome
@@ -105,10 +105,10 @@ dictionary:
     _ADMIN_INVITATIONS_PAGE_STATUS_TH_: status
     _ADMIN_INVITATIONS_PAGE_NO_DATA_FOUND_TEXT_: Nenhum convite encontrado
 
-    _ADMIN_ALERTS_PAGE_USERS_TH_: usuários
-    _ADMIN_ALERTS_TYPE_TH_: tipo
-    _ADMIN_ALERTS_MESSAGE_TH_: mensagem
-    _ADMIN_ALERTS_PAGE_CREATED_AT_TH_: criada em
+    _ADMIN_NOTIFICATIONS_PAGE_USERS_TH_: usuários
+    _ADMIN_NOTIFICATIONS_TYPE_TH_: tipo
+    _ADMIN_NOTIFICATIONS_MESSAGE_TH_: mensagem
+    _ADMIN_NOTIFICATIONS_PAGE_CREATED_AT_TH_: criada em
 
     _ADMIN_COUPONS_PAGE_NAME_ID_TH_: nome
     _ADMIN_COUPONS_PAGE_MAX_APPLY_COUNT_TH_: num. máximo
@@ -150,26 +150,45 @@ dictionary:
     _CHECKOUT_STEP_REVIEW_TOTAL_PRICE_TH_: total
     _CHECKOUT_STEP_REVIEW_COUPON_ALREADY_APPLIED_TOAST_MESSAGE_: cupom já aplicado
     _CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_: continuar
-    
-    _CHECKOUT_STEP_ADDRESS_TITLE_: Escolha um endereço para entrega
-    _NEW_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
-    _NEW_ADDRESS_MODAL_LABEL_FIELD_LABEL_: identificador
-    _NEW_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
-    _NEW_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: cep
-    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: rndereço
-    _NEW_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
-    _NEW_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: número
-    _NEW_ADDRESS_MODAL_NUMBER_FIELD_PLACEHOLDER_: "4938"
-    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: complemento
-    _NEW_ADDRESS_MODAL_COMPLEMENT_FIELD_PLACEHOLDER_: Apto 402
-    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: bairro
-    _NEW_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
-    _NEW_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
-    _NEW_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
-    _NEW_ADDRESS_MODAL_PHONE_FIELD_LABEL_: telefone de contato
 
     _CHECKOUT_STEP_PAYMENT_TITLE_: Realizar o pagamento
     _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
+    _CHECKOUT_STEP_PAYMENT_BASKET_SIDEBAR_BUTTON_LABEL_: Pagar
+    
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_TITLE_: Cadastrar Novo Cartão
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_NUMBER_FIELD_LABEL_: número
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_NUMBER_FIELD_PLACEHOLDER_: "5555 6666 7777 8884"
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_EXP_DATE_FIELD_LABEL_: data de expiração (MM/YY)
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_EXP_DATE_FIELD_PLACEHOLDER_: "05/18"
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_LABEL_: código de verificação (cvc)
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_PLACEHOLDER_: "123"
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_LABEL_: nome no cartão
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_PLACEHOLDER_: João M Silva
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_DOCUMENT_NUMBER_FIELD_LABEL_: documento
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_DOCUMENT_NUMBER_FIELD_PLACEHOLDER_: 564.464.832-01
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_PHONE_FIELD_LABEL_: telefone
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_PHONE_FIELD_PLACEHOLDER_: (00)99999-9999
+    
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_LABEL_FIELD_LABEL_: identificador
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: cep
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_PLACEHOLDER_: 30000-000
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: endereço
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: número
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NUMBER_FIELD_PLACEHOLDER_: "4938"
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: complemento
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_COMPLEMENT_FIELD_PLACEHOLDER_: Apto 402
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: bairro
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_PHONE_FIELD_LABEL_: telefone de contato
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_PHONE_FIELD_PLACEHOLDER_: (32) 99999-9999
+
+    _CHECKOUT_STEP_PAYMENT_MISSING_CREDIT_CARD_ERROR_TOAST_MESSAGE_: Ops.. Você tem que selecionar um cartão de crédito.
+    _CHECKOUT_STEP_PAYMENT_MISSING_ADDRESS_ERROR_TOAST_MESSAGE_: Ops.. Você tem que selecionar um endereço de entrega.
 
     _CHECKOUT_STEP_FINALIZE_TITLE_: Obrigado pela preferência :)
     _CHECKOUT_STEP_FINALIZE_BODY_: <p>Seu pedido foi realizado com sucesso e agora você pode acompanhá-lo na página de <a href="/orders">Meus Pedidos</a>.</p><p>Lembramos que atualmente todos as compras são entregues apenas aos Domingos de cada semana, mas não se preocupe pois lhe notificaremos assim que suas compras estiverem à caminho.</p><p>Em caso de qualquer dúvida entre em contato com a gente pelo email <a href="mailto:contato@dockas.com">contato@dockas.com</a> ou pelo telefone {{phone}} ({{name}}).</p>
@@ -215,16 +234,16 @@ dictionary:
 
     _COMPANIES_CREATE_SUCCESS_: Empresas criadas com sucesso.
 
-    _CREATE_ALERT_PAGE_TITLE_: Novo Alerta
-    _CREATE_ALERT_PAGE_USERS_FIELD_LABEL_: usuários
-    _CREATE_ALERT_PAGE_USERS_FIELD_PLACEHOLDER_: user@email.com
-    _CREATE_ALERT_PAGE_MESSAGE_FIELD_LABEL_: mensagem
-    _CREATE_ALERT_PAGE_MESSAGE_FIELD_PLACEHOLDER_: opa...saca só :)
-    _CREATE_ALERT_PAGE_OPTIONS_FIELD_LABEL_: opções
-    _CREATE_ALERT_PAGE_OPTION_VALUE_TH_: valor
-    _CREATE_ALERT_PAGE_OPTION_LABEL_TH_: label
-    _CREATE_ALERT_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_: valor
-    _CREATE_ALERT_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_: label
+    _CREATE_NOTIFICATION_PAGE_TITLE_: Novo Alerta
+    _CREATE_NOTIFICATION_PAGE_USERS_FIELD_LABEL_: usuários
+    _CREATE_NOTIFICATION_PAGE_USERS_FIELD_PLACEHOLDER_: user@email.com
+    _CREATE_NOTIFICATION_PAGE_MESSAGE_FIELD_LABEL_: mensagem
+    _CREATE_NOTIFICATION_PAGE_MESSAGE_FIELD_PLACEHOLDER_: opa...saca só :)
+    _CREATE_NOTIFICATION_PAGE_OPTIONS_FIELD_LABEL_: opções
+    _CREATE_NOTIFICATION_PAGE_OPTION_VALUE_TH_: valor
+    _CREATE_NOTIFICATION_PAGE_OPTION_LABEL_TH_: label
+    _CREATE_NOTIFICATION_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_: valor
+    _CREATE_NOTIFICATION_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_: label
 
     _CREATE_COUPON_PAGE_TITLE_: Criar cupom
     _CREATE_COUPON_PAGE_NAME_ID_LABEL_: nome identificador
@@ -275,17 +294,17 @@ dictionary:
     _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
     _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.
 
-    # Alerts Page
-    _ALERTS_PAGE_TITLE_: Alertas
-    _ALERTS_PAGE_NO_DATA_FOUND_MESSAGE_: Não há alertas ainda
+    # Notifications Page
+    _NOTIFICATIONS_PAGE_TITLE_: Alertas
+    _NOTIFICATIONS_PAGE_NO_DATA_FOUND_MESSAGE_: Não há alertas ainda
 
-    # Alert Messages
-    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_AWAITING_USER_AVAILABILITY_: Seu pedido <b>#{{order.count}}</b> sairá amanhã! Você estará em casa?
-    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_CONFIRMED_: Seu pedido <b>#{{order.count}}</b> foi confirmado.
-    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_BOXED_: Seu pedido <b>#{{order.count}}</b> já está pronto para ser entregue.
-    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{order.count}}</b> está a caminho da sua casa.
-    _ALERT_MESSAGE_ORDER_STATUS_UPDATED_TO_CLOSED_: Seu pedido <b>#{{order.count}}</b> foi entregue.
-    _ALERT_SELECTED_OPTION_TEXT_: "Opção selecionada : <b>{{selectedOption}}</b>"
+    # Notification Messages
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_AWAITING_USER_AVAILABILITY_: Seu pedido <b>#{{order.count}}</b> sairá amanhã! Você estará em casa?
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_CONFIRMED_: Seu pedido <b>#{{order.count}}</b> foi confirmado.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_BOXED_: Seu pedido <b>#{{order.count}}</b> já está pronto para ser entregue.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{order.count}}</b> está a caminho da sua casa.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_CLOSED_: Seu pedido <b>#{{order.count}}</b> foi entregue.
+    _NOTIFICATION_SELECTED_OPTION_TEXT_: "Opção selecionada : <b>{{selectedOption}}</b>"
 
     # Basket Card
     _BASKET_CARD_ITEMS_TEXT_: "{{numItems}} itens"
@@ -305,6 +324,9 @@ dictionary:
     _FIELD_ERROR_COLOR_: Digite uma cor válida
     _FIELD_ERROR_ID_: Apenas os caracteres a-z (sem acentos), dígitos 0-9 e hífen (-) são permitidos.
     _FIELD_ERROR_PHONE_: Insira um telefone válido.
+    _FIELD_ERROR_POSTAL_CODE_: Insira um CEP válido.
+    _FIELD_ERROR_CARD_EXP_DATE_: Insira uma data válida.
+    _FIELD_ERROR_DOCUMENT_CPF_: Insira um CPF válido.
 
     # Error messages
     _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.

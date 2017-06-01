@@ -241,7 +241,7 @@ class Component extends React.Component {
 
                     {/*<div className={styles.optionsContainer}>
                         <Text scale={0.8} color="moody">
-                            <i18n.Translate text="_CREATE_ALERT_PAGE_OPTIONS_FIELD_LABEL_" />
+                            <i18n.Translate text="_CREATE_NOTIFICATION_PAGE_OPTIONS_FIELD_LABEL_" />
                         </Text>
 
                         <Form onSubmit={(data) => {
@@ -259,13 +259,13 @@ class Component extends React.Component {
                                         <th>
                                             <Field.Text
                                                 name="value"
-                                                placeholder="_CREATE_ALERT_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_"
+                                                placeholder="_CREATE_NOTIFICATION_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_"
                                                 scale={1}/>
                                         </th>
                                         <th>
                                             <Field.Text
                                                 name="label"
-                                                placeholder="_CREATE_ALERT_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_"
+                                                placeholder="_CREATE_NOTIFICATION_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_"
                                                 scale={1}/>
                                         </th>
                                         <th>

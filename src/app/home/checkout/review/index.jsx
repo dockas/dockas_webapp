@@ -9,11 +9,11 @@ import Button from "darch/src/button";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
 import Text from "darch/src/text";
-import Form from "darch/src/form";
-import Field from "darch/src/field";
+//import Form from "darch/src/form";
+//import Field from "darch/src/field";
 import numberUtils from "darch/src/field/number/utils";
 import Toaster from "darch/src/toaster";
-import Label from "darch/src/label";
+//import Label from "darch/src/label";
 import {Basket} from "common";
 import styles from "./styles";
 
@@ -96,17 +96,8 @@ class Component extends React.Component {
         let logger = Logger.create("onBasketButtonClick");
         logger.info("enter");
         
-        // If user are not logged, then prompt it to login or to
-        // create an account.
-        if(!this.props.user) {
-            this.props.router.push({
-                pathname: "/signin",
-                query: {redirect: "/checkout/address"}
-            });
-        }
-        else {
-            this.props.router.push("/checkout/address");
-        }
+        // Go to payment
+        this.props.router.push("/checkout/payment");
     }
 
     onCouponFormSubmit(data) {
@@ -131,7 +122,7 @@ class Component extends React.Component {
         let {minOrderTotalPrice} = config.shared;
         let {screenSize} = this.state;
         let {basket,spec} = this.props;
-        let {totalPrice,totalDiscount,coupons} = basket;
+        let {totalPrice,totalDiscount} = basket;
         let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
         let totalPriceWithDiscount = totalPrice - appliedDiscount;
 
@@ -147,7 +138,7 @@ class Component extends React.Component {
                             <div className={styles.bodyContainer}>
                                 <h3><i18n.Translate text="_CHECKOUT_STEP_REVIEW_TITLE_" /></h3>
 
-                                <div className={styles.couponsContainer}>
+                                {/*<div className={styles.couponsContainer}>
                                     <Form onSubmit={this.onCouponFormSubmit}>
                                         <Grid noGap={true}>
                                             <Grid.Cell span={2}>
@@ -173,7 +164,7 @@ class Component extends React.Component {
                                             <Text scale={0.8}><b>nenhum</b></Text>
                                         )}
                                     </div>
-                                </div>
+                                </div>*/}
 
                                 <div className={styles.itemsContainer}>
                                     <div className="table-container">
@@ -206,9 +197,9 @@ class Component extends React.Component {
                                                                 
                                                                 {item.product.name}
                                                             </td>
-                                                            <td><i18n.Number value={item.product.priceValue} numDecimals={2} currency={true} /></td>
-                                                            <td>{item.count}</td>
-                                                            <td><i18n.Number value={item.count * item.product.priceValue} numDecimals={2} currency={true} /></td>
+                                                            <td><i18n.Number value={item.product.priceValue/100} numDecimals={2} currency={true} /></td>
+                                                            <td>{item.quantity}</td>
+                                                            <td><i18n.Number value={(item.quantity * item.product.priceValue)/100} numDecimals={2} currency={true} /></td>
                                                             <td>
                                                                 <Button onClick={this.onRemoveButtonClick(item.product)} color="danger" scale={0.8}>-1</Button>
                                                                 <Button onClick={this.onAddButtonClick(item.product)} color="moody" scale={0.8}>+1</Button>
@@ -233,13 +224,13 @@ class Component extends React.Component {
                                             <div className={styles.discountInfoContainer}>
                                                 <div className={styles.originalTotalPriceContainer}>
                                                     <Text scale={0.8}>
-                                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat(totalPrice.toFixed(2))} numDecimals={2} />
+                                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat((totalPrice/100).toFixed(2))} numDecimals={2} />
                                                     </Text>
                                                 </div>
 
                                                 <div className={styles.appliedDiscountContainer}>
                                                     <Text scale={0.8}>
-                                                        <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat(appliedDiscount.toFixed(2))} numDecimals={2} />
+                                                        <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat((appliedDiscount/100).toFixed(2))} numDecimals={2} />
                                                     </Text>
                                                 </div>
                                             </div>
@@ -251,7 +242,7 @@ class Component extends React.Component {
                                             </div>
 
                                             <div className={styles.priceValue}>
-                                                <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount).toFixed(2))} numDecimals={2} />
+                                                <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount/100).toFixed(2))} numDecimals={2} />
                                             </div>
                                         </div>
 
@@ -261,8 +252,8 @@ class Component extends React.Component {
                                                     <i18n.Translate text="_CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_" />
                                                 ) : (
                                                     <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
-                                                        minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice).value,
-                                                        diff: (minOrderTotalPrice - totalPrice)
+                                                        minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
+                                                        diff: (minOrderTotalPrice - totalPrice)/100
                                                     }} />
                                                 )}
                                             </Button>

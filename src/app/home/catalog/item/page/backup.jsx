@@ -365,7 +365,7 @@ class Component extends React.Component {
                                         {screenSize != "phone" ? (
                                             <div className={styles.priceContainer}>
                                                 <Text scale={2}>
-                                                    <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue} /></b>
+                                                    <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue/100} /></b>
                                                 </Text>
                                             </div>
                                         ) : null}
@@ -374,7 +374,7 @@ class Component extends React.Component {
                                             <div className={styles.totalPriceContainer}>
                                                 {item ? (
                                                     <Text scale={0.8} color="#999999">
-                                                        ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={item.count * product.priceValue} /></b> )
+                                                        ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={(item.count * product.priceValue)/100} /></b> )
                                                     </Text>
                                                 ) : (
                                                     <Text scale={0.8} color="#999999">••••</Text>

@@ -10,14 +10,14 @@ import {Api} from "common";
 import Bar from "../bar";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("admin.alerts");
+let Logger = new LoggerFactory("admin.notifications");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "admin.alerts";
+    static displayName = "admin.notifications";
     static defaultProps = {};
     static propTypes = {};
 
@@ -68,7 +68,7 @@ export default class Component extends React.Component {
         return (
             <div>
                 <Bar>
-                    <Tabs.Item align="right" color="moody" to="/admin/create/alert"><i18n.Translate text="_ADMIN_BAR_ALERTS_CREATE_ACTION_LABEL_" /></Tabs.Item>
+                    <Tabs.Item align="right" color="moody" to="/admin/create/notification"><i18n.Translate text="_ADMIN_BAR_NOTIFICATIONS_CREATE_ACTION_LABEL_" /></Tabs.Item>
                 </Bar>
                 
                 <Container>
@@ -76,10 +76,10 @@ export default class Component extends React.Component {
                         <table>
                             <thead>
                                 <tr>
-                                    <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_USERS_TH_" /></th>
-                                    <th><i18n.Translate text="_ADMIN_ALERTS_TYPE_TH_" /></th>
-                                    <th><i18n.Translate text="_ADMIN_ALERTS_MESSAGE_TH_" /></th>
-                                    <th><i18n.Translate text="_ADMIN_ALERTS_PAGE_CREATED_AT_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_NOTIFICATIONS_PAGE_USERS_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_NOTIFICATIONS_TYPE_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_NOTIFICATIONS_MESSAGE_TH_" /></th>
+                                    <th><i18n.Translate text="_ADMIN_NOTIFICATIONS_PAGE_CREATED_AT_TH_" /></th>
                                     <th></th>
                                 </tr>
                             </thead>

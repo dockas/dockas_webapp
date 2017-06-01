@@ -10,7 +10,7 @@ import Card from "./card";
 import actions from "../actions";
 import Badge from "../../badge";
 
-let Logger = new LoggerFactory("alert.dropdown");
+let Logger = new LoggerFactory("notification.dropdown");
 
 /**
  * Redux map state to props function.
@@ -20,8 +20,8 @@ let Logger = new LoggerFactory("alert.dropdown");
  */
 function mapStateToProps(state) {
     return {
-        alerts: state.alert.data,
-        newCount: state.alert.newCount
+        notifications: state.notification.data,
+        newCount: state.notification.newCount
     };
 }
 
@@ -37,7 +37,7 @@ let mapDispatchToProps = {
  */
 class Component extends React.Component {
     /** React properties **/
-    static displayName = "alert.dropdown";
+    static displayName = "notification.dropdown";
     static defaultProps = {};
     static propTypes = {};
 
@@ -51,19 +51,19 @@ class Component extends React.Component {
 
         return (
             <span>
-                <span className={styles.title}><span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_ALERTS_ITEM_LABEL_" /></span> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null} 
+                <span className={styles.title}><span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_NOTIFICATIONS_ITEM_LABEL_" /></span> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null} 
             </span>
         );
     }
 
     onToggle() {
-        Redux.dispatch(actions.alertFind({
-            sort: {createdAt: -1}
+        Redux.dispatch(actions.notificationFind({
+            sort: {status: 1, createdAt: -1}
         }));
     }
 
     render() {
-        let {alerts} = this.props;
+        let {notifications} = this.props;
 
         return (
             <Dropdown Toggle={this.renderToggle()}
@@ -76,18 +76,18 @@ class Component extends React.Component {
                 height="300pt"
                 onToggle={this.onToggle}
                 className={styles.dropdown}>
-                    {alerts && alerts.length ? (
-                        alerts.map((alert) => {
-                            return <Card key={alert._id} alert={alert} />;
+                    {notifications && notifications.length ? (
+                        notifications.map((notification) => {
+                            return <Card key={notification._id} notification={notification} />;
                         })
-                    ) : !alerts ? (
+                    ) : !notifications ? (
                         <Dropdown.Item>
                             loading ...
                         </Dropdown.Item>
                     ) : (
                         <Dropdown.Item>
                             <div style={{textAlign: "center"}}>
-                                <i18n.Translate text="_ALERTS_PAGE_NO_DATA_FOUND_MESSAGE_" />
+                                <i18n.Translate text="_NOTIFICATION_PAGE_NO_DATA_FOUND_MESSAGE_" />
                             </div>
                         </Dropdown.Item>    
                     )}

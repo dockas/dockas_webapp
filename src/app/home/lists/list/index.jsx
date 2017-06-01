@@ -123,7 +123,7 @@ class Component extends React.Component {
         let sum = 0.00;
 
         for(let item of list.items) {
-            sum += (item.product.priceValue * item.count);
+            sum += (item.product.priceValue * item.quantity);
         }
 
         return sum;
@@ -224,8 +224,8 @@ class Component extends React.Component {
                                                         <tr key={item.product._id} className={styles.itemRow}>
                                                             <td></td>
                                                             <td>{item.product.name}</td>
-                                                            <td>{item.count} x <i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue}/></td>
-                                                            <td><i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue*item.count}/></td>
+                                                            <td>{item.quantity} x <i18n.Number prefix="R$" numDecimals={2} value={item.product.priceValue/100}/></td>
+                                                            <td><i18n.Number prefix="R$" numDecimals={2} value={(item.product.priceValue*item.quantity)/100}/></td>
                                                             <td></td>
                                                             <td></td>
                                                         </tr>

@@ -1,5 +1,5 @@
 module.exports = {
-    path: "alerts",
+    path: "notifications",
 
     getComponent(nextState, cb) {
         require.ensure([], (require) => {

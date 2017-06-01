@@ -12,7 +12,8 @@ let initialState = {
     totalDiscount: 0.00,
     items: {},
     address: null,
-    coupons: {}
+    coupons: {},
+    billingSessionId: null
 };
 
 function getTotalDiscount(state) {
@@ -57,11 +58,11 @@ export default handleActions({
         let {items,address} = state;
 
         items[product._id] = items[product._id] || {
-            count: 0,
+            quantity: 0,
             product
         };
 
-        items[product._id].count++;
+        items[product._id].quantity++;
 
         // Sum product price to totalPrice.
         let totalPrice = state.totalPrice + product.priceValue;
@@ -88,10 +89,10 @@ export default handleActions({
         let {items,totalPrice,address} = state;
 
         if(items[product._id]) {
-            items[product._id].count--;
+            items[product._id].quantity--;
             totalPrice -= product.priceValue;
 
-            if(items[product._id].count === 0) {
+            if(items[product._id].quantity === 0) {
                 delete items[product._id];
             }
         }
@@ -137,6 +138,13 @@ export default handleActions({
         storage.set("basket", JSON.stringify(newState));
 
         return newState;
+    },
+
+    basketGetBillingSessionId_COMPLETED(state, action) {
+        let logger = Logger.create("basketGetBillingSessionId_COMPLETED");
+        logger.info("enter", {state, action});
+
+        return Object.assign({}, state, {billingSessionId: action.payload});
     },
 
     basketApplyCoupon_COMPLETED(state, action) {
@@ -186,7 +194,8 @@ export default handleActions({
             totalDiscount: 0,
             items: {},
             coupons: {},
-            address: null
+            address: null,
+            billingSessionId: null
         };
 
         // Save to localstorage.

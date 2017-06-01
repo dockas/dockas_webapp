@@ -51,6 +51,9 @@ server {
     listen                      80;
     server_name                 file.dockas.dev;
 
+    client_max_body_size 10M;
+    add_header Access-Control-Allow-Origin *;
+
     root                        PWD_PATH/../api_rest/files;
 }
 

@@ -3,10 +3,10 @@ import {connect} from "react-redux";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
-import {Alert} from "common";
+import {Notification} from "common";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("catalog.page");
+let Logger = new LoggerFactory("notifications.page");
 
 /**
  * Redux map state to props function.
@@ -16,8 +16,8 @@ let Logger = new LoggerFactory("catalog.page");
  */
 function mapStateToProps(state) {
     return {
-        alerts: state.alert.data,
-        newCount: state.alert.newCount
+        notifications: state.notification.data,
+        newCount: state.notification.newCount
     };
 }
 
@@ -33,7 +33,7 @@ let mapDispatchToProps = {
  */
 class Component extends React.Component {
     /** React properties **/
-    static displayName = "catalog.page";
+    static displayName = "notification.page";
     static defaultProps = {};
     static propTypes = {};
 
@@ -41,29 +41,29 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        Redux.dispatch(Alert.actions.alertFind({
-            sort: {createdAt: -1}
+        Redux.dispatch(Notification.actions.notificationFind({
+            sort: {status: 1, createdAt: -1}
         }));
     }
 
     render() {
-        let {alerts} = this.props;
+        let {notifications} = this.props;
 
         return (
             <div>
                 <Container size="sm">
                     <ul className={styles.list}>
-                        {alerts && alerts.length ? (
-                            alerts.map((alert) => {
-                                return <Alert.Card key={alert._id} alert={alert} />;
+                        {notifications && notifications.length ? (
+                            notifications.map((notification) => {
+                                return <Notification.Card key={notification._id} notification={notification} />;
                             })
-                        ) : !alerts ? (
+                        ) : !notifications ? (
                             <li style={{textAlign: "center"}}>
                                 carregando ...
                             </li>
                         ) : (
                             <li style={{textAlign: "center"}}>
-                                <i18n.Translate text="_ALERTS_PAGE_NO_DATA_FOUND_MESSAGE_" />
+                                <i18n.Translate text="_NOTIFICATIONS_PAGE_NO_DATA_FOUND_MESSAGE_" />
                             </li>
                         )}
                     </ul>

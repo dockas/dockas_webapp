@@ -66,11 +66,46 @@ class Component extends React.Component {
         window.addEventListener("resize", this.handleWindowResize);
 
         this.handleWindowResize();
+
+        console.log("pagseguro sessionId", this.props.sessionId);
+
+        //this.initPagSeguro();
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleWindowResize);
     }
+
+    /*componentDidUpdate(prevProps) {
+        if(this.props.sessionId != prevProps.sessionId) {
+            this.initPagSeguro();
+        }
+    }*/
+
+    /*initPagSeguro() {
+        if(!this.props.sessionId) {return;}
+
+        console.info("PagSeguroDirectPayment init");
+
+        PagSeguroDirectPayment.setSessionId(this.props.sessionId);
+
+        let senderHash = PagSeguroDirectPayment.getSenderHash();
+
+        console.log("PagSeguroDirectPayment senderHash", senderHash);
+
+        PagSeguroDirectPayment.getPaymentMethods({
+            //amount:
+            success: (result) => {
+                console.info("PagSeguroDirectPayment getPaymentMethods success", result);
+            },
+            error: (error) => {
+                console.error("PagSeguroDirectPayment getPaymentMethods error", error);
+            },
+            complete: () => {
+                console.log("PagSeguroDirectPayment getPaymentMethods complete");
+            }
+        });
+    }*/
 
     handleWindowResize() {
         let logger = Logger.create("handleWindowResize");

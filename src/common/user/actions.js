@@ -3,7 +3,7 @@ import {createActions} from "redux-actions";
 import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
 import Socket from "../utils/socket";
-import AlertActions from "../alert/actions";
+import NotificationActions from "../notification/actions";
 
 let Logger = new LoggerFactory("common.user.actions", {level:"debug"});
 
@@ -25,7 +25,7 @@ export default createActions({
 
             // Count new alerts.
             await Redux.dispatch(
-                AlertActions.alertNewCount()
+                NotificationActions.notificationNewCount()
             );
 
             // Return user profile
@@ -51,6 +51,26 @@ export default createActions({
         logger.debug("Api userAddAddress success", response);
 
         return response.result;
+    },
+
+    async userAddBillingSource(source, opts) {
+        var logger = Logger.create("userAddBillingSource");
+        logger.info("enter", source);
+
+        let response = await Api.shared.billingSourceAdd(source, opts);
+        logger.debug("Api billingSourceAdd success", response);
+
+        return response.result;
+    },
+
+    async userRemoveBillingSource(id, opts) {
+        var logger = Logger.create("userRemoveBillingSource");
+        logger.info("enter", {id});
+
+        let response = await Api.shared.billingSourceRemove(id, opts);
+        logger.debug("Api billingSourceRemove success", response);
+
+        return {_id: id};
     },
 
     async userRemoveAddress(id, opts) {

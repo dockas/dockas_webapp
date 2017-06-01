@@ -33,7 +33,11 @@ html(lang="pt-br")
         meta(property="og:description" content=description)
 
         // Paypal
-        script(src="https://www.paypalobjects.com/api/checkout.js")
+        //script(src="https://www.paypalobjects.com/api/checkout.js")
+
+        // PagSeguro
+        //if pagseguro_lib_url
+            script(src=pagseguro_lib_url)
 
         if fb_app_id
             meta(property="fb:app_id" content=fb_app_id)

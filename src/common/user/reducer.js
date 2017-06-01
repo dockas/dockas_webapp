@@ -113,9 +113,51 @@ export default handleActions({
         );
     },
 
+    userAddBillingSource_COMPLETED(state, action) {
+        let logger = Logger.create("userAddBillingSource_COMPLETED");
+        logger.info("enter", {state, action});
+
+        let profile = state.profiles[state.uid];
+        profile.billingSources.push(action.payload);
+
+        return lodash.assign(
+            {},
+            state, 
+            {
+                profiles: lodash.set(
+                    state.profiles, 
+                    state.uid, 
+                    profile
+                )
+            }
+        );
+    },
+
+    userRemoveBillingSource_COMPLETED(state, action) {
+        let logger = Logger.create("userRemoveBillingSource_COMPLETED");
+        logger.info("enter", {state, action});
+
+        let profile = state.profiles[state.uid];
+        lodash.remove(profile.billingSources, (source) => {
+            return source._id == action.payload._id;
+        });
+        
+        return lodash.assign(
+            {},
+            state, 
+            {
+                profiles: lodash.set(
+                    state.profiles, 
+                    state.uid, 
+                    profile
+                )
+            }
+        );
+    },
+
     userFind_COMPLETED(state, action) {
         let logger = Logger.create("userFind_COMPLETED");
-        logger.info("enter", {state: state, action: action});
+        logger.info("enter", {state, action});
 
         let profiles = lodash.reduce(action.payload, (map, profile) => {
             map[profile._id] = profile;

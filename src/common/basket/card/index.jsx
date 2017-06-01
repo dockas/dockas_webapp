@@ -124,7 +124,7 @@ class Component extends React.Component {
                     ) : null*/}
 
                     <div>
-                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat(totalPriceWithDiscount.toFixed(2))} numDecimals={2} /></span>
+                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount/100).toFixed(2))} numDecimals={2} /></span>
                         <span className={styles.items}>
                             <span className={styles.separator}>/</span>
                             {lodash.size(items) == 1 ? (
@@ -141,8 +141,8 @@ class Component extends React.Component {
                                 <i18n.Translate text={buttonLabel} />
                             ) : (
                                 <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
-                                    minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice).value,
-                                    diff: (minOrderTotalPrice - totalPrice)
+                                    minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
+                                    diff: (minOrderTotalPrice - totalPrice)/100
                                 }} />
                             )}
                         </Button>

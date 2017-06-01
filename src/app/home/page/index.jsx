@@ -13,7 +13,7 @@ import Dropdown from "darch/src/dropdown";
 import Text from "darch/src/text";
 import logoIcon from "assets/images/logo_227x50.png";
 import styles from "./styles";
-import {Basket,Alert,Badge} from "common";
+import {Basket,Notification,Badge} from "common";
 
 let Logger = new LoggerFactory("home.page", {level: "debug"});
 
@@ -27,7 +27,7 @@ function mapStateToProps(state) {
     return {
         user: state.user.profiles[state.user.uid],
         location: state.location,
-        newCount: state.alert.newCount
+        newCount: state.notification.newCount
     };
 }
 
@@ -152,14 +152,14 @@ class Component extends React.Component {
 
                             {user && screenSize != "phone" ? (
                                 <Bar.Item>
-                                    <Alert.Dropdown />
+                                    <Notification.Dropdown />
                                 </Bar.Item>
                             ) : null}
 
                             {user && screenSize == "phone" ? (
                                 <Bar.Item>
-                                    <Link to="/alerts" activeClassName="active">
-                                        <span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_ALERTS_ITEM_LABEL_" /> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null}
+                                    <Link to="/notifications" activeClassName="active">
+                                        <span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_NOTIFICATIONS_ITEM_LABEL_" /> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null}
                                     </Link>
                                 </Bar.Item>
                             ) : null}

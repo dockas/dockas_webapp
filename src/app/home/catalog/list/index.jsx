@@ -35,7 +35,7 @@ function basketToList(basket) {
     for(let id of Object.keys(basket.items)) {
         list.items.push({
             product: id,
-            count: basket.items[id].count
+            quantity: basket.items[id].quantity
         });
     }
 
@@ -372,7 +372,7 @@ class Component extends React.Component {
         for(let id of Object.keys(items)) {
             list.items.push({
                 product: id,
-                count: items[id].count
+                quantity: items[id].quantity
             });
         }
 

@@ -8,14 +8,14 @@ import getIcon from "./icon";
 import optionActions from "../../option_actions";
 import actions from "../../actions";
 
-let Logger = new LoggerFactory("alert.card");
+let Logger = new LoggerFactory("notification.card");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "alert.card";
+    static displayName = "notification.card";
     static defaultProps = {};
     static propTypes = {};
 
@@ -29,16 +29,16 @@ export default class Component extends React.Component {
             let logger = Logger.create("selectOption");
             logger.info("enter", {option});
 
-            let {alert} = this.props;
-            let alertOptionActionKey = alert.onOptionSelectedAction;
+            let {notification} = this.props;
+            let notificationOptionActionKey = notification.onOptionSelectedAction;
 
-            // Run alert option action.
-            if(alertOptionActionKey && optionActions[alertOptionActionKey]) {
-                await Redux.dispatch(optionActions[alertOptionActionKey](option.value, alert));
+            // Run notification option action.
+            if(notificationOptionActionKey && optionActions[notificationOptionActionKey]) {
+                await Redux.dispatch(optionActions[notificationOptionActionKey](option.value, notification));
             }
             
-            // Now update alert with the selected option.
-            await Redux.dispatch(actions.alertUpdate(alert._id, {
+            // Now update notification with the selected option.
+            await Redux.dispatch(actions.notificationUpdate(notification._id, {
                 selectedOption: option.value,
                 status: "clicked"
             }));
@@ -46,26 +46,26 @@ export default class Component extends React.Component {
     }
 
     render() {
-        let {alert} = this.props;
+        let {notification} = this.props;
         let logger = Logger.create("render");
 
-        let selectedOption = lodash.find(alert.options, (option) => {
-            return option.value == alert.selectedOption;
+        let selectedOption = lodash.find(notification.options, (option) => {
+            return option.value == notification.selectedOption;
         });
 
-        logger.info("enter", {alert});
+        logger.info("enter", {notification});
 
         return (
             <li className={styles.card}>
                 <div className={styles.leftView}>
-                    <span className={getIcon(alert)}></span>
+                    <span className={getIcon(notification)}></span>
                 </div>
                 <div className={styles.body}>
-                    <div><i18n.Translate text={alert.message} data={alert.data} /></div>
+                    <div><i18n.Translate text={notification.message} data={notification.data} /></div>
                     
-                    {alert.options && alert.options.length && !alert.selectedOption ? (
+                    {notification.options && notification.options.length && !notification.selectedOption ? (
                         <div className={styles.optionsRow}>
-                            {alert.options.map((option) => {
+                            {notification.options.map((option) => {
                                 return <Button key={option.value} layout="outline" scale={0.6} color="moody" onClick={this.selectOption(option)}><i18n.Translate text={option.label}/></Button>;
                             })}
                         </div>
@@ -73,7 +73,7 @@ export default class Component extends React.Component {
 
                     {selectedOption ? (
                         <div className={styles.selectedOptionRow}>
-                            <i18n.Translate text="_ALERT_SELECTED_OPTION_TEXT_" data={{selectedOption: i18n.utils.translate({text: selectedOption.label})}} />
+                            <i18n.Translate text="_NOTIFICATION_SELECTED_OPTION_TEXT_" data={{selectedOption: i18n.utils.translate({text: selectedOption.label})}} />
                         </div>
                     ) : null}
                 </div>

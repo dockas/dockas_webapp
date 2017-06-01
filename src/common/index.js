@@ -5,7 +5,7 @@ export Product from "./product";
 export Basket from "./basket";
 export Paypal from "./paypal";
 export Order from "./order";
-export Alert from "./alert";
+export Notification from "./notification";
 export Badge from "./badge";
 export Location from "./location";
 export Brand from "./brand";

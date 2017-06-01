@@ -13,6 +13,8 @@ siteinfo:
     logo_icon_url: //dockas.com/assets/images/logo_icon.png
     logo_favicon_url: //dockas.com/assets/images/favicon.png
 
+    pagseguro_lib_url: https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js
+
 isBeta: true
 
 hostnames:

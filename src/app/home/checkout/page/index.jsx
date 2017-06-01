@@ -34,7 +34,7 @@ export default class Component extends React.Component {
                             <i18n.Translate text="_CHECKOUT_PROGRESS_STEP_REVIEW_TEXT_" />
                         </div>
                     </li>
-                    <li className={pathname=="/checkout/address"?styles.active:""}>
+                    {/*<li className={pathname=="/checkout/address"?styles.active:""}>
                         <div className={styles.stepContainer}>
                             <div className={classNames([styles.stepBar, styles.stepBarLeft])}></div>
                             <div className={styles.stepBullete}></div>
@@ -42,7 +42,7 @@ export default class Component extends React.Component {
                         <div className={styles.stepTitle}>
                             <i18n.Translate text="_CHECKOUT_PROGRESS_STEP_ADDRESS_TEXT_" />
                         </div>
-                    </li>
+                    </li>*/}
                     <li className={pathname=="/checkout/payment"?styles.active:""}>
                         <div className={styles.stepContainer}>
                             <div className={classNames([styles.stepBar, styles.stepBarLeft])}></div>

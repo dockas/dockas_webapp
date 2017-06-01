@@ -46,7 +46,7 @@ export default class Component extends React.Component {
             <div className={styles.page}>
                 {this.props.children}
 
-                <Toaster position="top-center"/>
+                <Toaster position="top-center" scale={0.9}/>
             </div>
         );
     }

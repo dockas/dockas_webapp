@@ -2,7 +2,7 @@ import lodash from "lodash";
 import {handleActions} from "redux-actions";
 import {LoggerFactory} from "darch/src/utils";
 
-let Logger = new LoggerFactory("common.alert.reducer", {level:"debug"});
+let Logger = new LoggerFactory("common.notification.reducer", {level:"debug"});
 
 let initialState = {
     data: null,
@@ -10,8 +10,8 @@ let initialState = {
 };
 
 export default handleActions({
-    alertCreatedEvent(state, action) {
-        let logger = Logger.create("alertCreatedEvent");
+    notificationCreatedEvent(state, action) {
+        let logger = Logger.create("notificationCreatedEvent");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {
@@ -19,30 +19,30 @@ export default handleActions({
         });
     },
 
-    alertUpdatedEvent(state, action) {
-        let logger = Logger.create("alertUpdatedEvent");
+    notificationUpdatedEvent(state, action) {
+        let logger = Logger.create("notificationUpdatedEvent");
         logger.info("enter", {state, action});
 
-        let {alert,updated} = action.payload;
+        let {notification,updated} = action.payload;
         let newState = state;
 
-        let stateAlert = lodash.find(state.data, (stateAlert) => {
-            return stateAlert._id == alert._id;
+        let stateNotification = lodash.find(state.data, (stateNotification) => {
+            return stateNotification._id == notification._id;
         });
 
-        if(stateAlert) {
-            logger.debug("alert found");
+        if(stateNotification) {
+            logger.debug("notification found");
 
-            Object.assign(stateAlert, updated);
+            Object.assign(stateNotification, updated);
 
             newState = Object.assign({}, newState, {
                 data: lodash.clone(state.data)
             });
         }
 
-        // New alert changed it's status, so decrement
+        // New notification changed it's status, so decrement
         // new count.
-        if(alert.status == "new" && updated.status != "new") {
+        if(stateNotification.status === 0 && updated.status !== 0) {
             newState = Object.assign({}, newState, {
                 newCount: newState.newCount-1
             });
@@ -51,8 +51,8 @@ export default handleActions({
         return newState;
     },
 
-    alertNewCount_COMPLETED(state, action) {
-        let logger = Logger.create("alertNewCount_COMPLETED");
+    notificationNewCount_COMPLETED(state, action) {
+        let logger = Logger.create("notificationNewCount_COMPLETED");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {
@@ -60,8 +60,8 @@ export default handleActions({
         });
     },
 
-    alertFind_COMPLETED(state, action) {
-        let logger = Logger.create("alertFind_COMPLETED");
+    notificationFind_COMPLETED(state, action) {
+        let logger = Logger.create("notificationFind_COMPLETED");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {

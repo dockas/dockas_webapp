@@ -12,14 +12,14 @@ import Grid from "darch/src/grid";
 import {Api} from "common";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("create.alert");
+let Logger = new LoggerFactory("create.notification");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "create.alert";
+    static displayName = "create.notification";
     static defaultProps = {};
     static propTypes = {};
 
@@ -74,7 +74,7 @@ export default class Component extends React.Component {
         return (
             <div>
                 <Container size="md">
-                    <h3 className="headline"><i18n.Translate text="_CREATE_ALERT_PAGE_TITLE_" /></h3>
+                    <h3 className="headline"><i18n.Translate text="_CREATE_NOTIFICATION_PAGE_TITLE_" /></h3>
 
                     <Field.Section>
                         <Form loading={loading}
@@ -82,12 +82,12 @@ export default class Component extends React.Component {
 
                             <Field.Section>
                                 <Text scale={0.8} color="moody">
-                                    <i18n.Translate text="_CREATE_ALERT_PAGE_USERS_FIELD_LABEL_" />
+                                    <i18n.Translate text="_CREATE_NOTIFICATION_PAGE_USERS_FIELD_LABEL_" />
                                 </Text>
                                 <div>
                                     <Field.Select
                                         name="users"
-                                        placeholder="_CREATE_ALERT_PAGE_USERS_FIELD_PLACEHOLDER_"
+                                        placeholder="_CREATE_NOTIFICATION_PAGE_USERS_FIELD_PLACEHOLDER_"
                                         options={users}
                                         loadOptions={this.loadUsers}
                                         loading={loadingUsers}
@@ -104,12 +104,12 @@ export default class Component extends React.Component {
                                     <Grid.Cell>
                                         <Field.Section>
                                             <Text scale={0.8} color="moody">
-                                                <i18n.Translate text="_CREATE_ALERT_PAGE_MESSAGE_FIELD_LABEL_" />
+                                                <i18n.Translate text="_CREATE_NOTIFICATION_PAGE_MESSAGE_FIELD_LABEL_" />
                                             </Text>
                                             <div>
                                                 <Field.TextArea
                                                     name="name"
-                                                    placeholder="_CREATE_ALERT_PAGE_MESSAGE_FIELD_PLACEHOLDER_"
+                                                    placeholder="_CREATE_NOTIFICATION_PAGE_MESSAGE_FIELD_PLACEHOLDER_"
                                                     scale={1}
                                                     validators="$required"/>
                                                 <Field.Error
@@ -126,7 +126,7 @@ export default class Component extends React.Component {
 
                     <div className={styles.optionsContainer}>
                         <Text scale={0.8} color="moody">
-                            <i18n.Translate text="_CREATE_ALERT_PAGE_OPTIONS_FIELD_LABEL_" />
+                            <i18n.Translate text="_CREATE_NOTIFICATION_PAGE_OPTIONS_FIELD_LABEL_" />
                         </Text>
 
                         <Form onSubmit={(data) => {
@@ -144,13 +144,13 @@ export default class Component extends React.Component {
                                         <th>
                                             <Field.Text
                                                 name="value"
-                                                placeholder="_CREATE_ALERT_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_"
+                                                placeholder="_CREATE_NOTIFICATION_PAGE_OPTION_VALUE_FIELD_PLACEHOLDER_"
                                                 scale={1}/>
                                         </th>
                                         <th>
                                             <Field.Text
                                                 name="label"
-                                                placeholder="_CREATE_ALERT_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_"
+                                                placeholder="_CREATE_NOTIFICATION_PAGE_OPTION_LABEL_FIELD_PLACEHOLDER_"
                                                 scale={1}/>
                                         </th>
                                         <th>

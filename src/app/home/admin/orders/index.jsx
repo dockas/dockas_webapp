@@ -171,11 +171,11 @@ class Component extends React.Component {
                 //console.log(["item",item]);
 
                 products[item.product._id] = products[item.product._id] || {
-                    count: 0,
+                    quantity: 0,
                     data: item.product
                 };
 
-                products[item.product._id].count += item.count;
+                products[item.product._id].quantity += item.quantity;
             }
         }
 
@@ -202,7 +202,7 @@ class Component extends React.Component {
                                             }}></div>
                                         </td>
                                         <td>{product.data.name}</td>
-                                        <td>{product.count}</td>
+                                        <td>{product.quantity}</td>
                                     </tr>
                                 );
                             })
