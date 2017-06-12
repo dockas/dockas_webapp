@@ -86,3 +86,4 @@ FEA : Add brand and description panel to product detail page.
 FEA : Handle update socket notifications (for order, brand, product update) instead of rest ones.
 FEA : Mark new messages as viewed when user closes the notification dropdown.
 BUG : Use https insteal of ssh to clone nosebit/common-config module (ssh require pub/priv keys).
+ENH : Add billing route to nginx.conf.tpl.

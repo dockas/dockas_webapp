@@ -41,6 +41,11 @@ server {
 
     client_max_body_size 10M;
 
+    location /v1/billing/notifications {
+        rewrite /v1/billing/(.*) /$1  break;
+        proxy_pass              http://localhost:9595;
+    }
+
     location /v1/ {
         proxy_pass              http://localhost:9898/;
     }
