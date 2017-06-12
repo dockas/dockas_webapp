@@ -80,3 +80,8 @@ ENH : Handle exhibition of integer product (cents unity) in decimal form.
 ENH : Replace product count field by quantity one.
 FEA : Implement a new checkout payment page with transparent checkout.
 ENH : Remove checkout address step from checkout process (now setled within payment step page).
+FEA : Group all order actions and store in common/order module.
+FEA : Add products to brand detail products page.
+FEA : Add brand and description panel to product detail page.
+FEA : Handle update socket notifications (for order, brand, product update) instead of rest ones.
+FEA : Mark new messages as viewed when user closes the notification dropdown.

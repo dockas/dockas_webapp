@@ -18,8 +18,8 @@ let Logger = new LoggerFactory("orders.list");
  */
 function mapStateToProps(state) {
     return {
-        orders: state.order.data,
-        ordersQuery: state.order.query,
+        orders: lodash.get(state.order,"scope.myOrders.data"),
+        ordersQuery: lodash.get(state.order,"scope.myOrders.query"),
         user: state.user.profiles[state.user.uid]
     };
 }
@@ -52,7 +52,11 @@ class Component extends React.Component {
 
         this.setState({initializing: true});
 
-        try { await Redux.dispatch(Order.actions.orderFind(query)); }
+        try { 
+            await Redux.dispatch(Order.actions.orderFind(query, {
+                scope: {id: "myOrders"}
+            })); 
+        }
         catch(error) {
             logger.error("order action orderFind error", error);
         }
@@ -75,6 +79,7 @@ class Component extends React.Component {
                         <table>
                             <thead>
                                 <tr>
+                                    <th><i18n.Translate text="_ORDERS_PAGE_ID_TH_" /></th>
                                     <th><i18n.Translate text="_ORDERS_PAGE_CREATED_AT_TH_" /></th>
                                     <th><i18n.Translate text="_ORDERS_PAGE_ADDRESS_TH_" /></th>
                                     <th><i18n.Translate text="_ORDERS_PAGE_ITEMS_COUNT_TH_" /></th>
@@ -91,16 +96,19 @@ class Component extends React.Component {
                                 ) : orders && orders.length ? (
                                     orders.map((order) => {
                                         let address = lodash.find(user.addresses, (address) => {
-                                            return address.id == order.address;
+                                            return address._id == order.address;
                                         });
+
+                                        console.log(["order address maluco", order, address, user]);
 
                                         return (
                                             <tr key={order._id}>
+                                                <td>{order.count}</td>
                                                 <td><i18n.Moment date={order.createdAt} /></td>
                                                 <td>{address.label}</td>
                                                 <td>{order.items.length}</td>
-                                                <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
-                                                <td>{order.status}</td>
+                                                <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice/100} /></td>
+                                                <td><i18n.Translate text={`_ORDER_STATUS_${lodash.toUpper(order.status)}_`}/></td>
                                                 <td></td>
                                             </tr>
                                         );

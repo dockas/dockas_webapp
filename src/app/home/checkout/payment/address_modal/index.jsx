@@ -82,7 +82,7 @@ class Component extends React.Component {
             this.setState({loading: false});
             this.props.onComplete(data, "address_modal");
         })
-        .cacth(() => {
+        .catch(() => {
             this.setState({loading: false});
         });
     }
@@ -150,15 +150,15 @@ class Component extends React.Component {
                                 <Grid.Cell span={3}>
                                     <Field.Section>
                                         <Text scale={0.8}>
-                                            <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_" />
+                                            <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_STREET_FIELD_LABEL_" />
                                         </Text>
                                         <Field.Text
-                                            name="address"
-                                            placeholder="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_"
+                                            name="street"
+                                            placeholder="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_STREET_FIELD_PLACEHOLDER_"
                                             scale={1}
                                             validators="$required"/>
                                         <Field.Error
-                                            for="address"
+                                            for="street"
                                             validator="$required"
                                             message="_FIELD_ERROR_REQUIRED_"/>
                                     </Field.Section>

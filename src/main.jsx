@@ -5,6 +5,7 @@ import config from "config";
 import React from "react";
 import {render} from "react-dom";
 import {Provider} from "react-redux";
+import moment from "moment";
 import {Router,browserHistory} from "react-router";
 import {syncHistoryWithStore,routerReducer} from "react-router-redux";
 import {LoggerFactory,Redux} from "darch/src/utils";
@@ -112,6 +113,50 @@ Form.registerValidator({
     }
 });
 
+Form.registerValidator({
+    name: "birthdate",
+    validate: (value, opts) => {
+        let logger = Logger.create("birthdate validate");
+        logger.debug("enter", {value,opts});
+
+        if(!value){return true;}
+
+        let date = moment(value, opts[0], true);
+
+        console.log(["date macuna",date]);
+
+        if(!date.isValid()) {return false;}
+
+        return true;
+    }
+});
+
+Form.registerValidator({
+    name: "brand_name_id",
+    on: "blur",
+    validate: async (value) => {
+        let logger = Logger.create("brand_name_id validate");
+        logger.debug("enter", {value});
+
+        if(!value){return true;}
+
+        try {
+            let response = await Api.shared.brandFindByNameId(value, null, {
+                preventErrorInterceptor: true
+            });
+
+            logger.info("api brandFindByNameId success", response);
+        }
+        catch(error) {
+            logger.error("api brandFindByNameId error", error);
+
+            if(error.code == 1) {return true;}
+        }
+
+        return false;
+    }
+});
+
 /****************************************************************
 * App Bootstrap
 ****************************************************************/
@@ -148,14 +193,14 @@ Form.registerValidator({
         order: Order.reducer,
         notification: Notification.reducer,
         location: Location.reducer,
-        brand: Brand.reducer,
-
-        adminOrders: require("app/home/admin/orders/reducer")
+        brand: Brand.reducer
     }, {shared: true});
 
     // Start listen to socket events
     Notification.listenSocketEvents();
     Order.listenSocketEvents();
+    Product.listenSocketEvents();
+    User.listenSocketEvents();
 
     // Create an enhanced history that syncs navigation events with the store
     const history = syncHistoryWithStore(browserHistory, Redux.shared.store);

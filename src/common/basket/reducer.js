@@ -2,7 +2,7 @@ import lodash from "lodash";
 import {handleActions} from "redux-actions";
 import {LoggerFactory, Storage} from "darch/src/utils";
 
-let Logger = new LoggerFactory("common.user.reducer", {level:"debug"});
+let Logger = new LoggerFactory("common.basket.reducer", {level:"debug"});
 let storage = new Storage();
 
 let initialState = {
@@ -200,6 +200,67 @@ export default handleActions({
 
         // Save to localstorage.
         storage.set("basket", JSON.stringify(newState));
+
+        return newState;
+    },
+
+    signinPageOpened() {
+        let logger = Logger.create("signinPageOpened");
+        logger.info("enter");
+
+        let newState = {
+            totalPrice: 0,
+            totalDiscount: 0,
+            items: {},
+            coupons: {},
+            address: null,
+            billingSessionId: null
+        };
+
+        // Save to localstorage.
+        storage.set("basket", JSON.stringify(newState));
+
+        return newState;
+    },
+
+    productPriceUpdate_COMPLETED(state, action) {
+        let logger = Logger.create("productPriceUpdate_COMPLETED");
+        logger.info("enter", {state, action});
+
+        let {items} = state;
+        let item = items[action.payload._id];
+        let newState = state;
+
+        logger.debug("item", item);
+
+        if(item) {
+            logger.debug("old totalPrice", {totalPrice: state.totalPrice});
+
+            // Remove old price
+            let totalPrice = state.totalPrice - item.quantity * item.product.priceValue;
+
+            logger.debug("totalPrice without old price", {totalPrice});
+
+            // Add new price
+            totalPrice += item.quantity * action.payload.value;
+
+            logger.debug("new totalPrice", totalPrice);
+
+            // Update price
+            item.product.priceValue = action.payload.value;
+
+            // log
+            logger.debug("result", {item, totalPrice});
+
+            // Set new state
+            newState = Object.assign({}, state, {totalPrice, items});
+
+            // Set new state total discount
+            newState.totalDiscount = getTotalDiscount(newState);
+
+            // Save to localstorage.
+            storage.set("basket", JSON.stringify(newState));
+        }
 
         return newState;
     }

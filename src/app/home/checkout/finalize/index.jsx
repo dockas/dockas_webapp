@@ -1,9 +1,10 @@
 import React from "react";
 import config from "config";
 import lodash from "lodash";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Container from "darch/src/container";
+import {Basket} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("checkout.finalize");
@@ -20,6 +21,9 @@ export default class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        // Now we can clear the basket
+        Redux.dispatch(Basket.actions.basketClear());
     }
 
     onBasketButtonClick() {

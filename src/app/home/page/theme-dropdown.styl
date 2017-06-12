@@ -1,0 +1,36 @@
+@require "~darch/src/styles/variables"
+@require "~darch/src/styles/utils"
+@require "~darch/src/styles/animation"
+
+.menu
+    background: white;
+    border-radius: 3px;
+    background-clip: padding-box;
+    border: 1px solid rgba(27,31,35,0.15);
+    shadow(0 3px 12px rgba(27,31,35,0.15));
+    
+.menu-container
+    .arrow-container
+        .arrow
+            border: 1px solid rgba(27,31,35,0.15);
+            background: white;
+
+.caret
+    margin-left: 0;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+
+.enter
+    opacity(0);
+    transition(opacity .08s ease-in);
+
+.enter-active
+    opacity(1);
+
+.leave
+    opacity(1);
+    transition(opacity .08s ease-in);
+
+.leave-active
+    opacity(0);

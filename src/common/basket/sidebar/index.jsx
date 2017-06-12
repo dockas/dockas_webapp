@@ -123,15 +123,17 @@ class Component extends React.Component {
                         </div>
 
                         <div className={styles.buttonContainer}>
-                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={priceLowerThanMin}>
-                                {!priceLowerThanMin ? (
+                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={priceLowerThanMin||loading}>
+                                {loading ? (
+                                    loadingComponent
+                                ) : !priceLowerThanMin ? (
                                     <i18n.Translate text={this.props.buttonLabel} />
-                                ) : !loading ? (
+                                ) : (
                                     <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
                                         minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
                                         diff: (minOrderTotalPrice - totalPrice)/100
                                     }} />
-                                ) : loadingComponent}
+                                )}
                             </Button>
                         </div>
                     </div>

@@ -1,8 +1,10 @@
 import React from "react";
 import lodash from "lodash";
+import classNames from "classnames";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
+import {Api} from "common";
 import styles from "./styles";
 import getIcon from "./icon";
 import optionActions from "../../option_actions";
@@ -22,6 +24,28 @@ export default class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+    }
+
+    async componentWillUnmount() {
+        let {notification} = this.props,
+            logger = Logger.create("componentWillUnmount");
+
+        logger.info("enter");
+
+        // Skip old notifications.
+        if(notification.status != 0){return;}
+
+        // Let's mark new notifications as viewd.
+        try {
+            let result = await Api.shared.notificationUpdate(notification._id, {
+                status: 1
+            });
+
+            logger.debug("api notificationUpdate success", result);
+        }
+        catch(error) {
+            logger.error("api notificationUpdate error", error);
+        }
     }
 
     selectOption(option) {
@@ -56,7 +80,10 @@ export default class Component extends React.Component {
         logger.info("enter", {notification});
 
         return (
-            <li className={styles.card}>
+            <li className={classNames([
+                styles.card,
+                styles[`card-status-${notification.status}`]
+            ])}>
                 <div className={styles.leftView}>
                     <span className={getIcon(notification)}></span>
                 </div>

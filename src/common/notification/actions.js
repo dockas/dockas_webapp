@@ -1,3 +1,4 @@
+import lodash from "lodash";
 import {createActions} from "redux-actions";
 import {LoggerFactory} from "darch/src/utils";
 import Api from "../utils/api";
@@ -16,7 +17,10 @@ export default createActions({
         var logger = Logger.create("notificationUpdatedEvent");
         logger.info("enter", data);
 
-        return data;
+        let {result, updatedKeys} = data;
+        data = lodash.pick(result, updatedKeys);
+
+        return {data, _id: result._id};
     },
 
     async notificationNewCount(opts) {
@@ -43,11 +47,11 @@ export default createActions({
         return {data: findResponse.results, query};
     },
 
-    async notificationUpdate(data = {}, opts) {
+    async notificationUpdate(id, data = {}, opts) {
         var logger = Logger.create("notificationUpdate");
-        logger.info("enter", data);
+        logger.info("enter", {id, data});
 
-        let response = await Api.shared.notificationUpdate(data, opts);
+        let response = await Api.shared.notificationUpdate(id, data, opts);
 
         logger.debug("api notificationUpdate success", response);
 

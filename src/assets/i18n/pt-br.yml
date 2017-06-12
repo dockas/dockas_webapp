@@ -34,12 +34,14 @@ dictionary:
 
     # Nav bar
     _NAV_BAR_ACCOUNT_ITEM_LABEL_: perfil
-    _NAV_BAR_ORDERS_ITEM_LABEL_: meus pedidos
+    _NAV_BAR_ORDERS_ITEM_LABEL_: pedidos
+    _NAV_BAR_CREATE_BRAND_ITEM_LABEL_: nova marca
+    _NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_: novo produto
     _NAV_BAR_SIGNOUT_ITEM_LABEL_: sair
     _NAV_BAR_SIGNIN_ITEM_LABEL_: entrar
     _NAV_BAR_ADMIN_ITEM_LABEL_: admin
     _NAV_BAR_NOTIFICATIONS_ITEM_LABEL_: alertas
-    _NAV_BAR_LISTS_ITEM_LABEL_: minhas listas
+    _NAV_BAR_LISTS_ITEM_LABEL_: listas
 
     # Catalog Page
     _CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_: nome do item
@@ -164,6 +166,8 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_PLACEHOLDER_: "123"
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_LABEL_: nome no cartão
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_PLACEHOLDER_: João M Silva
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_BIRTHDATE_FIELD_LABEL_: data de nascimento
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_BIRTHDATE_PLACEHOLDER_LABEL_: 22/01/1253
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_DOCUMENT_NUMBER_FIELD_LABEL_: documento
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_DOCUMENT_NUMBER_FIELD_PLACEHOLDER_: 564.464.832-01
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_PHONE_FIELD_LABEL_: telefone
@@ -174,14 +178,14 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_: cep
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_PLACEHOLDER_: 30000-000
-    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_LABEL_: endereço
-    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_ADDRESS_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_STREET_FIELD_LABEL_: endereço
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_STREET_FIELD_PLACEHOLDER_: Rua Gusmão Acíntaro
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NUMBER_FIELD_LABEL_: número
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NUMBER_FIELD_PLACEHOLDER_: "4938"
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_COMPLEMENT_FIELD_LABEL_: complemento
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_COMPLEMENT_FIELD_PLACEHOLDER_: Apto 402
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_LABEL_: bairro
-    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Bairrero
+    _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_NEIGHBORHOOD_FIELD_PLACEHOLDER_: Barreiro
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_CITY_FIELD_LABEL_: cidade
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_CITY_FIELD_PLACEHOLDER_: --selecionar--
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_PHONE_FIELD_LABEL_: telefone de contato
@@ -234,6 +238,19 @@ dictionary:
 
     _COMPANIES_CREATE_SUCCESS_: Empresas criadas com sucesso.
 
+    # Create brand page
+    _CREATE_BRAND_PAGE_TITLE_: Nova Marca
+    _CREATE_BRAND_PAGE_NAME_FIELD_LABEL_: nome
+    _CREATE_BRAND_PAGE_NAME_FIELD_PLACEHOLDER_: minha marca fodástica
+    _CREATE_BRAND_PAGE_NAME_ID_FIELD_LABEL_: identificador
+    _CREATE_BRAND_PAGE_NAME_ID_FIELD_PLACEHOLDER_: minha-marca-fodastica
+    _CREATE_BRAND_PAGE_OWNERS_FIELD_LABEL_: donos (diferentes de você)
+    _CREATE_BRAND_PAGE_OWNERS_FIELD_PLACEHOLDER_: meuamiguinho@email.com
+    _CREATE_BRAND_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+    _CREATE_BRAND_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: Venha experimentar nossas guloseimas deliciosas :p
+    _CREATE_BRAND_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
+
+    # Create notification
     _CREATE_NOTIFICATION_PAGE_TITLE_: Novo Alerta
     _CREATE_NOTIFICATION_PAGE_USERS_FIELD_LABEL_: usuários
     _CREATE_NOTIFICATION_PAGE_USERS_FIELD_PLACEHOLDER_: user@email.com
@@ -260,6 +277,7 @@ dictionary:
 
     # Orders Page
     _ORDERS_PAGE_TITLE_: Meus Pedidos
+    _ORDERS_PAGE_ID_TH_: id
     _ORDERS_PAGE_CREATED_AT_TH_: data de criação
     _ORDERS_PAGE_ADDRESS_TH_: endereço de entrega
     _ORDERS_PAGE_ITEMS_COUNT_TH_: número de items
@@ -279,11 +297,14 @@ dictionary:
     _LISTS_PAGE_OVERRIDE_WARNING_MODAL_BODY_: Existem produtos selecionados atualmente na sua cesta. O carregamento dessa lista eliminará todos esses produtos selecionados para dar lugar aos produtos da lista. Tem certeza que deseja continuar?
 
     # Catalog Item Page
+    _CATALOG_ITEM_PAGE_INFO_TAB_LABEL_: sobre
+    _CATALOG_ITEM_PAGE_STATISTICS_TAB_LABEL_: estatísticas
     _CATALOG_ITEM_PAGE_NAME_FIELD_LABEL_: nome
     _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
     _CATALOG_ITEM_PAGE_EDIT_LABEL_: editar
     _CATALOG_ITEM_PAGE_SAVE_LABEL_: salvar
     _CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_: preço
+    _CATALOG_ITEM_PAGE_BRAND_LABEL: marca
 
     # Invitation Page
     _INVITATION_PAGE_TITLE_: Solicite seu convite
@@ -294,16 +315,23 @@ dictionary:
     _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
     _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.
 
+    # Brand 
+    _BRAND_DETAIL_PAGE_PRODUCTS_TAB_LABEL_: produtos
+    _BRAND_DETAIL_PAGE_INFO_TAB_LABEL_: sobre
+    _BRAND_DETAIL_PAGE_STATISTICS_TAB_LABEL_: estatísticas
+    _BRAND_DETAIL_PAGE_PHOTOS_TAB_LABEL_: fotos
+    _BRAND_DETAIL_PAGE_ORDERS_TAB_LABEL_: pedidos
+    _BRAND_DETAIL_INFO_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+
     # Notifications Page
     _NOTIFICATIONS_PAGE_TITLE_: Alertas
     _NOTIFICATIONS_PAGE_NO_DATA_FOUND_MESSAGE_: Não há alertas ainda
 
     # Notification Messages
-    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_AWAITING_USER_AVAILABILITY_: Seu pedido <b>#{{order.count}}</b> sairá amanhã! Você estará em casa?
-    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_CONFIRMED_: Seu pedido <b>#{{order.count}}</b> foi confirmado.
-    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_BOXED_: Seu pedido <b>#{{order.count}}</b> já está pronto para ser entregue.
-    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{order.count}}</b> está a caminho da sua casa.
-    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_CLOSED_: Seu pedido <b>#{{order.count}}</b> foi entregue.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_PAYMENT_AUTHORIZED_: O pagamento do seu pedido <b>#{{result.count}}</b> foi realizado com sucesso.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_PACKAGED_: Seu pedido <b>#{{result.count}}</b> está embalado e pronto para a entrega.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{result.count}}</b> está a caminho da sua casa.
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERED_: Seu pedido <b>#{{result.count}}</b> foi entregue.
     _NOTIFICATION_SELECTED_OPTION_TEXT_: "Opção selecionada : <b>{{selectedOption}}</b>"
 
     # Basket Card
@@ -317,20 +345,34 @@ dictionary:
     _BASKET_CARD_INVITATION_BUTTON_TEXT_: quero comprar
     _BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_: Mínimo de R$ {{minOrderTotalPrice}}
 
+    # ORDER STATUS
+    _ORDER_STATUS_PAYMENT_PENDING_: pagamento pendente
+    _ORDER_STATUS_PAYMENT_AUTHORIZED_: pagamento autorizado
+    _ORDER_STATUS_PACKAGED_: embalado
+    _ORDER_STATUS_DELIVERING_: a caminho
+    _ORDER_STATUS_DELIVERED_: entregue
+
     # Field errors
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
     _FIELD_ERROR_EMAIL_: Digite um endereço de email válido
     _FIELD_ERROR_DIGITS_: Apenas números são permitidos neste campo.
     _FIELD_ERROR_COLOR_: Digite uma cor válida
     _FIELD_ERROR_ID_: Apenas os caracteres a-z (sem acentos), dígitos 0-9 e hífen (-) são permitidos.
+    _FIELD_BRAND_NAME_ID_: Esse identificador já está sendo utilizado.
     _FIELD_ERROR_PHONE_: Insira um telefone válido.
     _FIELD_ERROR_POSTAL_CODE_: Insira um CEP válido.
     _FIELD_ERROR_CARD_EXP_DATE_: Insira uma data válida.
     _FIELD_ERROR_DOCUMENT_CPF_: Insira um CPF válido.
+    _FIELD_ERROR_BIRTHDATE_: Insira uma data válida.
 
     # Error messages
     _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.
     _AUTH_ERROR_2_: Nome de usuário, email ou senha incorretos.
     _USER_ERROR_6_: Email já cadastrado.
     _COUPON_ERROR_3_: Você já utilizou esse cupom antes.
+    _BRAND_ERROR_5_: Você atingiu o número máximo de marcas possíveis.
+    _BRAND_ERROR_6_: Você atingiu o número máximo de produtos possíveis nessa marca.
+    _PRODUCT_ERROR_4_: Você atingiu o número máximo de produtos permitidos para a marca <b>{{brand.name}}</b>
+    _API_ERROR_5_: Apenas proprietários podem realizar essa requisição.
+    _API_ERROR_6_: Apenas proprietários autorizados podem realizar essa requisição.
     _ERROR_UNKNOWN_: Ops.. Algo misterioso aconteceu! :(

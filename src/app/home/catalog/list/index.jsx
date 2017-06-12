@@ -16,10 +16,8 @@ import Spinner from "darch/src/spinner";
 import Label from "darch/src/label";
 import Text from "darch/src/text";
 import Toaster from "darch/src/toaster";
-import {Api,Product} from "common";
+import {Api,Product,Scroller} from "common";
 import styles from "./styles";
-import Scroller from "./scroller";
-import PriceModal from "../price_modal";
 
 let Logger = new LoggerFactory("catalog.list", {level: "debug"});
 let storage = new Storage();
@@ -53,8 +51,8 @@ function mapStateToProps(state) {
     return {
         user: lodash.get(state.user.profiles, state.user.uid),
         basket: state.basket,
-        products: state.product.data,
-        productsQuery: state.product.query
+        products: lodash.get(state.product,"scope.catalogList.data"),
+        productsQuery: lodash.get(state.product,"scope.catalogList.query")
     };
 }
 
@@ -90,11 +88,13 @@ class Component extends React.Component {
 
         // Retrieve popular tags
         try {
-            let response = await Api.shared.tagFind();
+            let response = await Api.shared.tagFind({
+                sort: {findCount: -1}
+            });
 
             // Process tags
             let tags = response.results.map((tag) => {
-                return {value: tag._id, label: tag.name};
+                return {value: tag._id, label: tag.name, color: tag.color};
             });
 
             this.setState({tags});
@@ -115,10 +115,10 @@ class Component extends React.Component {
 
                 let query = {
                     limit: 30,
-                    name: {
+                    hash: {
                         gt: count===1 ? 
                             "#" :
-                            products[products.length-1].name
+                            products[products.length-1].hash
                     }
                 };
 
@@ -130,11 +130,11 @@ class Component extends React.Component {
                     query.tags = this.tags;
                 }
 
-                if(products.length) {
+                /*if(products.length) {
                     query.priority = {
                         lte: products[products.length-1].priority
                     };
-                }
+                }*/
 
                 await this.loadProducts(query);
             },
@@ -169,7 +169,7 @@ class Component extends React.Component {
         });
 
         let mergedQuery = lodash.assign({}, query, {
-            sort: {"priority": -1, "name": 1},
+            sort: {"hash": 1, "name": 1},
             populate: ["tags","profileImages","brand","brand.company"]
         });
 
@@ -184,7 +184,10 @@ class Component extends React.Component {
         // Retrieve products
         try {
             await Redux.dispatch(
-                Product.actions.productFind(mergedQuery, {concat})
+                Product.actions.productFind(mergedQuery, {
+                    concat,
+                    scope: {id: "catalogList"}
+                })
             );
         }
         catch(error) {
@@ -219,7 +222,7 @@ class Component extends React.Component {
 
             // Process tags
             let tags = response.results.map((tag) => {
-                return {value: tag._id, label: tag.name};
+                return {value: tag._id, label: tag.name, color: tag.color};
             });
 
             this.setState({tags, loadingTags: false});
@@ -237,6 +240,7 @@ class Component extends React.Component {
         let {productsQuery} = this.props;
         let query = lodash.cloneDeep(productsQuery);
         query.limit = 30;
+        query.hash = {gt: "#"};
 
         this.searchName = data.name;
 
@@ -247,7 +251,7 @@ class Component extends React.Component {
             mixpanel.track("product searched by name", {name: data.name});
         }
         else {
-            query.name = {gte: "#"};
+            delete query.name;
         }
 
         this.loadProducts(query,{isSearch:true, concat: false});
@@ -268,12 +272,19 @@ class Component extends React.Component {
             let {productsQuery} = this.props;
             let query = lodash.cloneDeep(productsQuery);
             query.limit = 30;
+            query.hash = {gt: "#"};
 
             if(values && values.length) {
                 this.tags = values;
 
                 query.tags = values;
-                query.name = this.searchName || {gte: "#"};
+
+                if(this.searchName) {
+                    query.name = this.searchName;
+                }
+                else {
+                    delete query.name;
+                }
 
                 // Send mixpanel event.
                 for(let tagValue of values) {
@@ -291,6 +302,16 @@ class Component extends React.Component {
                 this.tags = null;
             }
 
+            // Let's increment findCount of new tags.
+            let newTags = lodash.difference(values, this.state.selectedTags);
+
+            logger.debug("new tags", newTags);
+
+            for(let newTag of newTags) {
+                Api.shared.tagIncFindCount(newTag);
+            }
+
+            // Load products
             return this.loadProducts(query,{isSearch:true, concat: false});
         }
     }
@@ -394,16 +415,16 @@ class Component extends React.Component {
     }
 
     render() {
-        let {products,user} = this.props;
+        let {products,user,basket} = this.props;
         let {listName} = this.props.basket;
-        let {tags,loadingTags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
+        let {tags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
 
         products = filteredProducts || products;
 
         return (
             <div className={styles.page}>
                 <Container>
-                   <div className={styles.searchContainer}>
+                    <div className={styles.searchContainer}>
                         <Grid noGap={true}>
                             <Grid.Cell span={1}>
                                 <Grid noGap={false}>
@@ -428,8 +449,6 @@ class Component extends React.Component {
                                                 onChange={this.onSearchTagsChange}
                                                 placeholder="_CATALOG_LIST_PAGE_SEARCH_TAGS_FIELD_PLACEHOLDER_"
                                                 options={tags}
-                                                loadOptions={this.loadTags}
-                                                loading={loadingTags}
                                                 clearSearchOnSelect={true}
                                                 creatable={false}
                                                 multi={true}
@@ -438,6 +457,13 @@ class Component extends React.Component {
                                                 loaderComponent={<Spinner.CircSide color="#555" />}/>
                                         </div>
                                     </Grid.Cell>
+                                    {/*<Grid.Cell span={1}>
+                                        <Button scale={screenSize == "phone"?1:0.8} onClick={ ()=> {
+
+                                        }}>
+                                            pesquisar
+                                        </Button>
+                                    </Grid.Cell>*/}
 
                                     {/*this.state.searchLoading ? (
                                         <Grid.Cell>
@@ -451,9 +477,9 @@ class Component extends React.Component {
 
                             <Grid.Cell>
                                 <div className={classNames([styles.fieldContainer,styles.actionButtonsContainer])}>
-                                    {user && user.roles.indexOf("admin") >= 0 ? (
+                                    {/*user && user.roles.indexOf("admin") >= 0 ? (
                                         <div className="field-gap"><Button to="/admin/create/product" scale={screenSize == "phone"?1:0.8} color="warning"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_" /></Button></div>
-                                    ) : null}
+                                    ) : null*/}
                                     
                                     {user ? <div className="field-gap"><Button scale={screenSize == "phone"?1:0.8} onClick={this.onSaveListButtonClick}><i18n.Translate text="_CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_" /></Button></div> : null}
                                 </div>
@@ -502,7 +528,9 @@ class Component extends React.Component {
                             })*/
 
                             products.map((product) => {
-                                return (
+                                let isWithinBasket = !!(basket.items[product._id]);
+
+                                return product.stock != 0 || isWithinBasket ? (
                                     <Grid.Cell key={product._id} span={2}>
                                         <Product.Card data={product} 
                                             onChangePrice={this.onProductChangePrice}
@@ -517,7 +545,7 @@ class Component extends React.Component {
                                             }}
                                         />
                                     </Grid.Cell>
-                                );
+                                ) : <span></span>;
                             })
                         ) : null}
                     </Grid>
@@ -596,7 +624,7 @@ class Component extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-                <PriceModal open={!!priceModalProduct}
+                <Product.PriceModal open={!!priceModalProduct}
                     product={priceModalProduct} 
                     onComplete={(result) => {
                         let logger = Logger.create("onPriceModalComplete");

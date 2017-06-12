@@ -66,11 +66,15 @@ export default class Component extends React.Component {
                                             name="email"
                                             placeholder="_INVITATION_PAGE_EMAIL_FIELD_PLACEHOLDER_"
                                             scale={1.5}
-                                            validators="required"/>
+                                            validators="$required|$email"/>
                                         <Field.Error
-                                            for="test"
-                                            validator="required|email"
+                                            for="email"
+                                            validator="$required"
                                             message="_FIELD_ERROR_REQUIRED_"/>
+                                        <Field.Error
+                                            for="email"
+                                            validator="$email"
+                                            message="_FIELD_ERROR_EMAIL_"/>
                                     </Field.Section>
 
                                     <Field.Section>

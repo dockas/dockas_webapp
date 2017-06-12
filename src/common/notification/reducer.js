@@ -21,34 +21,30 @@ export default handleActions({
 
     notificationUpdatedEvent(state, action) {
         let logger = Logger.create("notificationUpdatedEvent");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
-        let {notification,updated} = action.payload;
-        let newState = state;
+        let {data,newCount} = state;
 
-        let stateNotification = lodash.find(state.data, (stateNotification) => {
-            return stateNotification._id == notification._id;
+        let idx = lodash.findIndex(data, (notification) => {
+            return notification._id == action.payload._id;
         });
 
-        if(stateNotification) {
-            logger.debug("notification found");
+        if(idx >= 0) {
+            let oldStatus = data[idx].status;
+            data.splice(idx, 1, Object.assign({}, data[idx], action.payload.data, lodash.get(action,"payload.opts.data")));
 
-            Object.assign(stateNotification, updated);
-
-            newState = Object.assign({}, newState, {
-                data: lodash.clone(state.data)
+            logger.debug("notification found", {
+                oldStatus, notification: data[idx]
             });
+
+            // New notification is not new anymore
+            if(oldStatus == 0 && data[idx].status != 0) {
+                logger.debug("new notification is not new anymore");
+                newCount--;
+            }
         }
 
-        // New notification changed it's status, so decrement
-        // new count.
-        if(stateNotification.status === 0 && updated.status !== 0) {
-            newState = Object.assign({}, newState, {
-                newCount: newState.newCount-1
-            });
-        }
-
-        return newState;
+        return {data,newCount};
     },
 
     notificationNewCount_COMPLETED(state, action) {
@@ -67,5 +63,15 @@ export default handleActions({
         return Object.assign({}, state, {
             data: action.payload.data
         });
+    },
+
+    signinPageOpened() {
+        let logger = Logger.create("signinPageOpened");
+        logger.info("enter");
+
+        return {
+            data: null,
+            newCount: 0
+        };
     }
 }, initialState);

@@ -18,6 +18,7 @@ module.exports = {
                 require("./invitation/route"),
                 require("./notifications/route"),
                 require("./lists/route"),
+                require("./create/route"),
                 require("./admin/route")
             ]);
         });

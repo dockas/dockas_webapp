@@ -35,12 +35,15 @@ export default handleActions({
         logger.info("enter", {state, action});
 
         let {selected,data} = state;
-        let idx = lodash.findIndex(data, (brand) => {
-            return brand._id = action.payload._id;
-        });
 
-        if(idx >= 0) {
-            data.splice(idx, 1, action.payload);
+        if(data) {
+            let idx = lodash.findIndex(data, (brand) => {
+                return brand._id = action.payload._id;
+            });
+
+            if(idx >= 0) {
+                data.splice(idx, 1, action.payload);
+            }
         }
 
         if(selected && selected._id == action.payload._id) {
@@ -51,6 +54,17 @@ export default handleActions({
             data,
             selected,
             query: state.query
+        };
+    },
+
+    signinPageOpened() {
+        let logger = Logger.create("signinPageOpened");
+        logger.info("enter");
+
+        return {
+            data: null,
+            selected: null,
+            query: null
         };
     }
 }, initialState);

@@ -8,6 +8,10 @@ let Logger = new LoggerFactory("common.utils.api");
  * Main class definition.
  */
 export default class Api {
+    static idToKey(id) {
+        return id.replace(/^.*\/(\d+)$/, "$1");
+    }
+
     constructor({http=new Http(), shared=false} = {}) {
         if(shared){Api.shared = this;}
 
@@ -29,9 +33,9 @@ export default class Api {
         ).catch((error) => {
             logger.error("catch error", error);
 
-            if(!opts.preventErrorInterceptor) {
-                let data = lodash.get(error, "response.data");
+            let data = lodash.get(error, "response.data");
 
+            if(!opts.preventErrorInterceptor) {
                 if(data && data.name) {
                     let name = lodash.toUpper(lodash.snakeCase(data.name));
                     let code = data.code;
@@ -46,7 +50,7 @@ export default class Api {
                 
             }
 
-            throw error;
+            throw data;
         });
     }
 
@@ -123,6 +127,10 @@ export default class Api {
 
     tagFind(query, opts) {
         return this.request("GET", "tag", query, opts);
+    }
+
+    tagIncFindCount(id, opts) {
+        return this.request("PUT", `tag/${Api.idToKey(id)}/find/count`, null, opts);
     }
 
     priceCreate(data, opts) {
@@ -251,6 +259,14 @@ export default class Api {
 
     billingSourceRemove(id, opts) {
         return this.request("DELETE", `billing/${id}`, null, opts);
+    }
+
+    fileFind(query, opts) {
+        return this.request("GET", "file", query, opts);
+    }
+
+    fileFindById(id, opts) {
+        return this.request("GET", `file/${id}`, null, opts);
     }
 
     configGet(opts) {

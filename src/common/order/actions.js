@@ -1,3 +1,4 @@
+import lodash from "lodash";
 import {createActions} from "redux-actions";
 import {LoggerFactory} from "darch/src/utils";
 import Api from "../utils/api";
@@ -16,15 +17,19 @@ export default createActions({
         return createResponse.result;
     },
 
-    async orderFind(query, opts) {
+    async orderFind(query, {
+        scope="",
+        concat=false,
+        opts=null
+    }) {
         var logger = Logger.create("orderFind");
-        logger.info("enter", query);
+        logger.info("enter", {query,scope,concat,opts});
 
-        let findResponse = await Api.shared.orderFind(query, opts);
+        let response = await Api.shared.orderFind(query, opts);
 
-        logger.debug("Api orderFind success", findResponse);
+        logger.debug("api orderFind success", response);
 
-        return {data: findResponse.results, query};
+        return {data: response.results, query, scope, concat};
     },
 
     async orderStatusUpdate(id, status, opts) {
@@ -33,15 +38,23 @@ export default createActions({
 
         let response = await Api.shared.orderStatusUpdate(id, status, opts);
 
-        logger.debug("Api orderStatusUpdate success", response);
+        logger.debug("api orderStatusUpdate success", response);
 
-        return response.result;
+        return {data: response.result, _id: response.result._id};
     },
 
-    orderStatusUpdatedEvent(data) {
-        var logger = Logger.create("orderStatusUpdatedEvent");
-        logger.info("enter", data);
+    orderUpdatedEvent(data) {
+        let logger = Logger.create("orderUpdatedEvent");
+        logger.info("enter", {data});
 
-        return data;
+        let {result, updatedKeys} = data;
+        data = lodash.pick(result, updatedKeys);
+
+        logger.debug("updated data", data);
+
+        // @TODO : If any items has changed, then we must
+        // populate it.
+
+        return {data, _id: result._id};
     }
 });

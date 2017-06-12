@@ -6,14 +6,15 @@ let Logger = new LoggerFactory("order", {level: "debug"});
 module.exports = class Order {
     static actions = require("./actions");
     static reducer = require("./reducer");
+    static types = require("./types");
 
     // Register to socket events.
     static listenSocketEvents() {
-        Socket.shared.on("order:status_updated", (data) => {
-            let logger = Logger.create("order:status_updated");
+        Socket.shared.on("order:updated", (data) => {
+            let logger = Logger.create("order:updated");
             logger.info("enter", data);
 
-            Redux.dispatch(Order.actions.orderStatusUpdatedEvent(data));
+            Redux.dispatch(Order.actions.orderUpdatedEvent(data));
         });
     }
 };

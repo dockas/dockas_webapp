@@ -8,14 +8,14 @@ import Spinner from "darch/src/spinner";
 import {Api} from "common";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("admin.products.price_modal");
+let Logger = new LoggerFactory("catalog.price_modal");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "admin.products.price_modal";
+    static displayName = "catalog.price_modal";
     static defaultProps = {
         onComplete: () => {},
         open: false

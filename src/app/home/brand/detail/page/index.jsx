@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
 import Text from "darch/src/text";
-//import i18n from "darch/src/i18n";
+import i18n from "darch/src/i18n";
 import Uploader from "darch/src/uploader";
 import Tabs from "darch/src/tabs";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
@@ -261,12 +261,10 @@ class Component extends React.Component {
     }
 
     render() {
-        let {uid,user,brand} = this.props;
+        let {user,brand} = this.props;
         let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
-        let isOwner = (user && user.roles.indexOf("admin") >= 0) 
-            || (uid && brand.owners && brand.owners.indexOf(uid) >= 0)
-            || (uid && brand.company && brand.company.owners && brand.company.owners.indexOf(uid) >= 0);
+        let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, brand);
 
         return (
             <div className={styles.page}>
@@ -307,8 +305,11 @@ class Component extends React.Component {
                                     <div className={styles.tabsBodyContainer}>
                                         <div className={styles.tabsBody}>
                                             <Tabs bordered={false}>
-                                                <Tabs.Item to={`/brand/${nameId}`}>Info</Tabs.Item>
-                                                {isOwner ? <Tabs.Item to={`/brand/${nameId}/statistics`}>Estatísticas</Tabs.Item> : null}
+                                                <Tabs.Item to={`/brand/${nameId}`}><i18n.Translate text="_BRAND_DETAIL_PAGE_PRODUCTS_TAB_LABEL_"/></Tabs.Item>
+                                                <Tabs.Item to={`/brand/${nameId}/info`}><i18n.Translate text="_BRAND_DETAIL_PAGE_INFO_TAB_LABEL_"/></Tabs.Item>
+                                                <Tabs.Item to={`/brand/${nameId}/photos`}><i18n.Translate text="_BRAND_DETAIL_PAGE_PHOTOS_TAB_LABEL_"/></Tabs.Item>
+                                                {isAdmin||isApprovedOwner ? <Tabs.Item to={`/brand/${nameId}/statistics`}><i18n.Translate text="_BRAND_DETAIL_PAGE_STATISTICS_TAB_LABEL_" /></Tabs.Item> : null}
+                                                {isAdmin||isApprovedOwner ? <Tabs.Item to={`/brand/${nameId}/orders`}><i18n.Translate text="_BRAND_DETAIL_PAGE_ORDERS_TAB_LABEL_" /></Tabs.Item> : null}
                                             </Tabs>
                                         </div>
                                     </div>
@@ -335,11 +336,11 @@ class Component extends React.Component {
                                                 onImagesLoad={this.onUploaderImagesLoad}
                                                 images={profileImages}
                                                 defaulImageUrl={placeholderImg}
-                                                showAddMoreButton={true}
-                                                showSelectMainProfileImageButton={(user && user.roles.indexOf("admin") >= 0)}
-                                                borderColor="white"
+                                                showAddMoreButton={isAdmin||isApprovedOwner}
+                                                showSelectMainProfileImageButton={isAdmin||isApprovedOwner}
+                                                borderColor="#ffffff"
                                                 borderWidth="7px"
-                                                editing={(user && user.roles.indexOf("admin") >= 0)}/>
+                                                editing={isAdmin||isApprovedOwner}/>
 
                                             {/*mainImage ? (
                                                 <div className={styles.mainImage} style={{

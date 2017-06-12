@@ -9,7 +9,7 @@ import i18n from "darch/src/i18n";
 import Text from "darch/src/text";
 import Spinner from "darch/src/spinner";
 import placeholderImg from "assets/images/placeholder.png";
-import {Basket} from "common";
+import {Basket,Brand} from "common";
 import styles from "./styles";
 import Badge from "../../badge";
 
@@ -172,6 +172,7 @@ class Component extends React.Component {
     render() {
         let {data,uid,user} = this.props;
         let {showOverlay,screenSize} = this.state;
+        let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(data, "brand"));
 
         let item = this.props.basket.items[data._id];
         let mainProfileImage = lodash.find(data.profileImages, (image) => {
@@ -228,7 +229,7 @@ class Component extends React.Component {
                         null
                     )}
 
-                    {user && user.roles.indexOf("admin") >= 0 ? (
+                    {isAdmin||isApprovedOwner ? (
                         <a className={styles.changePriceButton} onClick={this.onChangePriceBtnClicked} title="change price">
                             <span className="icon-price-tag"></span>
                         </a>

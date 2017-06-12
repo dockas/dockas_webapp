@@ -7,6 +7,11 @@ import NotificationActions from "../notification/actions";
 let Logger = new LoggerFactory("common.auth.actions", {level:"error"});
 
 export default createActions({
+    signinPageOpened() {
+        var logger = Logger.create("signinPageOpened");
+        logger.info("enter");
+    },
+
     async signin({email, password} = {}, opts) {
         var logger = Logger.create("signin");
         logger.info("enter", {email, password});
@@ -34,5 +39,19 @@ export default createActions({
         logger.debug("Api userMe success", {userMeResponse});
 
         return userMeResponse.result;
+    },
+
+    async signout() {
+        var logger = Logger.create("signout");
+        logger.info("enter");
+
+        let response = await Api.shared.signout();
+        logger.debug("api signout success", response);
+
+        // Remove api http auth token
+        await Api.shared.http.removeAuthToken();
+        logger.debug("api http removeAuthToken success");
+
+        return response.result;
     }
 });

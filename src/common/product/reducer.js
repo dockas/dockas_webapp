@@ -5,9 +5,8 @@ import lodash from "lodash";
 let Logger = new LoggerFactory("common.product.reducer", {level:"debug"});
 
 let initialState = {
-    data: null,
-    selected: null,
-    query: null
+    scope: {},
+    selected: null
 };
 
 export default handleActions({
@@ -28,43 +27,89 @@ export default handleActions({
     },
 
     productFind_COMPLETED(state, action) {
-        let data,logger = Logger.create("productFind_COMPLETED");
+        let data,
+            scope = lodash.get(action, "payload.scope"),
+            logger = Logger.create("productFind_COMPLETED");
+
         logger.info("enter", {state, action});
 
-        if(action.payload.opts.concat) {
-            data = (state.data||[]).concat(action.payload.data);
+        if(!scope||!lodash.isObject(scope)){return;}
+
+        if(action.payload.concat) {
+            data = (lodash.get(state.scope,`${scope.id}.data`)||[]).concat(action.payload.data);
         }
         else {
             data = action.payload.data;
         }
 
         return {
-            data,
-            query: action.payload.query
+            scope: Object.assign(
+                {},
+                state.scope,
+                {
+                    [scope.id]: Object.assign({}, scope, {
+                        data,
+                        query: action.payload.query
+                    })
+                }
+            )
         };
     },
 
-    productUpdate_COMPLETED(state, action) {
-        let logger = Logger.create("productUpdate_COMPLETED");
+    productUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("productUpdatedEvent_COMPLETED");
         logger.info("enter", {state, action});
 
-        let {selected,data} = state;
-        let idx = lodash.findIndex(data, (product) => {
-            return product._id = action.payload.data._id;
-        });
+        let {scope,selected} = state;
 
-        if(idx >= 0) {
-            data.splice(idx, 1, lodash.merge({}, action.payload.data, action.payload.opts.data));
-        }
+        //console.log(["balofo colo", scope]);
 
-        if(selected && selected._id == action.payload.data._id) {
-            selected = lodash.merge({}, selected, action.payload.data, action.payload.opts.data);
+        scope = lodash.reduce(scope, (result, scope, id) => {
+            let {data,query} = scope;
+
+            //console.log(["balofo colo : one", id, data, query, scope, action]);
+
+            let idx = lodash.findIndex(data, (product) => {
+                return product._id == action.payload._id;
+            });
+
+            //console.log(["balofo colo : idx", idx]);
+
+            if(idx >= 0) {
+                data.splice(idx, 1, lodash.merge({}, data[idx], action.payload.data, lodash.get(action,"payload.opts.data")));
+            }
+
+            //console.log(["balofo colo : data", data]);
+
+            return Object.assign(result, {
+                [id]: Object.assign(scope, {
+                    data: lodash.clone(data),
+                    query
+                })
+            });
+        }, {});
+
+        //console.log(["balofo colo : new scope", scope, action, selected]);
+
+        if(selected && selected._id == action.payload._id) {
+            selected = lodash.assign({}, lodash.clone(selected), action.payload.data, lodash.get(action,"payload.opts.data"));
+
+            //console.log(["balofo colo : update selected", scope, selected]);
         }
 
         return {
-            data,
-            selected,
-            query: state.query
+            scope,
+            selected
+        };
+    },
+
+    signinPageOpened() {
+        let logger = Logger.create("signinPageOpened");
+        logger.info("enter");
+
+        return {
+            scope: {},
+            selected: null
         };
     }
 }, initialState);

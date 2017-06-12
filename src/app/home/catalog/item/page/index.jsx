@@ -10,7 +10,7 @@ import Button from "darch/src/button";
 import Uploader from "darch/src/uploader";
 import Tabs from "darch/src/tabs";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
-import {Api,Product,Basket,Badge} from "common";
+import {Api,Product,Basket,Badge,Brand} from "common";
 import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
 
@@ -24,7 +24,7 @@ let Logger = new LoggerFactory("catalog.item.page");
  */
 function mapStateToProps(state) {
     return {
-        products: state.product.data,
+        products: lodash.get(state.product,"scope.catalogList.data"),
         product: state.product.selected,
         basket: state.basket,
         uid: state.user.uid,
@@ -86,22 +86,8 @@ class Component extends React.Component {
         }
         
         if(product) {
-            // Process profile images
-            let profileImages = [];
-
-            for(let image of product.profileImages||[]) {
-                profileImages.push({
-                    _id: image._id, 
-                    url: image.url?image.url:`//${config.hostnames.file}/images/${image.path}`
-                });
-            }
-
-            let mainProfileImage = lodash.find(profileImages, (image) => {
-                return image._id == product.mainProfileImage;
-            });
-
-            newState.mainProfileImage = mainProfileImage;
-            newState.profileImages = profileImages;
+            // Process profile images.
+            //Object.assign(newState, this.processProfileImages(product));
 
             // Select product
             Redux.dispatch(Product.actions.productSelect(product));
@@ -123,8 +109,65 @@ class Component extends React.Component {
         this.handleWindowResize();
     }
 
+    componentDidUpdate(prevProps) {
+        let logger = Logger.create("componentDidUpdate");
+        logger.info("enter");
+
+        let {product} = this.props;
+        let profileImagesStr = lodash.map(lodash.get(product, "profileImages"),"_id").sort().join(",");
+        let prevProfileImagesStr = lodash.map(lodash.get(prevProps, "product.profileImages"), "_id").sort().join(",");
+
+        logger.debug("data", {
+            profileImagesStr,
+            prevProfileImagesStr
+        });
+
+        // If product images is diferent than state profile images,
+        // then process again.
+        if(profileImagesStr != prevProfileImagesStr
+        ||lodash.get(product, "mainProfileImage") != lodash.get(prevProps,"product.mainProfileImage")) {
+            logger.debug("product profileImages changed");
+            this.processProfileImages(product);
+        }
+    }
+
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    processProfileImages(product) {
+        // Process profile images
+        let profileImages = [];
+
+        for(let image of product.profileImages||[]) {
+            profileImages.push({
+                _id: image._id,
+                url: image.url?image.url:`//${config.hostnames.file}/images/${image.path}`
+            });
+        }
+
+        // If the are local-files mounted, then add it to the end
+        // of the profile images array.
+        let localImages = lodash.filter(this.state.profileImages, (img) => {
+            return img.type == "local-file";
+        });
+
+        console.log("rapadura mole : localImages", {localImages});
+
+        profileImages = profileImages.concat(localImages);
+
+        // Set main profile image.
+        let mainProfileImage = lodash.find(profileImages, (image) => {
+            return image._id == product.mainProfileImage;
+        });
+
+        console.log("rapadura mole", {mainProfileImage, profileImages});
+
+        // Return to caller.
+        this.setState({
+            mainProfileImage,
+            profileImages
+        });
     }
 
     handleWindowResize() {
@@ -223,23 +266,22 @@ class Component extends React.Component {
 
     async onUploadComplete() {
         let logger = Logger.create("onUploadComplete");
-
-        //console.log(["console onUploadComplete", this.state]);
-
         logger.info("enter", this.data);
 
-        this.updateProduct({
-            mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
-            profileImages: lodash.map(this.state.profileImages, (image) => {
-                //console.log("console onUploadComplete : image", image);
+        try {
+            await this.updateProduct({
+                mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
+                profileImages: lodash.map(this.state.profileImages, (image) => {
+                    return image._id;
+                })
+            }, {profileImages: this.state.profileImages});
+        }
+        catch(error) {
+            return logger.error("updateProduct error", error);
+        }
 
-                return image._id;
-            })
-        }, {
-            tags: this.props.product.tags,
-            profileImages: this.oldProfileImages,
-            mainProfileImage: this.oldMainProfileImage
-        });
+        // Clear profile images.
+        this.setState({profileImages: []});
     }
 
     onUploaderImagesLoad(images) {
@@ -262,22 +304,22 @@ class Component extends React.Component {
     }
 
     async updateProduct(data, oldData) {
-        let productResponse,
+        let response,
             productId = lodash.get(this.props, "product._id"),
             logger = Logger.create("onUploadComplete");
 
         if(!productId){return;}
 
-        logger.info("enter", data);
+        logger.info("enter", {data,oldData});
 
         // Update product.
         try {
-            productResponse = await Redux.dispatch(
+            response = await Redux.dispatch(
                 Product.actions.productUpdate(productId, data, {
                     data: oldData
                 })
             );
-            logger.debug("api productUpdate success", productResponse);
+            logger.debug("api productUpdate success", response);
         }
         catch(error) {
             return logger.error("api productUpdate error", error);
@@ -289,7 +331,8 @@ class Component extends React.Component {
         let {items} = this.props.basket;
         let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
-        let isOwner = (user && user.roles.indexOf("admin") >= 0) || !!(uid && product && product.brand.owners && product.brand.owners.indexOf(uid) >= 0) || !!(uid && product && product.brand.company && product.brand.company.owners && product.brand.company.owners.indexOf(uid) >= 0);
+        let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(product,"brand"));
+        let isProductReady = product && product.nameId == lodash.get(this.props, "params.id");
 
         let item = lodash.find(items, (item) => {
             return item.product.nameId == nameId;
@@ -343,7 +386,7 @@ class Component extends React.Component {
 
                 <div className={styles.mainContent}>
                     <Container>
-                        {product ? (
+                        {isProductReady ? (
                             <Grid>
                                 <Grid.Cell>
                                     <div className={styles.sidebarContainer}>
@@ -361,10 +404,10 @@ class Component extends React.Component {
                                                 images={profileImages}
                                                 defaulImageUrl={placeholderImg}
                                                 showAddMoreButton={true}
-                                                showSelectMainProfileImageButton={isOwner}
+                                                showSelectMainProfileImageButton={isAdmin||isApprovedOwner}
                                                 borderColor="white"
                                                 borderWidth="7px"
-                                                editing={isOwner}/>
+                                                editing={isAdmin||isApprovedOwner}/>
 
                                             {/*mainImage ? (
                                                 <div className={styles.mainImage} style={{
@@ -429,13 +472,15 @@ class Component extends React.Component {
                                         <div className={styles.tabsBodyContainer}>
                                             <div className={styles.tabsBody}>
                                                 <Tabs bordered={true}>
-                                                    <Tabs.Item to={`/item/${nameId}`}>Info</Tabs.Item>
-                                                    {isOwner?<Tabs.Item to={`/item/${nameId}/statistics`}>Estatísticas</Tabs.Item>:null}
+                                                    <Tabs.Item to={`/item/${nameId}`}><i18n.Translate text="_CATALOG_ITEM_PAGE_INFO_TAB_LABEL_"/></Tabs.Item>
+                                                    {isAdmin||isApprovedOwner?<Tabs.Item to={`/item/${nameId}/statistics`}><i18n.Translate text="_CATALOG_ITEM_PAGE_STATISTICS_TAB_LABEL_"/></Tabs.Item>:null}
                                                 </Tabs>
                                             </div>
                                         </div>
 
-                                        {this.props.children}
+                                        <div className={styles.childrenBodyContainer}>
+                                            {this.props.children}
+                                        </div>
                                     </div>
                                 </Grid.Cell>
                             </Grid>

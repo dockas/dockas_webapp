@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?4t04v8');
-  src:  url('fonts/icomoon.eot?4t04v8#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?4t04v8') format('truetype'),
-    url('fonts/icomoon.woff?4t04v8') format('woff'),
-    url('fonts/icomoon.svg?4t04v8#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?7r5n5');
+  src:  url('fonts/icomoon.eot?7r5n5#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?7r5n5') format('truetype'),
+    url('fonts/icomoon.woff?7r5n5') format('woff'),
+    url('fonts/icomoon.svg?7r5n5#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-circled-box:before {
+  content: "\e921";
+}
+.icon-circled-dollar:before {
+  content: "\e922";
+}
+.icon-circled-new:before {
+  content: "\e927";
+}
+.icon-circled-ok:before {
+  content: "\e933";
+}
+.icon-circled-truck:before {
+  content: "\e934";
+}
+.icon-bell-3:before {
+  content: "\e932";
+}
 .icon-bank-card:before {
   content: "\e931";
 }
@@ -153,13 +171,7 @@
 .icon-paper-plane:before {
   content: "\e920";
 }
-.icon-circled-box:before {
-  content: "\e921";
-}
-.icon-circled-truck:before {
-  content: "\e922";
-}
-.icon-circled-ok:before {
+.icon-circled-ok-2:before {
   content: "\e923";
 }
 .icon-circled-question:before {
@@ -170,7 +182,4 @@
 }
 .icon-happy:before {
   content: "\e926";
-}
-.icon-circled-thumbs-up:before {
-  content: "\e927";
 }

@@ -249,7 +249,7 @@ class Component extends React.Component {
 
             // Process tags
             let tags = response.results.map((tag) => {
-                return {value: tag._id, label: tag.name};
+                return {value: tag._key, label: tag.name};
             });
 
             this.setState({tags, loadingTags: false});

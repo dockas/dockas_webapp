@@ -9,8 +9,8 @@ import i18n from "darch/src/i18n";
 import Label from "darch/src/label";
 import Spinner from "darch/src/spinner";
 //import Tabs from "darch/src/tabs";
+import {Order} from "common";
 import Bar from "../bar";
-import actions from "./actions";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("admin.orders.list");
@@ -23,8 +23,8 @@ let Logger = new LoggerFactory("admin.orders.list");
  */
 function mapStateToProps(state) {
     return {
-        orders: state.adminOrders.data,
-        ordersQuery: state.adminOrders.query
+        orders: lodash.get(state.order,"scope.adminOrders.data"),
+        ordersQuery: lodash.get(state.order,"scope.adminOrders.query")
     };
 }
 
@@ -46,68 +46,74 @@ class Component extends React.Component {
 
     state = {};
 
-    statusSort = [
-        "user_available",
-        "confirmed",
-        "boxed",
-        "delivering",
-        "closed"
+    statusSequence = [
+        Order.types.Status.PAYMENT_PENDING,
+        Order.types.Status.PAYMENT_AUTHORIZED,
+        Order.types.Status.PACKAGED,
+        Order.types.Status.DELIVERING,
+        Order.types.Status.DELIVERED
     ];
+
+    statusIconClassMap = {
+        [Order.types.Status.PAYMENT_PENDING]: "icon-circled-new",
+        [Order.types.Status.PAYMENT_AUTHORIZED]: "icon-circled-dollar",
+        [Order.types.Status.PACKAGED]: "icon-circled-box",
+        [Order.types.Status.DELIVERING]: "icon-circled-truck",
+        [Order.types.Status.DELIVERED]: "icon-circled-ok"
+    };
 
     async componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        Redux.dispatch(actions.adminOrdersFind({
+        Redux.dispatch(Order.actions.orderFind({
             populate: ["user","items[].product"],
-            status: [ // all but closed
-                "open", 
-                "awaiting_user_availability", 
-                "user_available", 
-                "user_unavailable",
-                "confirmed",
-                "boxed",
-                "delivering"
+            status: [ // all but delivered
+                Order.types.Status.PAYMENT_PENDING,
+                Order.types.Status.PAYMENT_AUTHORIZED,
+                Order.types.Status.PACKAGED,
+                Order.types.Status.DELIVERING
             ],
             createdAt: {
                 gte: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
                 lte: moment().day("Friday").endOf("day").toISOString() // to next friday
             }
+        }, {
+            scope: {id: "adminOrders"}
         }));
     }
 
-    onStatusUpdateClick(id, status) {
+    onStatusUpdateClick(order, targetStatus) {
         return () => {
-            Redux.dispatch(actions.adminOrdersStatusUpdate(id, status));
+            let logger = Logger.create("onStatusUpdateClick");
+
+            let orderStatusSeq = this.statusSequence.indexOf(order.status);
+            let targetStatusSeq = this.statusSequence.indexOf(targetStatus);
+
+            logger.info("enter", {orderStatusSeq,targetStatusSeq});
+
+            // Prevent pass direct to a gratter status.
+            if(targetStatusSeq != orderStatusSeq+1){return;}
+
+            Redux.dispatch(Order.actions.orderStatusUpdate(order._id, targetStatus));
         };
     }
 
-    getStatusClassName(order, status) {
+    isStatusActive(targetStatus, orderStatus) {
         let logger = Logger.create("getStatusClassName");
-        logger.info("enter", {orderStatus: order.status, status});
+        logger.info("enter", {orderStatus,targetStatus});
 
-        let statusIdx = this.statusSort.indexOf(status);
-        let orderStatusIdx = this.statusSort.indexOf(order.status);
+        let targetStatusSeq = this.statusSequence.indexOf(targetStatus);
+        let orderStatusSeq = this.statusSequence.indexOf(orderStatus);
 
-        logger.debug("indexes", {statusIdx, orderStatusIdx});
+        logger.debug("seq", {orderStatusSeq, targetStatusSeq});
 
-        if(status == "awaiting_user_availability") {
-            if(order.status == "awaiting_user_availability") {return styles.semiActive;}
-            else if(order.status == "user_unavailable") { return styles.inactive; }
+        // Activate when targetStatus is behind current orderStatus.
+        if(targetStatusSeq <= orderStatusSeq) {
+            return true;
         }
 
-        if(orderStatusIdx >= statusIdx) {
-            return styles.active;
-        }
-
-        /*if(status == "awaiting_user_availability") {
-            if(order.status == "awaiting_user_availability") {return styles.semiActive;}
-            else if(order.status == "user_available") { return styles.active; }
-            else if(order.status == "user_unavailable") { return styles.inactive; }
-        }
-        else if(order.status == status) {
-            return styles.active;
-        }*/
+        return false;
     }
 
     renderOrdersTable() {
@@ -130,14 +136,18 @@ class Component extends React.Component {
                         {orders && orders.length ? (
                             orders.map((order) => {
                                 let address = lodash.find(order.user.addresses, (address) => {
-                                    return address.id = order.address;
+                                    return address._id = order.address;
                                 });
+
+                                let phoneAreaCode = lodash.get(address, "phone.areaCode")||""; 
+                                let phoneNumber = lodash.get(address, "phone.number")||"";
+                                let phone = `${phoneAreaCode}${phoneNumber}`;
 
                                 return (
                                     <tr key={order._id}>
                                         <td>{order.user.fullName}</td>
-                                        <td>{address.address}, {address.number} {address.complement||""} - {address.neighborhood} (<u>{address.phone}</u>)</td>
-                                        <td><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice} /></td>
+                                        <td>{address.street}, {address.number} {address.complement||""} - {address.neighborhood} (<u>{phone}</u>)</td>
+                                        <td style={{whiteSpace: "nowrap"}}><i18n.Number prefix="R$" numDecimals={2} value={order.totalPrice/100} /></td>
                                         <td>
                                             <i18n.Moment date={order.createdAt} />
                                         </td>
@@ -145,11 +155,14 @@ class Component extends React.Component {
                                         <td>{order.status}</td>
                                         
                                         <td className={styles.buttonsContainer}>
-                                            <a className={this.getStatusClassName(order, "awaiting_user_availability")} onClick={this.onStatusUpdateClick(order._id, "awaiting_user_availability")}><span className="icon-circled-question"></span></a>
-                                            <a className={this.getStatusClassName(order, "confirmed")} onClick={this.onStatusUpdateClick(order._id, "confirmed")}><span className="icon-circled-ok"></span></a>
-                                            <a className={this.getStatusClassName(order, "boxed")} onClick={this.onStatusUpdateClick(order._id, "boxed")}><span className="icon-circled-box"></span></a>
-                                            <a className={this.getStatusClassName(order, "delivering")} onClick={this.onStatusUpdateClick(order._id, "delivering")}><span className="icon-circled-truck"></span></a>
-                                            <a className={this.getStatusClassName(order, "closed")} onClick={this.onStatusUpdateClick(order._id, "closed")}><span className="icon-circled-thumbs-up"></span></a>
+                                            {this.statusSequence.map((status) => {
+                                                let isActive = this.isStatusActive(status, order.status);
+                                                let isDisabled = isActive || [Order.types.Status.PAYMENT_PENDING,Order.types.Status.PAYMENT_AUTHORIZED].indexOf(status) >= 0;
+
+                                                return (
+                                                    <a key={status} title={i18n.utils.translate({text: `_ORDER_STATUS_${lodash.toUpper(status)}_`})} className={isActive?styles.active:""} disabled={isDisabled} onClick={this.onStatusUpdateClick(order, status)}><span className={this.statusIconClassMap[status]}></span></a>
+                                                );
+                                            })}
                                         </td>
                                     </tr>
                                 );
@@ -230,7 +243,9 @@ class Component extends React.Component {
             };
         }
 
-        Redux.dispatch(actions.adminOrdersFind(query)).then(() => {
+        Redux.dispatch(Order.actions.orderFind(query, {
+            scope: {id: "adminOrders"}
+        })).then(() => {
             this.setState({filtering: false});
         });
     }
@@ -249,7 +264,9 @@ class Component extends React.Component {
             query.status = "open";
         }
 
-        Redux.dispatch(actions.adminOrdersFind(query)).then(() => {
+        Redux.dispatch(Order.actions.orderFind(query, {
+            scope: {"id": "adminOrders"}
+        })).then(() => {
             this.setState({filtering: false});
         });
     }

@@ -1,5 +1,5 @@
 import {createActions} from "redux-actions";
-//import lodash from "lodash";
+import lodash from "lodash";
 import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
 import Socket from "../utils/socket";
@@ -12,10 +12,10 @@ export default createActions({
         var logger = Logger.create("userInit");
         logger.info("enter");
 
-        let signedResponse = await Api.shared.signed();
-        logger.debug("Api signed success", {signedResponse});
+        let response = await Api.shared.signed();
+        logger.debug("api signed success", {response});
 
-        if(signedResponse.result.ok) {
+        if(response.result.ok) {
             let userMeResponse = await Api.shared.userMe();
             logger.debug("Api userMe success", {userMeResponse});
 
@@ -91,5 +91,17 @@ export default createActions({
         logger.debug("Api userFind success", findResponse);
 
         return findResponse.results;
+    },
+
+    userUpdatedEvent(data) {
+        let logger = Logger.create("userUpdatedEvent");
+        logger.info("enter", {data});
+
+        let {result, updatedKeys} = data;
+        data = lodash.pick(result, updatedKeys);
+
+        logger.debug("updated data", data);
+
+        return {data, _id: result._id};
     }
 });

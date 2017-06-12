@@ -8,7 +8,7 @@ import i18n from "darch/src/i18n";
 import styles from "./styles";
 import Card from "./card";
 import actions from "../actions";
-import Badge from "../../badge";
+//import Badge from "../../badge";
 
 let Logger = new LoggerFactory("notification.dropdown");
 
@@ -50,9 +50,9 @@ class Component extends React.Component {
         let {newCount} = this.props;
 
         return (
-            <span>
-                <span className={styles.title}><span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_NOTIFICATIONS_ITEM_LABEL_" /></span> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null} 
-            </span>
+            <div className={styles.badgeContainer}>
+                <span className={styles.title}><span className="icon-bell-3"></span></span> {newCount ? <div className={styles.badge}></div> : null} 
+            </div>
         );
     }
 
@@ -68,12 +68,15 @@ class Component extends React.Component {
         return (
             <Dropdown Toggle={this.renderToggle()}
                 showCaret={false} 
+                arrowOffset={4}
                 position="right"
                 buttonLayout="none" 
                 buttonColor="dark" 
-                buttonScale={0.8}
+                buttonScale={1}
                 width="280pt"
                 height="300pt"
+                overflow="scroll"
+                theme={this.props.theme}
                 onToggle={this.onToggle}
                 className={styles.dropdown}>
                     {notifications && notifications.length ? (
@@ -87,7 +90,7 @@ class Component extends React.Component {
                     ) : (
                         <Dropdown.Item>
                             <div style={{textAlign: "center"}}>
-                                <i18n.Translate text="_NOTIFICATION_PAGE_NO_DATA_FOUND_MESSAGE_" />
+                                <i18n.Translate text="_NOTIFICATIONS_PAGE_NO_DATA_FOUND_MESSAGE_" />
                             </div>
                         </Dropdown.Item>    
                     )}

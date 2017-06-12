@@ -1,5 +1,6 @@
 import React from "react";
 import lodash from "lodash";
+import moment from "moment";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Modal from "darch/src/modal";
 import i18n from "darch/src/i18n";
@@ -64,6 +65,7 @@ export default class Component extends React.Component {
                 cvc: parseInt(data.cvc),
                 holder: {
                     fullname: data.holderName,
+                    birthdate: moment(data.holderBirthdate, "DD/MM/YYYY").toISOString(), // @TODO : Internationalize date format.
                     document: {
                         type: "cpf",
                         number: holderDocumentNumber
@@ -197,19 +199,48 @@ export default class Component extends React.Component {
                         <div className={styles.separator}><Separator.Line title="Dono do Cartão" scale={0.8} titleAlign="right"/></div>
 
                         <Field.Section>
-                            <Text scale={0.8}>
-                                <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_LABEL_" />
-                            </Text>
+                            <Grid>
+                                <Grid.Cell>
+                                    <Field.Section>
+                                        <Text scale={0.8}>
+                                            <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_LABEL_" />
+                                        </Text>
 
-                            <Field.Text
-                                name="holderName"
-                                placeholder="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_PLACEHOLDER_"
-                                scale={1}
-                                validators="$required"/>
+                                        <Field.Text
+                                            name="holderName"
+                                            placeholder="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_PLACEHOLDER_"
+                                            scale={1}
+                                            validators="$required"/>
 
-                            <Field.Error for="holderName"
-                                validator="$required"
-                                message="_FIELD_ERROR_REQUIRED_"/>
+                                        <Field.Error for="holderName"
+                                            validator="$required"
+                                            message="_FIELD_ERROR_REQUIRED_"/>
+                                    </Field.Section>
+                                </Grid.Cell>
+                                <Grid.Cell>
+                                    <Field.Section>
+                                        <Text scale={0.8}>
+                                            <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_BIRTHDATE_FIELD_LABEL_" />
+                                        </Text>
+
+                                        <Field.Text
+                                            name="holderBirthdate"
+                                            placeholder="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_BIRTHDATE_PLACEHOLDER_LABEL_"
+                                            mask="99/99/9999"
+                                            maskChar="_"
+                                            scale={1}
+                                            validators="$required|birthdate:DD/MM/YYYY"/>
+
+                                        <Field.Error for="holderBirthdate"
+                                            validator="$required"
+                                            message="_FIELD_ERROR_REQUIRED_"/>
+
+                                        <Field.Error for="holderBirthdate"
+                                            validator="birthdate"
+                                            message="_FIELD_ERROR_BIRTHDATE_"/>
+                                    </Field.Section>
+                                </Grid.Cell>
+                            </Grid>
                         </Field.Section>
 
                         <Field.Section>

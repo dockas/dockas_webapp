@@ -3,4 +3,5 @@ module.exports = class Product {
 
     static actions = require("./actions");
     static reducer = require("./reducer");
+    static utils = require("./utils");
 };

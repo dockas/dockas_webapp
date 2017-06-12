@@ -9,3 +9,4 @@ export Notification from "./notification";
 export Badge from "./badge";
 export Location from "./location";
 export Brand from "./brand";
+export Panel from "./panel";

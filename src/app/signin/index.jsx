@@ -36,7 +36,8 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        //console.log("OIIII", this.props.location);
+        // Clear cache.
+        Redux.dispatch(Auth.actions.signinPageOpened());
     }
 
     /**
@@ -101,11 +102,15 @@ class Component extends React.Component {
                                             name="email"
                                             placeholder="_LOGIN_FIELD_PLACEHOLDER_"
                                             scale={1.5}
-                                            validators="required"/>
+                                            validators="$required|$email"/>
                                         <Field.Error
-                                            for="test"
-                                            validator="required|email"
+                                            for="email"
+                                            validator="$required"
                                             message="_FIELD_ERROR_REQUIRED_"/>
+                                        <Field.Error
+                                            for="email"
+                                            validator="$email"
+                                            message="_FIELD_ERROR_EMAIL_"/>
                                     </Field.Section>
 
                                     <Field.Section>
@@ -117,7 +122,11 @@ class Component extends React.Component {
                                             name="password"
                                             placeholder="_PASSWORD_FIELD_PLACEHOLDER_"
                                             scale={1.5}
-                                            validators="required"/>
+                                            validators="$required"/>
+                                        <Field.Error
+                                            for="password"
+                                            validator="$required"
+                                            message="_FIELD_ERROR_REQUIRED_"/>
                                     </Field.Section>
 
                                     <Field.Section>

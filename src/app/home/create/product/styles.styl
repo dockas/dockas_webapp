@@ -1,0 +1,38 @@
+@require "~darch/src/styles/variables"
+@require "~darch/src/label/styles"
+
+.image
+    line-height: 0;
+        
+    img
+        width: 100%;
+
+.button-container
+    text-align: right;
+
+.spinner-container
+    padding-left: 0.8em;
+
+.form-container
+    @media (min-width: $screen-tablet-min)
+        padding-left: 20pt;
+
+.no-highlight
+    color: #bbb;
+
+.separator
+    margin: 0 5px;
+
+.file-input-button
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    
+    > label
+        cursor: pointer;
+        color: orange;
+        font-weight: 600;
+        /*padding: 0.2em 0.6em;
+        background: orange;
+        color: white;*/
+        line-height: 1;

@@ -6,14 +6,21 @@ import lodash from "lodash";
 import config from "config";
 import {Link,withRouter} from "react-router";
 import {connect} from "react-redux";
-import {LoggerFactory,Style} from "darch/src/utils";
+import {LoggerFactory,Style,Redux} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Bar from "darch/src/bar";
 import Dropdown from "darch/src/dropdown";
 import Text from "darch/src/text";
-import logoIcon from "assets/images/logo_227x50.png";
+import logoIcon from "assets/images/logo_light_orange_227x50.png";
 import styles from "./styles";
-import {Basket,Notification,Badge} from "common";
+import barTheme from "./theme-bar";
+import barItemTheme from "./theme-bar-item";
+import barItemTheme2 from "./theme-bar-item-2";
+import barItemTheme3 from "./theme-bar-item-3";
+import barMenuTheme from "./theme-bar-menu";
+import barItemMobileTheme from "./theme-bar-item-mobile";
+import dropdownTheme from "./theme-dropdown";
+import {Basket,Notification,Badge,Auth} from "common";
 
 let Logger = new LoggerFactory("home.page", {level: "debug"});
 
@@ -88,9 +95,19 @@ class Component extends React.Component {
         }
     }
 
-    onLogoutClick() {
-        let logger = Logger.create("onLogoutClick");
+    async onSignoutClick() {
+        let logger = Logger.create("onSignoutClick");
         logger.info("enter");
+
+        try {
+            let result = await Redux.dispatch(Auth.actions.signout());
+            logger.debug("auth signout action success", result);
+
+            this.props.router.replace("/signin");
+        }
+        catch(error) {
+            logger.error("auth signout action error", error);
+        }
     }
 
     onBasketCardButtonClick() {
@@ -121,11 +138,16 @@ class Component extends React.Component {
 
         return (
             <div className={styles.page}>
-                <Bar fixedOnTop={true} open={this.state.barOpen} onToggle={() => { this.setState({barOpen: !this.state.barOpen}); }}>
+                <Bar backgroundColor="#000000"
+                    scale={1}
+                    fixedOnTop={true} 
+                    theme={barTheme}
+                    open={this.state.barOpen} 
+                    onToggle={() => { this.setState({barOpen: !this.state.barOpen}); }}>
                     <Bar.Header>
                         <Bar.Menu togglable={false}>
-                            <Bar.Item>
-                                <Link to="/">
+                            <Bar.Item theme={barItemTheme}>
+                                <Link style={{lineHeight: 1}} to="/">
                                     <img className={styles.logo} src={logoIcon} />
 
                                     {config.isBeta ? (
@@ -138,98 +160,155 @@ class Component extends React.Component {
                         </Bar.Menu>
 
                         <Bar.Toggle
-                            openComponent={<span className="icon-menu"></span>}
-                            closeComponent={<span className="icon-delete"></span>}>
+                            openComponent={<span className="icon-menu" style={{color: "white"}}></span>}
+                            closeComponent={<span className="icon-delete" style={{color: "white"}}></span>}>
                         </Bar.Toggle>
                     </Bar.Header>
                     <Bar.Body>
-                        <Bar.Menu>
+                        <Bar.Menu theme={barMenuTheme}>
                             {/*<Bar.Item>
                                 <Link to="/messages" activeClassName="active">
                                     <i18n.Translate text="_NAV_BAR_MESSAGES_ITEM_LABEL_" />
                                 </Link>
                             </Bar.Item>*/}
 
-                            {user && screenSize != "phone" ? (
-                                <Bar.Item>
-                                    <Notification.Dropdown />
-                                </Bar.Item>
-                            ) : null}
-
                             {user && screenSize == "phone" ? (
-                                <Bar.Item>
+                                <Bar.Item theme={barItemMobileTheme}>
                                     <Link to="/notifications" activeClassName="active">
-                                        <span className="icon-bell-2"></span> <i18n.Translate text="_NAV_BAR_NOTIFICATIONS_ITEM_LABEL_" /> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null}
+                                        <i18n.Translate text="_NAV_BAR_NOTIFICATIONS_ITEM_LABEL_" format="upper" /> {newCount ? <Badge className={styles.badge} count={newCount} scale={0.8} color="danger" /> : null}
                                     </Link>
                                 </Bar.Item>
                             ) : null}
 
-                            {user ? (
-                                <Bar.Item>
+                            {user && screenSize == "phone" ? (
+                                <Bar.Item theme={barItemMobileTheme}>
                                     <Link to="/lists" activeClassName="active">
-                                        <span className="icon-checklist"></span> <i18n.Translate text="_NAV_BAR_LISTS_ITEM_LABEL_" />
+                                        <i18n.Translate text="_NAV_BAR_LISTS_ITEM_LABEL_" format="upper" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}
 
-                            {user ? (
-                                <Bar.Item>
+                            {user && screenSize == "phone" ? (
+                                <Bar.Item theme={barItemMobileTheme}>
                                     <Link to="/orders" activeClassName="active">
-                                        <span className="icon-purchase-order"></span> <i18n.Translate text="_NAV_BAR_ORDERS_ITEM_LABEL_" />
+                                        <i18n.Translate text="_NAV_BAR_ORDERS_ITEM_LABEL_" format="upper" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}
 
                             {user && screenSize == "phone" ? (
-                                <Bar.Item>
+                                <Bar.Item theme={barItemMobileTheme}>
+                                    <Link to="/create/brand" activeClassName="active">
+                                        <i18n.Translate text="_NAV_BAR_CREATE_BRAND_ITEM_LABEL_" format="upper" />
+                                    </Link>
+                                </Bar.Item>
+                            ) : null}
+
+                            {user && screenSize == "phone" ? (
+                                <Bar.Item theme={barItemMobileTheme}>
+                                    <Link to="/create/product" activeClassName="active">
+                                        <i18n.Translate text="_NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_" format="upper" />
+                                    </Link>
+                                </Bar.Item>
+                            ) : null}
+
+                            {user && screenSize == "phone" ? (
+                                <Bar.Item theme={barItemMobileTheme}>
                                     <Link to="/account" activeClassName="active">
-                                        <span className="icon-circled-user"></span> <i18n.Translate text="_NAV_BAR_ACCOUNT_ITEM_LABEL_" />
+                                        <i18n.Translate text="_NAV_BAR_ACCOUNT_ITEM_LABEL_" format="upper" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}
 
                             {user && screenSize == "phone" ? (
-                                <Bar.Item>
+                                <Bar.Item theme={barItemMobileTheme}>
                                     <a onClick={this.onLogoutClick}>
-                                        <span className="icon-exit"></span> <i18n.Translate text="_NAV_BAR_SIGNOUT_ITEM_LABEL_" />
+                                        <i18n.Translate text="_NAV_BAR_SIGNOUT_ITEM_LABEL_" format="upper" />
                                     </a>
                                 </Bar.Item>
                             ) : null}
 
-                            {user && user.roles.indexOf("admin") >= 0 ? (
-                                <Bar.Item>
-                                    <Link to="/admin" className={styles.createButton}>
-                                        <i18n.Translate text="_NAV_BAR_ADMIN_ITEM_LABEL_" />
+                            {!user && screenSize == "phone"  ? (
+                                <Bar.Item theme={barItemMobileTheme}>
+                                    <Link to="/signin">
+                                        <i18n.Translate text="_NAV_BAR_SIGNIN_ITEM_LABEL_" format="upper" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}
 
                             {user && screenSize != "phone" ? (
-                                <Bar.Item>
-                                    <div className={styles.accountDropdown}>
-                                        <Dropdown Toggle={<span style={{fontSize: "26pt"}} 
-                                        className={classNames(["icon-circled-user"])}></span>} 
-                                        showCaret={false} 
-                                        position="right"
-                                        buttonLayout="none" 
-                                        buttonColor="dark" 
-                                        buttonScale={0.8}>
-                                            <Dropdown.Item to="/account">
-                                                <i18n.Translate text="_NAV_BAR_ACCOUNT_ITEM_LABEL_" />
-                                            </Dropdown.Item>
-                                            <Dropdown.Separator></Dropdown.Separator>
-                                            <Dropdown.Item onClick={this.onLogoutClick}>
-                                                <i18n.Translate text="_NAV_BAR_SIGNOUT_ITEM_LABEL_" />
-                                            </Dropdown.Item>
-                                        </Dropdown>
-                                    </div>
+                                <Bar.Item theme={barItemTheme}>
+                                    <Link to="/lists" activeClassName="active">
+                                        <i18n.Translate text="_NAV_BAR_LISTS_ITEM_LABEL_" format="upper" />
+                                    </Link>
                                 </Bar.Item>
                             ) : null}
 
-                            {!user ? (
-                                <Bar.Item>
-                                    <Link to="/signin" className={styles.signinButton}>
-                                        <i18n.Translate text="_NAV_BAR_SIGNIN_ITEM_LABEL_" />
+                            {user && screenSize != "phone" ? (
+                                <Bar.Item theme={barItemTheme}>
+                                    <Link to="/orders" activeClassName="active">
+                                        <i18n.Translate text="_NAV_BAR_ORDERS_ITEM_LABEL_" format="upper" />
+                                    </Link>
+                                </Bar.Item>
+                            ) : null}
+
+                            {user && screenSize != "phone" ? (
+                                <Bar.Item theme={barItemTheme3}>
+                                    <Notification.Dropdown theme={dropdownTheme} />
+                                </Bar.Item>
+                            ) : null}
+
+                            {user && screenSize != "phone" ? (
+                                <Bar.Item theme={barItemTheme2}>
+                                    <Dropdown Toggle={<span className={classNames(["icon-plus-strong", styles.addButton])}></span>}
+                                    theme={dropdownTheme}
+                                    showCaret={true}
+                                    arrowOffset={10}
+                                    position="right"
+                                    buttonLayout="none" 
+                                    buttonColor="dark" 
+                                    buttonScale={1}>
+                                        <Dropdown.Item to="/create/brand">
+                                            <i18n.Translate text="_NAV_BAR_CREATE_BRAND_ITEM_LABEL_" />
+                                        </Dropdown.Item>
+
+                                        <Dropdown.Item to="/create/product">
+                                            <i18n.Translate text="_NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_" />
+                                        </Dropdown.Item>
+                                    </Dropdown>
+                                </Bar.Item>
+                            ) : null}
+
+                            {user && screenSize != "phone" ? (
+                                <Bar.Item theme={barItemTheme2}>
+                                    <Dropdown Toggle={<span className={classNames(["icon-circled-user", styles.profileButton])}></span>} 
+                                        theme={dropdownTheme}
+                                        showCaret={false}
+                                        arrowOffset={8}
+                                        position="right"
+                                        buttonLayout="none" 
+                                        buttonColor="dark" 
+                                        buttonScale={1}>
+                                        <Dropdown.Item to="/account">
+                                            <i18n.Translate text="_NAV_BAR_ACCOUNT_ITEM_LABEL_" />
+                                        </Dropdown.Item>
+                                        {user && user.roles.indexOf("admin") >= 0 ? (
+                                            <Dropdown.Item to="/admin">
+                                                <i18n.Translate text="_NAV_BAR_ADMIN_ITEM_LABEL_" />
+                                            </Dropdown.Item>
+                                        ) : <span></span>}
+                                        <Dropdown.Separator></Dropdown.Separator>
+                                        <Dropdown.Item onClick={this.onSignoutClick}>
+                                            <i18n.Translate text="_NAV_BAR_SIGNOUT_ITEM_LABEL_" />
+                                        </Dropdown.Item>
+                                    </Dropdown>
+                                </Bar.Item>
+                            ) : null}
+
+                            {!user && screenSize != "phone"  ? (
+                                <Bar.Item theme={barItemTheme}>
+                                    <Link to="/signin">
+                                        <i18n.Translate text="_NAV_BAR_SIGNIN_ITEM_LABEL_" format="upper" />
                                     </Link>
                                 </Bar.Item>
                             ) : null}

@@ -120,41 +120,28 @@ class Component extends React.Component {
         try {
             response = await Api.shared.orderCreate(order);
             logger.info("api orderCreate success", response);
+            order = response.result;
         }
         catch(error) {
             logger.error("api orderCreate error", error);
             return this.setState({loading: false});
         }
 
-        // Retrieve the order created
-        try {
-            let orderResponse = await Api.shared.orderFindById(response.result);
-            logger.info("api orderFindById success", orderResponse);
-
-            order = orderResponse.result;
-        }
-        catch(error) {
-            logger.error("api orderFindById error", error);
-        }
-
         // Pay the order right away.
         try {
-            let chargeResponse = await Api.shared.orderCharge(response.result, {
+            response = await Api.shared.orderCharge(order._id, {
                 source: {
                     method: "credit_card",
                     _id: this.state.selectedCreditCardId
                 }
             });
 
-            logger.info("api orderCharge success", chargeResponse);
+            logger.info("api orderCharge success", response);
         }
         catch(error) {
             logger.error("api orderCharge error", error);
             return this.setState({loading: false});
         }
-
-        // Now we can clear the basket
-        Redux.dispatch(Basket.actions.basketClear());
 
         // Go to last step.
         this.props.router.replace({
@@ -377,10 +364,11 @@ class Component extends React.Component {
                                             return (
                                                 <div key={address._id} className={classNames([
                                                     styles.panel,
+                                                    styles.addressPanel,
                                                     selectedAddressId == address._id ? styles.active : ""
                                                 ])} onClick={this.selectAddress(address)}>
                                                     <div className={styles.title}>{address.label}</div>
-                                                    <div className={styles.body}>{address.address}, {address.number} - {address.neighborhood}</div>
+                                                    <div className={styles.body}>{address.street}, {address.number} - {address.neighborhood}</div>
                                                 </div>
                                             );
                                         }) : (

@@ -2,6 +2,7 @@ import React from "react";
 import {LoggerFactory} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import styles from "./styles";
+import toasterTheme from "./theme-toaster";
 
 let Logger = new LoggerFactory("app.page");
 
@@ -46,7 +47,7 @@ export default class Component extends React.Component {
             <div className={styles.page}>
                 {this.props.children}
 
-                <Toaster position="top-center" scale={0.9}/>
+                <Toaster theme={toasterTheme} position="top-center" scale={0.9}/>
             </div>
         );
     }
