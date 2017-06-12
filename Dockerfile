@@ -17,7 +17,8 @@ RUN mv ./.ssh /root/ && \
     chmod 400 -R /root/.ssh && \
     eval "$(ssh-agent -s)" && \
     ssh-add /root/.ssh/id_rsa && \
-    ssh-keyscan -H bitbucket.org >> /root/.ssh/known_hosts
+    ssh-keyscan -H github.com >> /root/.ssh/known_hosts && \
+    ssh-keygen -R github.com
 
 # Install npm global dependencies
 RUN npm install -g gulp-cli lodash-cli
