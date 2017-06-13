@@ -11,6 +11,7 @@ config/index.js
 
 # Yarn
 yarn.lock
+package-lock.json
 
 # Nginx
 .ssl

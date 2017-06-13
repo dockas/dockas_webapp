@@ -88,3 +88,5 @@ FEA : Mark new messages as viewed when user closes the notification dropdown.
 BUG : Use https insteal of ssh to clone nosebit/common-config module (ssh require pub/priv keys).
 ENH : Add billing route to nginx.conf.tpl.
 ENH : Add watchOpts to webpack dev config.
+ENH : Remove mapbox as dependency (npm 5.0.3 can't install it).
+ENH : Ignore package-lock.json.
