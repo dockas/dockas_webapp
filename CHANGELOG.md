@@ -87,3 +87,4 @@ FEA : Handle update socket notifications (for order, brand, product update) inst
 FEA : Mark new messages as viewed when user closes the notification dropdown.
 BUG : Use https insteal of ssh to clone nosebit/common-config module (ssh require pub/priv keys).
 ENH : Add billing route to nginx.conf.tpl.
+ENH : Add watchOpts to webpack dev config.

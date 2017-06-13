@@ -5,6 +5,10 @@ let lodash          = require("lodash"),
 // Merge with base config
 let config = lodash.merge({}, baseConfig, {
     watch: true,
+    watchOptions: {
+        poll: true,
+        aggregateTimeout: 1000
+    },
     devtool: "source-map"
 });
 
