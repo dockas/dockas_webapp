@@ -12,7 +12,6 @@ module.exports = {
             "react-dom",
             "react-redux",
             "react-router",
-            "mapbox",
             "darch/src"
         ]
     },

@@ -2,7 +2,7 @@ import {createActions} from "redux-actions";
 import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
 import Socket from "../utils/socket";
-import NotificationActions from "../notification/actions";
+import NotificationAlertActions from "../notification_alert/actions";
 
 let Logger = new LoggerFactory("common.auth.actions", {level:"error"});
 
@@ -31,7 +31,7 @@ export default createActions({
 
         // Get user new alerts count
         await Redux.dispatch(
-            NotificationActions.notificationNewCount()
+            NotificationAlertActions.notificationAlertNewCount()
         );
 
         // Get user profile.

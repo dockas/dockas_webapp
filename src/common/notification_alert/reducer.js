@@ -2,7 +2,7 @@ import lodash from "lodash";
 import {handleActions} from "redux-actions";
 import {LoggerFactory} from "darch/src/utils";
 
-let Logger = new LoggerFactory("common.notification.reducer", {level:"debug"});
+let Logger = new LoggerFactory("common.notification_alert.reducer", {level:"debug"});
 
 let initialState = {
     data: null,
@@ -10,8 +10,8 @@ let initialState = {
 };
 
 export default handleActions({
-    notificationCreatedEvent(state, action) {
-        let logger = Logger.create("notificationCreatedEvent");
+    notificationAlertCreatedEvent(state, action) {
+        let logger = Logger.create("notificationAlertCreatedEvent");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {
@@ -19,8 +19,8 @@ export default handleActions({
         });
     },
 
-    notificationUpdatedEvent(state, action) {
-        let logger = Logger.create("notificationUpdatedEvent");
+    notificationAlertUpdatedEvent(state, action) {
+        let logger = Logger.create("notificationAlertUpdatedEvent");
         logger.info("enter", {action});
 
         let {data,newCount} = state;
@@ -33,13 +33,13 @@ export default handleActions({
             let oldStatus = data[idx].status;
             data.splice(idx, 1, Object.assign({}, data[idx], action.payload.data, lodash.get(action,"payload.opts.data")));
 
-            logger.debug("notification found", {
+            logger.debug("notification alert found", {
                 oldStatus, notification: data[idx]
             });
 
             // New notification is not new anymore
             if(oldStatus == 0 && data[idx].status != 0) {
-                logger.debug("new notification is not new anymore");
+                logger.debug("new notification alert is not new anymore");
                 newCount--;
             }
         }
@@ -47,8 +47,8 @@ export default handleActions({
         return {data,newCount};
     },
 
-    notificationNewCount_COMPLETED(state, action) {
-        let logger = Logger.create("notificationNewCount_COMPLETED");
+    notificationAlertNewCount_COMPLETED(state, action) {
+        let logger = Logger.create("notificationAlertNewCount_COMPLETED");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {
@@ -56,8 +56,8 @@ export default handleActions({
         });
     },
 
-    notificationFind_COMPLETED(state, action) {
-        let logger = Logger.create("notificationFind_COMPLETED");
+    notificationAlertFind_COMPLETED(state, action) {
+        let logger = Logger.create("notificationAlertFind_COMPLETED");
         logger.info("enter", {state, action});
 
         return Object.assign({}, state, {

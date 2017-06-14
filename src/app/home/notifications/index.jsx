@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
-import {Notification} from "common";
+import {NotificationAlert} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("notifications.page");
@@ -16,8 +16,8 @@ let Logger = new LoggerFactory("notifications.page");
  */
 function mapStateToProps(state) {
     return {
-        notifications: state.notification.data,
-        newCount: state.notification.newCount
+        notifications: state.notificationAlert.data,
+        newCount: state.notificationAlert.newCount
     };
 }
 
@@ -41,7 +41,7 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        Redux.dispatch(Notification.actions.notificationFind({
+        Redux.dispatch(NotificationAlert.actions.notificationAlertFind({
             sort: {status: 1, createdAt: -1}
         }));
     }
@@ -55,7 +55,7 @@ class Component extends React.Component {
                     <ul className={styles.list}>
                         {notifications && notifications.length ? (
                             notifications.map((notification) => {
-                                return <Notification.Card key={notification._id} notification={notification} />;
+                                return <NotificationAlert.Card key={notification._id} notification={notification} />;
                             })
                         ) : !notifications ? (
                             <li style={{textAlign: "center"}}>

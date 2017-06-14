@@ -20,7 +20,7 @@ import barItemTheme3 from "./theme-bar-item-3";
 import barMenuTheme from "./theme-bar-menu";
 import barItemMobileTheme from "./theme-bar-item-mobile";
 import dropdownTheme from "./theme-dropdown";
-import {Basket,Notification,Badge,Auth} from "common";
+import {Basket,NotificationAlert,Badge,Auth} from "common";
 
 let Logger = new LoggerFactory("home.page", {level: "debug"});
 
@@ -34,7 +34,7 @@ function mapStateToProps(state) {
     return {
         user: state.user.profiles[state.user.uid],
         location: state.location,
-        newCount: state.notification.newCount
+        newCount: state.notificationAlert.newCount
     };
 }
 
@@ -254,7 +254,7 @@ class Component extends React.Component {
 
                             {user && screenSize != "phone" ? (
                                 <Bar.Item theme={barItemTheme3}>
-                                    <Notification.Dropdown theme={dropdownTheme} />
+                                    <NotificationAlert.Dropdown theme={dropdownTheme} />
                                 </Bar.Item>
                             ) : null}
 

@@ -170,23 +170,23 @@ export default class Api {
     }
 
     invitationSend(id, opts) {
-        return this.request("POST", `invitation/${id}`, null, opts);
+        return this.request("POST", `invitation/alert/${id}`, null, opts);
     }
 
-    notificationCreate(data, opts) {
-        return this.request("POST", "notification", data, opts);
+    notificationAlertCreate(data, opts) {
+        return this.request("POST", "notification/alert", data, opts);
     }
 
-    notificationFind(query, opts) {
-        return this.request("GET", "notification", query, opts);
+    notificationAlertFind(query, opts) {
+        return this.request("GET", "notification/alert", query, opts);
     }
 
-    notificationUpdate(id, data, opts) {
-        return this.request("PUT", `notification/${id}`, data, opts);
+    notificationAlertUpdate(id, data, opts) {
+        return this.request("PUT", `notification/alert/${id}`, data, opts);
     }
 
-    notificationCount(query, opts) {
-        return this.request("GET", "notification/count", query, opts);
+    notificationAlertCount(query, opts) {
+        return this.request("GET", "notification/alert/count", query, opts);
     }
 
     couponCreate(data, opts) {

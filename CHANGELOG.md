@@ -90,3 +90,5 @@ ENH : Add billing route to nginx.conf.tpl.
 ENH : Add watchOpts to webpack dev config.
 ENH : Remove mapbox as dependency (npm 5.0.3 can't install it).
 ENH : Ignore package-lock.json.
+ENH : Replace Notification by NotificationAlert to reflect new api notification schema.
+BUG : Remove mapbox from webpack base config file.

@@ -10,7 +10,7 @@ import Card from "./card";
 import actions from "../actions";
 //import Badge from "../../badge";
 
-let Logger = new LoggerFactory("notification.dropdown");
+let Logger = new LoggerFactory("notification_alert.dropdown");
 
 /**
  * Redux map state to props function.
@@ -20,8 +20,8 @@ let Logger = new LoggerFactory("notification.dropdown");
  */
 function mapStateToProps(state) {
     return {
-        notifications: state.notification.data,
-        newCount: state.notification.newCount
+        notifications: state.notificationAlert.data,
+        newCount: state.notificationAlert.newCount
     };
 }
 
@@ -37,7 +37,7 @@ let mapDispatchToProps = {
  */
 class Component extends React.Component {
     /** React properties **/
-    static displayName = "notification.dropdown";
+    static displayName = "notification_alert.dropdown";
     static defaultProps = {};
     static propTypes = {};
 
@@ -57,7 +57,7 @@ class Component extends React.Component {
     }
 
     onToggle() {
-        Redux.dispatch(actions.notificationFind({
+        Redux.dispatch(actions.notificationAlertFind({
             sort: {status: 1, createdAt: -1}
         }));
     }

@@ -10,14 +10,14 @@ import getIcon from "./icon";
 import optionActions from "../../option_actions";
 import actions from "../../actions";
 
-let Logger = new LoggerFactory("notification.card");
+let Logger = new LoggerFactory("notification_alert.card");
 
 /**
  * Main component class.
  */
 export default class Component extends React.Component {
     /** React properties **/
-    static displayName = "notification.card";
+    static displayName = "notification_alert.card";
     static defaultProps = {};
     static propTypes = {};
 
@@ -37,14 +37,14 @@ export default class Component extends React.Component {
 
         // Let's mark new notifications as viewd.
         try {
-            let result = await Api.shared.notificationUpdate(notification._id, {
+            let result = await Api.shared.notificationAlertUpdate(notification._id, {
                 status: 1
             });
 
-            logger.debug("api notificationUpdate success", result);
+            logger.debug("api notificationAlertUpdate success", result);
         }
         catch(error) {
-            logger.error("api notificationUpdate error", error);
+            logger.error("api notificationAlertUpdate error", error);
         }
     }
 
