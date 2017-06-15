@@ -269,8 +269,8 @@ export default class Api {
         return this.request("GET", `file/${id}`, null, opts);
     }
 
-    postalCodeFindAddress(code, query, opts) {
-        return this.request("GET", `postal_code/${code}/address`, query, opts);
+    addressFindByPostalCode(code, query, opts) {
+        return this.request("GET", `address/postalCode/${code}`, query, opts);
     }
 
     configGet(opts) {

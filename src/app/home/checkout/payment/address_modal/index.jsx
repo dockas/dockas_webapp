@@ -154,11 +154,11 @@ class Component extends React.Component {
                                                     if(!(/^\d{8}$/).test(value)) {return false;}
 
                                                     try {
-                                                        let response = await Api.shared.postalCodeFindAddress(value, {
-                                                            country_code: "BRA"
+                                                        let response = await Api.shared.addressFindByPostalCode(value, {
+                                                            countryCode: "BRA"
                                                         }, {preventErrorInterceptor: true});
 
-                                                        logger.info("api postalCodeFindAddress success", response);
+                                                        logger.info("api addressFindByPostalCode success", response);
 
                                                         let {result} = response;
 
@@ -169,7 +169,7 @@ class Component extends React.Component {
                                                         }};
                                                     }
                                                     catch(error) {
-                                                        logger.error("api postalCodeFindAddress error", error);
+                                                        logger.error("api addressFindByPostalCode error", error);
 
                                                         return {valid: false, error};
                                                     }
