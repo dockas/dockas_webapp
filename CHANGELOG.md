@@ -92,3 +92,6 @@ ENH : Remove mapbox as dependency (npm 5.0.3 can't install it).
 ENH : Ignore package-lock.json.
 ENH : Replace Notification by NotificationAlert to reflect new api notification schema.
 BUG : Remove mapbox from webpack base config file.
+FEA : Add postal_code to invitation page.
+FEA : Set address fields based on fetched postal code address in payment page.
+FEA : Set credit card cvv mask to 4 digits in case credit card's brand is Amex (Moip requirement).
