@@ -170,7 +170,7 @@ export default class Api {
     }
 
     invitationSend(id, opts) {
-        return this.request("POST", `invitation/alert/${id}`, null, opts);
+        return this.request("POST", `invitation/${id}`, null, opts);
     }
 
     notificationAlertCreate(data, opts) {
@@ -267,6 +267,10 @@ export default class Api {
 
     fileFindById(id, opts) {
         return this.request("GET", `file/${id}`, null, opts);
+    }
+
+    postalCodeFindAddress(code, query, opts) {
+        return this.request("GET", `postal_code/${code}/address`, query, opts);
     }
 
     configGet(opts) {

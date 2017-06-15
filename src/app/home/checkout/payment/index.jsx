@@ -98,11 +98,15 @@ class Component extends React.Component {
 
         this.setState({loading: true});
 
+        let address = lodash.find(this.props.user.addresses || [], (address) => {
+            return address._id == this.state.selectedAddressId;
+        });
+
         let items = this.props.basket.items;
         let order = {
             totalPrice: this.props.basket.totalPrice,
-            address: this.state.selectedAddressId,
-            items: []
+            items: [],
+            address
         };
 
         // Add items to order

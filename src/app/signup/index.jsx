@@ -57,6 +57,9 @@ class Component extends React.Component {
         try {
             data.invitation = this.invitation._id;
 
+            // Add invitation postalCodeAddress
+            data.postalCodeAddress = this.invitation.postalCodeAddress;
+
             // Signs the user up.
             let signupResponse = await Api.shared.signup(data);
 

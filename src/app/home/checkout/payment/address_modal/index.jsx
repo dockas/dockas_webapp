@@ -9,7 +9,7 @@ import Button from "darch/src/button";
 import Spinner from "darch/src/spinner";
 import Text from "darch/src/text";
 import Grid from "darch/src/grid";
-import {User} from "common";
+import {User,Api} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("checkout.payment.address_modal");
@@ -69,6 +69,7 @@ class Component extends React.Component {
 
         this.setState({loading: true});
 
+        // Set data
         data.postal_code = data.postal_code.replace(/[_-]/g, "");
         data.phone = data.phone.replace(/[_-]/g,"");
         data.phone = {
@@ -76,6 +77,11 @@ class Component extends React.Component {
             number: data.phone.replace(/^\(\d+\)(\d+)$/,"$1")
         };
 
+        // @TODO : Internationalize this.
+        data.state = "MG";
+        data.country = "BRA";
+
+        // Add address to user profile.
         Redux.dispatch(
             User.actions.userAddAddress(data)
         ).then(() => {
@@ -89,7 +95,7 @@ class Component extends React.Component {
 
     render() {
         let {open,onDismiss,user} = this.props;
-        let {loading} = this.state;
+        let {loading,loadingPostalCodeAddress} = this.state;
         let phone = user.phones && user.phones.length ? `${user.phones[0].areaCode}${user.phones[0].number}` : undefined;
 
         return (
@@ -122,23 +128,66 @@ class Component extends React.Component {
                                 </Grid.Cell>
                                 <Grid.Cell>
                                     <Field.Section>
-                                        <Text scale={0.8}>
-                                            <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_" />
-                                        </Text>
+                                        <div>
+                                            <Text scale={0.8}>
+                                                <i18n.Translate text="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_LABEL_" />
+                                            </Text>
+
+                                            {loadingPostalCodeAddress?<span style={{marginLeft: "5px"}}><Spinner.CircSide scale={0.7} /></span>:null}
+                                        </div>
                                         <Field.Text
                                             name="postal_code"
                                             placeholder="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_PLACEHOLDER_"
                                             mask="99999-999"
                                             maskChar="_"
                                             scale={1}
-                                            validators="$required|postal_code"/>
+                                            validators={["$required", {
+                                                name: "cep",
+                                                validate: async (value) => {
+                                                    let logger = Logger.create("cep validate");
+                                                    logger.debug("enter", {value});
+
+                                                    if(!value){return true;}
+
+                                                    value = value.replace(/[_-]/g, "");
+
+                                                    if(!(/^\d{8}$/).test(value)) {return false;}
+
+                                                    try {
+                                                        let response = await Api.shared.postalCodeFindAddress(value, {
+                                                            country_code: "BRA"
+                                                        }, {preventErrorInterceptor: true});
+
+                                                        logger.info("api postalCodeFindAddress success", response);
+
+                                                        let {result} = response;
+
+                                                        return {valid: true, $set: {
+                                                            street: result.street,
+                                                            neighborhood: result.neighborhood,
+                                                            city: result.city
+                                                        }};
+                                                    }
+                                                    catch(error) {
+                                                        logger.error("api postalCodeFindAddress error", error);
+
+                                                        return {valid: false, error};
+                                                    }
+                                                }
+                                            }]}
+                                            onValidationStart={(validator) => {
+                                                if(validator == "cep") {this.setState({loadingPostalCodeAddress: true});}
+                                            }}
+                                            onValidationEnd={(validator) => {
+                                                if(validator == "cep") {this.setState({loadingPostalCodeAddress: false});}
+                                            }}/>
                                         <Field.Error
                                             for="postal_code"
                                             validator="$required"
                                             message="_FIELD_ERROR_REQUIRED_"/>
                                         <Field.Error
                                             for="postal_code"
-                                            validator="postal_code"
+                                            validator="cep"
                                             message="_FIELD_ERROR_POSTAL_CODE_"/>
                                     </Field.Section>
                                 </Grid.Cell>

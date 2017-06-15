@@ -184,8 +184,8 @@ export default class Component extends React.Component {
 
                                     <Field.Text
                                         name="cvc"
-                                        placeholder="_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_PLACEHOLDER_"
-                                        mask="999"
+                                        placeholder={brand=="card-amex"?"_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC4_FIELD_PLACEHOLDER_":"_CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC3_FIELD_PLACEHOLDER_"}
+                                        mask={brand=="card-amex"?"9999":"999"}
                                         scale={1}
                                         validators="$required"/>
 

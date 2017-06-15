@@ -163,7 +163,8 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_EXP_DATE_FIELD_LABEL_: data de expiração (MM/YY)
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_EXP_DATE_FIELD_PLACEHOLDER_: "05/18"
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_LABEL_: código de verificação (cvc)
-    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC_FIELD_PLACEHOLDER_: "123"
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC3_FIELD_PLACEHOLDER_: "123"
+    _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_CVC4_FIELD_PLACEHOLDER_: "1234"
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_LABEL_: nome no cartão
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_NAME_FIELD_PLACEHOLDER_: João M Silva
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_BIRTHDATE_FIELD_LABEL_: data de nascimento
@@ -311,6 +312,8 @@ dictionary:
     _INVITATION_PAGE_BODY_TEXT_: Para garantir um padrão elevado de qualidade, apenas pessoas convidadas podem realizar compras no Dockas neste momento. Informe seu email no campo abaixo que em breve lhe enviaremos um convite exclusivo.
     _INVITATION_PAGE_EMAIL_FIELD_LABEL_: email
     _INVITATION_PAGE_EMAIL_FIELD_PLACEHOLDER_: meu@email.com
+    _INVITATION_PAGE_POSTAL_CODE_FIELD_LABEL_: cep
+    _INVITATION_PAGE_POSTAL_CODE_FIELD_PLACEHOLDER_: 99999-999
     _INVITATION_PAGE_SEND_BUTTON_TEXT_: solicitar convite
     _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
     _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.

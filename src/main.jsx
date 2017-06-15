@@ -36,13 +36,31 @@ Form.registerValidator({
 
 // Postal code form validator (BR)
 Form.registerValidator({
-    name: "postal_code",
-    validate: (value) => {
+    name: "cep",
+    validate: async (value) => {
+        let logger = Logger.create("cep validate");
+        logger.debug("enter", {value});
+
         if(!value){return true;}
 
         value = value.replace(/[_-]/g, "");
 
-        return (/^\d{8}$/).test(value);
+        if(!(/^\d{8}$/).test(value)) {return false;}
+
+        try {
+            let response = await Api.shared.postalCodeFindAddress(value, {
+                country_code: "BRA"
+            }, {preventErrorInterceptor: true});
+
+            logger.info("api postalCodeFindAddress success", response);
+
+            return {valid: true, data: response.result};
+        }
+        catch(error) {
+            logger.error("api postalCodeFindAddress error", error);
+
+            return {valid: false, error};
+        }
     }
 });
 
