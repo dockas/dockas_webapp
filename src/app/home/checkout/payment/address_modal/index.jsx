@@ -70,7 +70,7 @@ class Component extends React.Component {
         this.setState({loading: true});
 
         // Set data
-        data.postal_code = data.postal_code.replace(/[_-]/g, "");
+        data.postalCode = data.postalCode.replace(/[_-]/g, "");
         data.phone = data.phone.replace(/[_-]/g,"");
         data.phone = {
             areaCode: data.phone.replace(/^\((\d+)\)\d+$/,"$1"),
@@ -136,7 +136,7 @@ class Component extends React.Component {
                                             {loadingPostalCodeAddress?<span style={{marginLeft: "5px"}}><Spinner.CircSide scale={0.7} /></span>:null}
                                         </div>
                                         <Field.Text
-                                            name="postal_code"
+                                            name="postalCode"
                                             placeholder="_CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_POSTAL_CODE_FIELD_PLACEHOLDER_"
                                             mask="99999-999"
                                             maskChar="_"
@@ -182,11 +182,11 @@ class Component extends React.Component {
                                                 if(validator == "cep") {this.setState({loadingPostalCodeAddress: false});}
                                             }}/>
                                         <Field.Error
-                                            for="postal_code"
+                                            for="postalCode"
                                             validator="$required"
                                             message="_FIELD_ERROR_REQUIRED_"/>
                                         <Field.Error
-                                            for="postal_code"
+                                            for="postalCode"
                                             validator="cep"
                                             message="_FIELD_ERROR_POSTAL_CODE_"/>
                                     </Field.Section>

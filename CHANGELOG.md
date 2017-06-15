@@ -95,3 +95,4 @@ BUG : Remove mapbox from webpack base config file.
 FEA : Add postal_code to invitation page.
 FEA : Set address fields based on fetched postal code address in payment page.
 FEA : Set credit card cvv mask to 4 digits in case credit card's brand is Amex (Moip requirement).
+ENH : Change postal_code to postalCode in address modal.
