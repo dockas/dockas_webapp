@@ -95,9 +95,7 @@ class Component extends React.Component {
                                     </tr>
                                 ) : orders && orders.length ? (
                                     orders.map((order) => {
-                                        let address = lodash.find(user.addresses, (address) => {
-                                            return address._id == order.address;
-                                        });
+                                        let {address} = order;
 
                                         console.log(["order address maluco", order, address, user]);
 

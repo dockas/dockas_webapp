@@ -18,6 +18,13 @@ export default createActions({
         return state ? JSON.parse(state) : null;
     },
 
+    basketSetIsPaying(isPaying) {
+        var logger = Logger.create("basketSetIsPaying");
+        logger.info("enter", {isPaying});
+
+        return {isPaying};
+    },
+
     basketAddProduct(product) {
         var logger = Logger.create("basketAddProduct");
         logger.info("enter", product);

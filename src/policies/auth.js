@@ -9,9 +9,16 @@ module.exports = function(nextState, replace) {
 
     logger.info("enter", {uid});
 
+    //console.log(["nextState", nextState]);
+
     if(!uid) {
         logger.info("not pass");
-        replace("/signin");
+        replace({
+            pathname: "/signin",
+            query: {
+                redirect: nextState.location.pathname
+            }
+        });
     }
     else {logger.info("pass");}
 

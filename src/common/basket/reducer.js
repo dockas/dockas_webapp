@@ -14,7 +14,8 @@ let initialState = {
     items: {},
     address: null,
     coupons: {},
-    billingSessionId: null
+    billingSessionId: null,
+    isPaying: false
 };
 
 function getTotalDiscount(state) {
@@ -51,9 +52,16 @@ export default handleActions({
         return action.payload ? action.payload : state;
     },
 
+    basketSetIsPaying(state, action) {
+        let logger = Logger.create("basketSetIsPaying");
+        logger.info("enter", {action});
+
+        return Object.assign({}, state, action.payload);
+    },
+
     basketAddProduct(state, action) {
         let logger = Logger.create("basketAddProduct");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let product = action.payload;
         let {items,address} = state;
@@ -84,7 +92,7 @@ export default handleActions({
 
     basketRemoveProduct(state, action) {
         let logger = Logger.create("basketRemoveProduct");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let product = action.payload;
         let {items,totalPrice,address} = state;
@@ -116,7 +124,7 @@ export default handleActions({
 
     basketLoadList(state, action) {
         let logger = Logger.create("basketLoadList");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let list = action.payload,
             newState = {
@@ -143,7 +151,7 @@ export default handleActions({
 
     basketGetBillingSessionId_COMPLETED(state, action) {
         let logger = Logger.create("basketGetBillingSessionId_COMPLETED");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         return Object.assign({}, state, {billingSessionId: action.payload});
     },
@@ -174,7 +182,7 @@ export default handleActions({
 
     basketSelectAddress(state, action) {
         let logger = Logger.create("basketSelectAddress");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let newState = Object.assign({}, state, {
             address: action.payload
@@ -188,7 +196,7 @@ export default handleActions({
 
     basketClear(state, action) {
         let logger = Logger.create("basketClear");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let newState = {
             totalPrice: 0,
@@ -226,7 +234,7 @@ export default handleActions({
 
     productPriceUpdate_COMPLETED(state, action) {
         let logger = Logger.create("productPriceUpdate_COMPLETED");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let {items} = state;
         let item = items[action.payload._id];
@@ -268,7 +276,7 @@ export default handleActions({
 
     productUpdatedEvent_COMPLETED(state, action) {
         let logger = Logger.create("productUpdatedEvent_COMPLETED");
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
         let {items} = state;
         let item = items[action.payload._id];
@@ -279,7 +287,11 @@ export default handleActions({
 
             // If stock becomes lesser then what user has selected,
             // then truncate it and notify user.
-            if(item.quantity > stock) {
+            // 
+            // @WARNING : When this order is getting paid, no other
+            // user can be paying an order (none overlaping order
+            // payment).
+            if(!state.isPaying && item.quantity > stock) {
                 let oldQuantity = item.quantity;
                 item.quantity = stock;
 

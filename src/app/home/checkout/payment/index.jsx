@@ -96,6 +96,10 @@ class Component extends React.Component {
             return Redux.dispatch(Toaster.actions.push("danger", "_CHECKOUT_STEP_PAYMENT_MISSING_ADDRESS_ERROR_TOAST_MESSAGE_"));
         }
 
+        // Set basket as beeing payed
+        Redux.dispatch(Basket.actions.basketSetIsPaying(true));
+
+        // Loading
         this.setState({loading: true});
 
         let address = lodash.find(this.props.user.addresses || [], (address) => {

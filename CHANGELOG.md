@@ -102,3 +102,6 @@ FEA : Add "in approve" label to product detail info page and product card.
 ENH : Fetch only public products and with some stock in catalog list page.
 FEA : Create a common tag module and fetch all tags in app bootstrap.
 FEA : Handle stock update impact in user basket.
+GIT : Commit a bug fix in darch.
+ENH : Set basket isPaying to prevent basket update during payment process (this can be improved).
+ENH : Add auth policies to lists, orders and notifications pages.
