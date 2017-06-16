@@ -12,7 +12,7 @@ import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
-import {Api,User,Socket,Product,Basket,Order,NotificationAlert,Location,Brand} from "common";
+import {Api,User,Socket,Product,Basket,Order,NotificationAlert,Location,Brand,Tag} from "common";
 
 let Logger = new LoggerFactory("main", {level: "debug"});
 
@@ -211,7 +211,8 @@ Form.registerValidator({
         order: Order.reducer,
         notificationAlert: NotificationAlert.reducer,
         location: Location.reducer,
-        brand: Brand.reducer
+        brand: Brand.reducer,
+        tag: Tag.reducer
     }, {shared: true});
 
     // Start listen to socket events

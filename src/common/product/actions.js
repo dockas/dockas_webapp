@@ -82,6 +82,26 @@ export default createActions({
         };
     },
 
+    async productStatusUpdate(id, status, {
+        opts=null
+    }={}) {
+        var logger = Logger.create("productStatusUpdate");
+        logger.info("enter", {id, status});
+
+        let response = await Api.shared.productStatusUpdate(id, {status}, opts);
+
+        logger.debug("api productStatusUpdate success", response);
+
+        Redux.dispatch(
+            Toaster.actions.push("success", "_PRODUCT_UPDATE_SUCCESS_")
+        );
+
+        return {
+            _id: id,
+            status
+        };
+    },
+
     /**
      * This function handles product updated event.
      */
@@ -96,7 +116,7 @@ export default createActions({
 
         // @TODO : If any profile images has changed, then we must
         // populate it.
-        if(data.profileImages) {
+        if(updatedKeys.indexOf("profileImages") >= 0) {
             try {
                 let response = await Api.shared.fileFind({
                     _id: data.profileImages

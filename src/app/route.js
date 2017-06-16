@@ -1,7 +1,7 @@
 import {LoggerFactory,Redux} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import config from "config";
-import {Api,User,Basket} from "common";
+import {Api,User,Basket,Tag} from "common";
 
 let Logger = new LoggerFactory("app.route");
 
@@ -23,6 +23,11 @@ module.exports = {
                 config.shared = sharedConfig;
             })
         ]);
+
+        // Async get all tags sorted by popularity
+        Redux.dispatch(Tag.actions.tagFind({
+            sort: {findCount: -1}
+        }, {scope: {id: "global"}}));
 
         // Fire callback anyway
         _initPromise.then(function(result) {

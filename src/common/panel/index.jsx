@@ -22,7 +22,8 @@ export default class Component extends React.Component {
         onEditStart: () => {},
         onEditEnd: () => {},
         editText: "_EDIT_",
-        saveText: "_SAVE_"
+        saveText: "_SAVE_",
+        cancelText: "_CANCEL_"
     };
     static propTypes = {
         id: React.PropTypes.string.isRequired,
@@ -37,7 +38,8 @@ export default class Component extends React.Component {
         onEditEnd: React.PropTypes.func,
         labelText: React.PropTypes.string.isRequired,
         editText: React.PropTypes.string,
-        saveText: React.PropTypes.string
+        saveText: React.PropTypes.string,
+        cancelText: React.PropTypes.string
     };
 
     componentDidMount() {
@@ -56,7 +58,7 @@ export default class Component extends React.Component {
         let {
             id,canEdit,editing,loading,
             labelText,saveText,editText,
-            display
+            display,cancelText
         } = this.props;
 
         return (
@@ -73,7 +75,7 @@ export default class Component extends React.Component {
                             !editing ? (
                                 <span> • <a onClick={this.props.onEditStart}><i18n.Translate text={editText} /></a></span>
                             ) : (
-                                <span> • <Button textCase="lower" type="submit" layout="link"><i18n.Translate text={saveText} /></Button></span>
+                                <span> • <Button textCase="lower" type="submit" layout="link"><i18n.Translate text={saveText} /></Button> • <a onClick={this.props.onCancel}><i18n.Translate text={cancelText} /></a></span>
                             )
                         ) : null}
                     </div>

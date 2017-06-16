@@ -31,6 +31,7 @@ dictionary:
     _OK_: Ok
     _FINALIZING_: Finalizando
     _TOTAL_IN_BASKET_: Total na Cesta
+    _OUT_OF_STOCK_: sem estoque
 
     # Nav bar
     _NAV_BAR_ACCOUNT_ITEM_LABEL_: perfil
@@ -304,8 +305,10 @@ dictionary:
     _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
     _CATALOG_ITEM_PAGE_EDIT_LABEL_: editar
     _CATALOG_ITEM_PAGE_SAVE_LABEL_: salvar
+    _CATALOG_ITEM_PAGE_CANCEL_LABEL_: cancelar
     _CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_: preço
     _CATALOG_ITEM_PAGE_BRAND_LABEL: marca
+    _CATALOG_ITEM_PAGE_STOCK_FIELD_LABEL_: estoque
 
     # Invitation Page
     _INVITATION_PAGE_TITLE_: Solicite seu convite
@@ -348,12 +351,15 @@ dictionary:
     _BASKET_CARD_INVITATION_BUTTON_TEXT_: quero comprar
     _BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_: Mínimo de R$ {{minOrderTotalPrice}}
 
-    # ORDER STATUS
+    # Order Status
     _ORDER_STATUS_PAYMENT_PENDING_: pagamento pendente
     _ORDER_STATUS_PAYMENT_AUTHORIZED_: pagamento autorizado
     _ORDER_STATUS_PACKAGED_: embalado
     _ORDER_STATUS_DELIVERING_: a caminho
     _ORDER_STATUS_DELIVERED_: entregue
+
+    # Produc status
+    _PRODUCT_STATUS_NOT_APPROVED_: em aprovação
 
     # Field errors
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório
@@ -367,6 +373,10 @@ dictionary:
     _FIELD_ERROR_CARD_EXP_DATE_: Insira uma data válida.
     _FIELD_ERROR_DOCUMENT_CPF_: Insira um CPF válido.
     _FIELD_ERROR_BIRTHDATE_: Insira uma data válida.
+
+    # Warning messages
+    _WARNING_PRODUCT_STOCK_BECAME_LOWER_THAN_SELECTED_QUANTITY_: O estoque do produto <b>{{product.name}}</b> acabou de se tornar menor do que a quantidade que você havia selecionado. Alteramos a quantidade selecionada para o número disponível no novo estoque.
+    _WARNING_PRODUCT_OUT_OF_STOCK_: O estoque do produto <b>{{product.name}}</b> acabou de ser zerado :(
 
     # Error messages
     _ERROR_INVITATION_CLOSED_: O seu convite já foi utilizado.

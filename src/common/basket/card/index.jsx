@@ -153,7 +153,7 @@ class Component extends React.Component {
             <div>
                 <div className={styles.card}>
                     <div>
-                        <Button scale={screenSize != "phone" ? 0.8 : 1} block={true} color="success" onClick={this.onGetInivitationBtnClick}>
+                        <Button scale={screenSize != "phone" ? 0.8 : 1} color="success" onClick={this.onGetInivitationBtnClick}>
                             <i18n.Translate text="_BASKET_CARD_INVITATION_BUTTON_TEXT_" />
                         </Button>
                     </div>

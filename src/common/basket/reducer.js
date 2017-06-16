@@ -1,6 +1,7 @@
 import lodash from "lodash";
 import {handleActions} from "redux-actions";
-import {LoggerFactory, Storage} from "darch/src/utils";
+import {LoggerFactory,Storage,Redux} from "darch/src/utils";
+import Toaster from "darch/src/toaster";
 
 let Logger = new LoggerFactory("common.basket.reducer", {level:"debug"});
 let storage = new Storage();
@@ -260,6 +261,62 @@ export default handleActions({
 
             // Save to localstorage.
             storage.set("basket", JSON.stringify(newState));
+        }
+
+        return newState;
+    },
+
+    productUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("productUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        let {items} = state;
+        let item = items[action.payload._id];
+        let newState = state;
+
+        if(item) {
+            let stock = lodash.get(action, "payload.data.stock");
+
+            // If stock becomes lesser then what user has selected,
+            // then truncate it and notify user.
+            if(item.quantity > stock) {
+                let oldQuantity = item.quantity;
+                item.quantity = stock;
+
+                // Remove old price
+                let totalPrice = state.totalPrice - oldQuantity * item.product.priceValue;
+
+                // Add new price
+                if(stock > 0) {
+                    item.quantity = stock;
+                    totalPrice += item.quantity * item.product.priceValue;
+                }
+                // Remove item
+                else {
+                    delete items[action.payload._id];
+                }
+
+                logger.debug("new total price", {totalPrice, item, oldQuantity});
+
+                // Set new state
+                newState = Object.assign({}, state, {totalPrice, items});
+
+                // Set new state total discount
+                newState.totalDiscount = getTotalDiscount(newState);
+
+                // Save to localstorage.
+                storage.set("basket", JSON.stringify(newState));
+
+                // Prevent anti-patern of dispatching action before
+                // reducer has finished.
+                setTimeout(() => {
+                    logger.debug("dispatching toaster action", item.product);
+
+                    Redux.dispatch(Toaster.actions.push("warning", stock?"_WARNING_PRODUCT_STOCK_BECAME_LOWER_THAN_SELECTED_QUANTITY_":"_WARNING_PRODUCT_OUT_OF_STOCK_", {
+                        messageData: {product: item.product}
+                    }));
+                }, 200);
+            }
         }
 
         return newState;

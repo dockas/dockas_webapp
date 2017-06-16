@@ -1,9 +1,13 @@
 @require "~darch/src/styles/variables";
+@require "~darch/src/styles/utils";
 
 .card
     cursor: pointer;
     padding: 10pt 0 20pt 0;
     position: relative;
+    
+    &.out-of-stock
+        opacity(0.5);
 
     //background: #f5f5f5;
     //border: 1pt solid #f1f1f1;

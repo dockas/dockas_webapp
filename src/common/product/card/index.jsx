@@ -3,14 +3,17 @@ import config from "config";
 import lodash from "lodash";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
+import classNames from "classnames";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Button from "darch/src/button";
 import i18n from "darch/src/i18n";
 import Text from "darch/src/text";
 import Spinner from "darch/src/spinner";
+import Label from "darch/src/label";
 import placeholderImg from "assets/images/placeholder.png";
 import {Basket,Brand} from "common";
 import styles from "./styles";
+import types from "../types";
 import Badge from "../../badge";
 
 let Logger = new LoggerFactory("common.product.card");
@@ -180,12 +183,21 @@ class Component extends React.Component {
         });
 
         return (
-            <div className={styles.card} 
+            <div className={classNames([
+                styles.card,
+                data.stock <= 0 ? styles.outOfStock : ""
+            ])} 
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}
                 onClick={this.goToProductDetail}>
                 {item ? (
                     <Badge className={styles.badge} count={item.quantity} borderWidth={8} />
+                ) : null}
+
+                {["not_approved"].indexOf(data.status) >= 0 ? (
+                    <div style={{position: "absolute", top: "18px", left: "10px", zIndex: "1", padding: "2px", backgroundColor: "white", borderRadius: "0.3em"}}>
+                        <Label scale={0.7} color="#F9690E" layout="outlined"><i18n.Translate text={`_PRODUCT_STATUS_${lodash.toUpper(data.status)}_`}/></Label>
+                    </div>
                 ) : null}
 
                 <div className={styles.imageContainer}>
@@ -204,13 +216,17 @@ class Component extends React.Component {
                         }}></div>
                     )}
 
-                    {uid && (showOverlay || screenSize == "phone") ? (
+                    {data.stock <= 0 || (uid && data.status != types.Status.NOT_APPROVED && (showOverlay || screenSize == "phone")) ? (
                         <div className={styles.overlay}>
-                            {item ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onRemoveBtnClick}>
+                            {item && data.stock > 0 ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onRemoveBtnClick}>
                                 <span className="icon-minus-strong"></span>
                             </Button>) : null}
-                            <Button scale={screenSize == "phone" ? 0.8 : 0.6} color="success" onClick={this.onAddBtnClick}>
-                                <span className="icon-plus-strong"></span> <i18n.Translate text="_ADD_" />
+                            <Button scale={screenSize == "phone" ? 0.8 : 0.6} color="success" onClick={this.onAddBtnClick} disabled={data.stock <= 0 || item && item.quantity == data.stock}>
+                                {data.stock <= 0 || item && item.quantity == data.stock ? (
+                                    <i18n.Translate text="_OUT_OF_STOCK_" />
+                                ) : (
+                                    <span><span className="icon-plus-strong"></span> <i18n.Translate text="_ADD_" /></span>
+                                )}
                             </Button>
                         </div>
                     ) : null}

@@ -8,7 +8,10 @@ import Text from "darch/src/text";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Uploader from "darch/src/uploader";
+import Label from "darch/src/label";
+import Spinner from "darch/src/spinner";
 import Tabs from "darch/src/tabs";
+//import Dropdown from "darch/src/dropdown";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import {Api,Product,Basket,Badge,Brand} from "common";
 import placeholderImg from "assets/images/placeholder.png";
@@ -86,8 +89,7 @@ class Component extends React.Component {
         }
         
         if(product) {
-            // Process profile images.
-            //Object.assign(newState, this.processProfileImages(product));
+            console.log("product already fetched", product);
 
             // Select product
             Redux.dispatch(Product.actions.productSelect(product));
@@ -102,6 +104,7 @@ class Component extends React.Component {
         }
 
         this.setState(newState);
+        this.processProfileImages(product);
 
         // Window resize
         window.addEventListener("resize", this.handleWindowResize);
@@ -326,6 +329,28 @@ class Component extends React.Component {
         }
     }
 
+    async onApproveButtonClick() {
+        let productId = lodash.get(this.props, "product._id"),
+            logger = Logger.create("onApproveButtonClick");
+        
+        logger.info("enter");
+
+        this.setState({approving: true});
+
+        // Let's approve the product (make it public).
+        try {
+            let response = await Redux.dispatch(
+                Product.actions.productStatusUpdate(productId, "public")
+            );
+            logger.debug("api productStatusUpdate success", response);
+        }
+        catch(error) {
+            logger.error("api productStatusUpdate error", error);
+        }
+
+        this.setState({approving: false});
+    }
+
     render() {
         let {uid,user,product} = this.props;
         let {items} = this.props.basket;
@@ -387,46 +412,37 @@ class Component extends React.Component {
                 <div className={styles.mainContent}>
                     <Container>
                         {isProductReady ? (
-                            <Grid>
-                                <Grid.Cell>
-                                    <div className={styles.sidebarContainer}>
-                                        {item ? <Badge className={styles.badge} count={item.quantity} borderWidth={8} /> : null}
+                            screenSize != "phone" ? (
+                                <Grid>
+                                    <Grid.Cell>
+                                        <div className={styles.sidebarContainer}>
+                                            {item && product.stock > 0 ? <Badge className={styles.badge} count={item.quantity} borderWidth={8} /> : null}
 
-                                        <div className={styles.mainImageContainer}>
-                                            <Uploader.Main authToken={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
-                                                uploadOnSubmitted={true}
-                                                onInit={this.onUploaderInit}
-                                                onFileUploadSuccess={this.onFileUploadSuccess}
-                                                onUploadComplete={this.onUploadComplete}
-                                                onSelectMainImage={this.selectMainProfileImage}
-                                                mainImage={mainProfileImage}
-                                                onImagesLoad={this.onUploaderImagesLoad}
-                                                images={profileImages}
-                                                defaulImageUrl={placeholderImg}
-                                                showAddMoreButton={true}
-                                                showSelectMainProfileImageButton={isAdmin||isApprovedOwner}
-                                                borderColor="white"
-                                                borderWidth="7px"
-                                                editing={isAdmin||isApprovedOwner}/>
+                                            <div className={styles.mainImageContainer}>
+                                                <Uploader.Main authToken={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
+                                                    uploadOnSubmitted={true}
+                                                    onInit={this.onUploaderInit}
+                                                    onFileUploadSuccess={this.onFileUploadSuccess}
+                                                    onUploadComplete={this.onUploadComplete}
+                                                    onSelectMainImage={this.selectMainProfileImage}
+                                                    mainImage={mainProfileImage}
+                                                    onImagesLoad={this.onUploaderImagesLoad}
+                                                    images={profileImages}
+                                                    defaulImageUrl={placeholderImg}
+                                                    showAddMoreButton={true}
+                                                    showSelectMainProfileImageButton={isAdmin||isApprovedOwner}
+                                                    borderColor="white"
+                                                    borderWidth="7px"
+                                                    editing={isAdmin||isApprovedOwner}/>
+                                            </div>
 
-                                            {/*mainImage ? (
-                                                <div className={styles.mainImage} style={{
-                                                    backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center"
-                                                }}></div>
-                                            ) : null*/}
-                                        </div>
-
-                                        {screenSize != "phone" ? (
+                                            
                                             <div className={styles.priceContainer}>
                                                 <Text scale={2}>
                                                     <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue/100} /></b>
                                                 </Text>
                                             </div>
-                                        ) : null}
 
-                                        {screenSize != "phone" ? (
                                             <div className={styles.totalPriceContainer}>
                                                 {item ? (
                                                     <Text scale={0.8} color="#999999">
@@ -436,54 +452,146 @@ class Component extends React.Component {
                                                     <Text scale={0.8} color="#999999">••••</Text>
                                                 )}
                                             </div>
-                                        ) : null}
 
-                                        {uid && screenSize != "phone" ? (
-                                            <div className={styles.addBtnContainer}>
-                                                <Grid noGap={true}>
-                                                    {item? (
-                                                        <Grid.Cell span={0.3}>
-                                                            <div className={styles.removeBtnContainer}>
-                                                                <Button scale={1} color="danger" onClick={() => {
-                                                                    Redux.dispatch(Basket.actions.basketRemoveProduct(product));
-                                                                }}>-</Button>
-                                                            </div>
+                                            {uid && product.status != Product.types.Status.NOT_APPROVED ? (
+                                                <div className={styles.addBtnContainer}>
+                                                    <Grid noGap={true}>
+                                                        {item? (
+                                                            <Grid.Cell span={0.3}>
+                                                                <div className={styles.removeBtnContainer}>
+                                                                    <Button scale={1} color="danger" block={true} onClick={() => {
+                                                                        Redux.dispatch(Basket.actions.basketRemoveProduct(product));
+                                                                    }}>-</Button>
+                                                                </div>
+                                                            </Grid.Cell>
+                                                        ) : (<span></span>)}
+
+                                                        <Grid.Cell>
+                                                            <Button scale={1} color="success" block={true} onClick={() => {
+                                                                Redux.dispatch(Basket.actions.basketAddProduct(product));
+                                                            }} disabled={product.stock <= 0 || (item && item.quantity == product.stock) }>
+                                                                {product.stock <= 0 || (item && item.quantity == product.stock) ? (
+                                                                    <i18n.Translate text="_OUT_OF_STOCK_" />
+                                                                ) : (
+                                                                    <span>+ <i18n.Translate text="_ADD_" /></span>
+                                                                )}
+                                                            </Button>
                                                         </Grid.Cell>
-                                                    ) : (<span></span>)}
+                                                    </Grid>
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    </Grid.Cell>
+                                    
+                                    <Grid.Cell span={4}>
+                                        <div className={styles.bodyContainer}>
 
-                                                    <Grid.Cell>
-                                                        <Button scale={1} color="success" onClick={() => {
-                                                            Redux.dispatch(Basket.actions.basketAddProduct(product));
-                                                        }}>+ Adicionar</Button>
-                                                    </Grid.Cell>
-                                                </Grid>
+                                            <div className={styles.nameContainer}>
+                                                <Text scale={1.5}>{product.name}</Text>
+
+                                                {product.status == Product.types.Status.NOT_APPROVED ? (
+                                                    <span style={{marginLeft: "10px"}}><Label scale={0.8} color="#F9690E" layout="outlined"><i18n.Translate text={`_PRODUCT_STATUS_${lodash.toUpper(product.status)}_`}/></Label></span>
+                                                ) : null}
+
+                                                {/*product.status == Product.types.Status.NOT_APPROVED ? (
+                                                    isAdmin ? (
+                                                        <Dropdown Toggle={<span style={{marginLeft: "10px"}}><Label color="#F9690E" scale={0.8}><i18n.Translate text={`_PRODUCT_STATUS_${lodash.toUpper(product.status)}_`}/></Label></span>}
+                                                        showCaret={false}
+                                                        arrowOffset={30}
+                                                        position="right"
+                                                        positionOffset={0}
+                                                        buttonLayout="none" 
+                                                        buttonColor="dark" 
+                                                        buttonScale={1}>
+                                                            <Dropdown.Item>
+                                                                Aprovar
+                                                            </Dropdown.Item>
+                                                        </Dropdown>
+                                                    ) : (
+                                                        <span style={{marginLeft: "10px"}}><Label scale={0.8} color="#F9690E"><i18n.Translate text={`_PRODUCT_STATUS_${lodash.toUpper(product.status)}_`}/></Label></span>
+                                                    )
+                                                ) : null*/}
                                             </div>
-                                        ) : null}
-                                    </div>
-                                </Grid.Cell>
-                                
-                                <Grid.Cell span={4}>
-                                    <div className={styles.bodyContainer}>
 
-                                        <div className={styles.nameContainer}>
-                                            <Text scale={1.5}>{product.name}</Text>
-                                        </div>
+                                            {/*isAdmin ? (
+                                                <div className={styles.actionsContainer}>
+                                                    {product.status == Product.types.Status.NOT_APPROVED ? (
+                                                        <Button scale={0.8} onClick={this.onApproveButtonClick} disabled={this.state.approving}>
+                                                            {!this.state.approving ? <span>aprovar</span> : (
+                                                                <span><span>aprovando</span><span style={{marginLeft: "5px"}}><Spinner.CircSide color="white"/></span></span>
+                                                            )}
+                                                        </Button>
+                                                    ) : null}
+                                                </div>
+                                            ) : null*/}
 
-                                        <div className={styles.tabsBodyContainer}>
-                                            <div className={styles.tabsBody}>
-                                                <Tabs bordered={true}>
-                                                    <Tabs.Item to={`/item/${nameId}`}><i18n.Translate text="_CATALOG_ITEM_PAGE_INFO_TAB_LABEL_"/></Tabs.Item>
-                                                    {isAdmin||isApprovedOwner?<Tabs.Item to={`/item/${nameId}/statistics`}><i18n.Translate text="_CATALOG_ITEM_PAGE_STATISTICS_TAB_LABEL_"/></Tabs.Item>:null}
-                                                </Tabs>
+                                            <div className={styles.tabsBodyContainer}>
+                                                <div className={styles.tabsBody}>
+                                                    <Tabs bordered={true}>
+                                                        <Tabs.Item to={`/item/${nameId}`}><i18n.Translate text="_CATALOG_ITEM_PAGE_INFO_TAB_LABEL_"/></Tabs.Item>
+                                                        {isAdmin||isApprovedOwner?<Tabs.Item to={`/item/${nameId}/statistics`}><i18n.Translate text="_CATALOG_ITEM_PAGE_STATISTICS_TAB_LABEL_"/></Tabs.Item>:null}
+                                                        {isAdmin && product.status == Product.types.Status.NOT_APPROVED ?(
+                                                            <Tabs.Item align="right">
+                                                                <Button scale={0.6} onClick={this.onApproveButtonClick} disabled={this.state.approving}>
+                                                                    {!this.state.approving ? <span>aprovar</span> : (
+                                                                        <span><span>aprovando</span><span style={{marginLeft: "5px"}}><Spinner.CircSide scale={0.9} color="white"/></span></span>
+                                                                    )}
+                                                                </Button>
+                                                            </Tabs.Item>
+                                                        ):null}
+                                                    </Tabs>
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.childrenBodyContainer}>
+                                                {this.props.children}
                                             </div>
                                         </div>
-
-                                        <div className={styles.childrenBodyContainer}>
-                                            {this.props.children}
-                                        </div>
+                                    </Grid.Cell>
+                                </Grid>
+                            ) : (
+                                <div>
+                                    <div className={styles.nameContainer}>
+                                        <Text scale={1.5}>
+                                            {product.name} 
+                                            
+                                            {["not_approved"].indexOf(product.status) >= 0 ? (
+                                                <span style={{marginLeft: "10px"}}><Label scale={0.8} color="#F9690E"><i18n.Translate text={`_PRODUCT_STATUS_${lodash.toUpper(product.status)}_`}/></Label></span>
+                                            ) : null}
+                                        </Text>
                                     </div>
-                                </Grid.Cell>
-                            </Grid>
+
+                                    <div className={styles.mainImageContainer}>
+                                        {item && product.stock > 0 ? <Badge className={styles.badge} count={item.quantity} borderWidth={8} /> : null}
+                                        
+                                        <Uploader.Main authToken={this.state.authToken} targetUrl={`//${config.hostnames.api}/${config.apiVersion}/file/upload`}
+                                            uploadOnSubmitted={true}
+                                            onInit={this.onUploaderInit}
+                                            onFileUploadSuccess={this.onFileUploadSuccess}
+                                            onUploadComplete={this.onUploadComplete}
+                                            onSelectMainImage={this.selectMainProfileImage}
+                                            mainImage={mainProfileImage}
+                                            onImagesLoad={this.onUploaderImagesLoad}
+                                            images={profileImages}
+                                            defaulImageUrl={placeholderImg}
+                                            showAddMoreButton={true}
+                                            showSelectMainProfileImageButton={isAdmin||isApprovedOwner}
+                                            borderColor="white"
+                                            borderWidth="7px"
+                                            editing={isAdmin||isApprovedOwner}/>
+                                    </div>
+
+                                    <div className={styles.totalPriceContainer}>
+                                        {item ? (
+                                            <Text scale={0.8} color="#999999">
+                                                ( <i18n.Translate text="_TOTAL_IN_BASKET_" format="lower"/> = <b><i18n.Number prefix="R$" numDecimals={2} value={(item.quantity * product.priceValue)/100} /></b> )
+                                            </Text>
+                                        ) : (
+                                            <Text scale={0.8} color="#999999">••••</Text>
+                                        )}
+                                    </div>
+                                </div>
+                            )
                         ) : initializing ? (
                             <div>Carregando ...</div>
                         ) : (

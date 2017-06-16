@@ -117,6 +117,10 @@ export default class Api {
         return this.request("PUT", `product/${id}/price`, data, opts);
     }
 
+    productStatusUpdate(id, data, opts) {
+        return this.request("PUT", `product/${id}/status`, data, opts);
+    }
+
     tagCreate(data, opts) {
         return this.request("POST", "tag", data, opts);
     }

@@ -56,6 +56,8 @@ class Component extends React.Component {
         saving: {}
     };
 
+    fieldRefs = {};
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
@@ -174,6 +176,34 @@ class Component extends React.Component {
 
                         <Link to={`/brand/${product.brand.nameId}`}>{product.brand.name}</Link>  
                     </Panel>
+
+                    {isAdmin||isApprovedOwner ? (
+                        <Panel id="stock"
+                            canEdit={true}
+                            editing={editing.stock}
+                            loading={saving.stock}
+                            labelText="_CATALOG_ITEM_PAGE_STOCK_FIELD_LABEL_"
+                            saveText="_CATALOG_ITEM_PAGE_SAVE_LABEL_"
+                            editText="_CATALOG_ITEM_PAGE_EDIT_LABEL_"
+                            cancelText="_CATALOG_ITEM_PAGE_CANCEL_LABEL_"
+                            onEditStart={() => { this.setState({editing: Object.assign(editing, {stock: true})}); }}
+                            onCancel={() => { this.setState({editing: Object.assign(editing, {stock: false})}); }}
+                            onEditEnd={this.onSubmit}>
+                            <div style={{minWidth: "100px"}}>
+                                {editing.stock ? (
+                                    <Field.Number
+                                        name="stock"
+                                        value={product.stock}
+                                        numDecimals={0}
+                                        focus={true}
+                                        validators="$required"
+                                    />
+                                ) : (
+                                    <div>{product.stock}</div>
+                                )}
+                            </div>
+                        </Panel>
+                    ) : null}
                 </div>
 
                 <div className={styles.panelRow}>
@@ -185,8 +215,10 @@ class Component extends React.Component {
                         labelText="_CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_"
                         saveText="_CATALOG_ITEM_PAGE_SAVE_LABEL_"
                         editText="_CATALOG_ITEM_PAGE_EDIT_LABEL_"
+                        cancelText="_CATALOG_ITEM_PAGE_CANCEL_LABEL_"
                         onEditStart={() => { this.setState({editing: Object.assign(editing, {description: true})}); }}
-                        onEditEnd={this.onSubmit}>
+                        onEditEnd={this.onSubmit}
+                        onCancel={() => { this.setState({editing: Object.assign(editing, {description: false})}); }}>
                         
                         {editing.description ? (
                             <Field.TextArea
@@ -195,7 +227,8 @@ class Component extends React.Component {
                                 value={product.description}
                                 name="description"
                                 disabled={saving.description}
-                                scale={1} />
+                                scale={1}
+                                focus={true}/>
                         ) : (
                             <div dangerouslySetInnerHTML={{
                                 __html: product.description ? 

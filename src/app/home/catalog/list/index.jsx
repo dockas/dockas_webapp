@@ -52,7 +52,8 @@ function mapStateToProps(state) {
         user: lodash.get(state.user.profiles, state.user.uid),
         basket: state.basket,
         products: lodash.get(state.product,"scope.catalogList.data"),
-        productsQuery: lodash.get(state.product,"scope.catalogList.query")
+        productsQuery: lodash.get(state.product,"scope.catalogList.query"),
+        tags: lodash.get(state.tag, "scope.global.dropdown")
     };
 }
 
@@ -87,7 +88,7 @@ class Component extends React.Component {
         }
 
         // Retrieve popular tags
-        try {
+        /*try {
             let response = await Api.shared.tagFind({
                 sort: {findCount: -1}
             });
@@ -101,7 +102,7 @@ class Component extends React.Component {
         }
         catch(error) {
             logger.error("api tagFind error", error);
-        }
+        }*/
 
         window.addEventListener("resize", this.handleWindowResize);
         this.handleWindowResize();
@@ -170,6 +171,8 @@ class Component extends React.Component {
 
         let mergedQuery = lodash.assign({}, query, {
             sort: {"hash": 1, "name": 1},
+            stock: {gt: 0},
+            status: ["public"],
             populate: ["tags","profileImages","brand","brand.company"]
         });
 
@@ -415,9 +418,9 @@ class Component extends React.Component {
     }
 
     render() {
-        let {products,user,basket} = this.props;
-        let {listName} = this.props.basket;
-        let {tags,selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
+        let {tags,products,user,basket} = this.props;
+        let {listName} = basket;
+        let {selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
 
         products = filteredProducts || products;
 
@@ -528,9 +531,7 @@ class Component extends React.Component {
                             })*/
 
                             products.map((product) => {
-                                let isWithinBasket = !!(basket.items[product._id]);
-
-                                return product.stock != 0 || isWithinBasket ? (
+                                return product.stock > 0 ? (
                                     <Grid.Cell key={product._id} span={2}>
                                         <Product.Card data={product} 
                                             onChangePrice={this.onProductChangePrice}
@@ -545,7 +546,7 @@ class Component extends React.Component {
                                             }}
                                         />
                                     </Grid.Cell>
-                                ) : <span></span>;
+                                ) : <span key={product._id}></span>;
                             })
                         ) : null}
                     </Grid>

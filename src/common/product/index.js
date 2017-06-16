@@ -9,6 +9,7 @@ module.exports = class Product {
 
     static actions = require("./actions");
     static reducer = require("./reducer");
+    static types = require("./types");
 
     // Register to socket events.
     static listenSocketEvents() {
