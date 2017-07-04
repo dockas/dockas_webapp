@@ -13,7 +13,7 @@ import Spinner from "darch/src/spinner";
 import Tabs from "darch/src/tabs";
 //import Dropdown from "darch/src/dropdown";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
-import {Api,Product,Basket,Badge,Brand} from "common";
+import {Api,Product,Basket,Badge,Brand,File} from "common";
 import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
 
@@ -27,11 +27,12 @@ let Logger = new LoggerFactory("catalog.item.page");
  */
 function mapStateToProps(state) {
     return {
-        products: lodash.get(state.product,"scope.catalogList.data"),
-        product: state.product.selected,
+        productData: state.product.data,
+        fileData: state.file.data,
+        productNameIdToId: state.product.nameIdToId,
         basket: state.basket,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -56,45 +57,52 @@ class Component extends React.Component {
         saving: {}
     };
 
+    uploadedFiles = {};
+
+    getProduct(props=this.props) {
+        let {productData,productNameIdToId} = props;
+        let nameId = lodash.get(props, "params.id");
+        
+        return productNameIdToId[nameId]?
+            productData[productNameIdToId[nameId]] :
+            null;
+    }
+
     async componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter", {params: this.props.params});
 
         let newState = {initializing: false};
         let nameId = lodash.get(this.props, "params.id");
+        let product = this.getProduct();
 
-        // Try to get product from products store.
-        let product = lodash.find(this.props.products, (product) => {
-            return product.nameId == nameId;
-        });
-
-        // If nothing was found, then get it directly from the server.
+        // If record was not fetched yet, then get it 
+        // directly from the server.
         if(!product) {
             this.setState({initializing: true});
 
-            logger.debug("product not in products", {
-                products: this.props.products
-            });
+            logger.debug("product not fetched yet");
 
             try {
-                let findResponse = await Api.shared.productFindByNameId(nameId, {
-                    populate: ["profileImages","tags","brand","brand.company"]
-                });
-                
-                product = findResponse.result;
+                await Redux.dispatch(
+                    Product.actions.productFindByNameId(nameId, {
+                        populate: {paths: ["profileImages","tags","brand","brand.company"]}
+                    })
+                );
             }
             catch(error) {
                 logger.error("api productFindByNameId error", error);
             }
         }
-        
-        if(product) {
-            console.log("product already fetched", product);
-
-            // Select product
-            Redux.dispatch(Product.actions.productSelect(product));
+        // Let's ensure that fetched product is populated with necessary data.
+        else {
+            Product.populator.populate(
+                [product], 
+                {paths:["profileImages","tags","brand","brand.company"]}
+            );
         }
-
+        
+        // Auth token for upload profile images.
         try {
             newState.authToken = await Api.shared.http.getAuthToken();
             logger.info("api http getAuthToken success", newState.authToken);
@@ -103,74 +111,57 @@ class Component extends React.Component {
             logger.error("api http getAuthToken error", error);
         }
 
+        // Update state
         this.setState(newState);
-        this.processProfileImages(product);
 
         // Window resize
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
-    }
-
-    componentDidUpdate(prevProps) {
-        let logger = Logger.create("componentDidUpdate");
-        logger.info("enter");
-
-        let {product} = this.props;
-        let profileImagesStr = lodash.map(lodash.get(product, "profileImages"),"_id").sort().join(",");
-        let prevProfileImagesStr = lodash.map(lodash.get(prevProps, "product.profileImages"), "_id").sort().join(",");
-
-        logger.debug("data", {
-            profileImagesStr,
-            prevProfileImagesStr
-        });
-
-        // If product images is diferent than state profile images,
-        // then process again.
-        if(profileImagesStr != prevProfileImagesStr
-        ||lodash.get(product, "mainProfileImage") != lodash.get(prevProps,"product.mainProfileImage")) {
-            logger.debug("product profileImages changed");
-            this.processProfileImages(product);
-        }
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleWindowResize);
     }
 
-    processProfileImages(product) {
-        // Process profile images
-        let profileImages = [];
+    processProfileImages() {
+        let profileImages = [],
+            {fileData} = this.props,
+            {uploaderImages} = this.state,
+            product = this.getProduct(),
+            logger = Logger.create("processProfileImages");
 
-        for(let image of product.profileImages||[]) {
-            profileImages.push({
-                _id: image._id,
-                url: image.url?image.url:`//${config.hostnames.file}/images/${image.path}`
-            });
+        logger.info("enter", {product, files: Object.keys(fileData)});
+
+        if(product) {
+            for(let imageId of product.profileImages) {
+                logger.debug("processing product profile image", {imageId});
+
+                if(!fileData[imageId]){
+                    logger.debug("image not available in store");
+                    continue;
+                }
+
+                profileImages.push({
+                    _id: fileData[imageId]._id,
+                    url: `//${config.hostnames.file}/images/${fileData[imageId].path}`
+                });
+            }
+
+            logger.debug("product profileImages", {profileImages});
+
+            // Add uploader loaded images.
+            for(let image of uploaderImages||[]) {
+                profileImages.push({
+                    type: "localImage",
+                    _id: image._id,
+                    url: image.url
+                });
+            }
+
+            logger.debug("product full profileImages", {profileImages});
         }
 
-        // If the are local-files mounted, then add it to the end
-        // of the profile images array.
-        let localImages = lodash.filter(this.state.profileImages, (img) => {
-            return img.type == "local-file";
-        });
-
-        console.log("rapadura mole : localImages", {localImages});
-
-        profileImages = profileImages.concat(localImages);
-
-        // Set main profile image.
-        let mainProfileImage = lodash.find(profileImages, (image) => {
-            return image._id == product.mainProfileImage;
-        });
-
-        console.log("rapadura mole", {mainProfileImage, profileImages});
-
-        // Return to caller.
-        this.setState({
-            mainProfileImage,
-            profileImages
-        });
+        return profileImages;
     }
 
     handleWindowResize() {
@@ -186,15 +177,17 @@ class Component extends React.Component {
     }
 
     onSubmit(data, formName) {
-        let logger = Logger.create("onSubmit");
+        let product = this.getProduct(),
+            logger = Logger.create("onSubmit");
+
         logger.info("enter", {data, formName});
 
-        if(!this.props.product) {return;}
+        if(!product) {return;}
 
         let changed = false;
 
         for(let key of Object.keys(data)) {
-            if(this.props.product[key] != data[key]) {
+            if(product[key] != data[key]) {
                 changed = true;
                 break;
             }
@@ -219,108 +212,96 @@ class Component extends React.Component {
         this.flow = flow;
     }
 
-    onUploadStart() {
-        let logger = Logger.create("onUploadStart");
-        logger.info("enter");
-    }
-
-    async onFileUploadSuccess(fileData, fid) {
-        let logger = Logger.create("onFileUploadSuccess");
-        logger.info("enter", {fileData, fid});
-
-        //console.log(["console onFileUploadSuccess", fileData, fid]);
-
-        // Update images
-        let idx = lodash.findIndex(this.state.profileImages, (image) => {
-            return image._id == fid;
-        });
-
-        //console.log(["console onFileUploadSuccess : idx", idx]);
-
-        let profileImages = this.oldProfileImages = this.state.profileImages;
-        let mainProfileImage = this.oldMainProfileImage = this.state.mainProfileImage;
-
-        logger.debug("idx", {idx});
-
-        if(idx >= 0 && profileImages.length && idx < profileImages.length) {
-            //console.log(["console onFileUploadSuccess : let's update profile images"]);
-
-            let oldImage = profileImages[idx];
-            let newImage = {
-                _id: fileData._id,
-                url: `//${config.hostnames.file}/images/${fileData.path}`
-            };
-
-            //console.log(["console onUploadSuccess : oldImage, newImage", oldImage, newImage]);
-
-            if(oldImage._id == mainProfileImage._id) {
-                mainProfileImage = newImage;
-            }
-
-            //console.log(["console onUploadSuccess : images before splice", lodash.map(profileImages, "_id")]);
-
-            profileImages.splice(idx, 1, newImage);
-
-            //console.log(["console onUploadSuccess : images aftre splice", lodash.map(profileImages, "_id")]);
-        }
-
-        this.setState({mainProfileImage, profileImages});
-    }
-
-    async onUploadComplete() {
-        let logger = Logger.create("onUploadComplete");
-        logger.info("enter", this.data);
-
-        try {
-            await this.updateProduct({
-                mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
-                profileImages: lodash.map(this.state.profileImages, (image) => {
-                    return image._id;
-                })
-            }, {profileImages: this.state.profileImages});
-        }
-        catch(error) {
-            return logger.error("updateProduct error", error);
-        }
-
-        // Clear profile images.
-        this.setState({profileImages: []});
-    }
-
     onUploaderImagesLoad(images) {
-        let profileImages = this.state.profileImages.concat(images);
-
         this.setState({
-            profileImages,
-            mainProfileImage: this.state.mainProfileImage || profileImages[0]
+            uploaderImages: lodash.cloneDeep(images)
         }, () => {
             this.flow.upload();
         });
     }
 
+    onUploadStart() {
+        let logger = Logger.create("onUploadStart");
+        logger.info("enter");
+    }
+
+    async onFileUploadSuccess(file, fid) {
+        let logger = Logger.create("onFileUploadSuccess");
+        logger.info("enter", {file, fid});
+
+        this.uploadedFiles[fid] = file;
+
+        try {
+            Redux.dispatch(
+                File.actions.fileAdd(file)
+            );
+        }
+        catch(error) {
+            logger.error("file action fileAdd error", error);
+        }
+    }
+
+    async onUploadComplete() {
+        let {uploaderImages} = this.state,
+            product = this.getProduct(),
+            fileIds = lodash.get(product, "profileImages")||[],
+            logger = Logger.create("onUploadComplete");
+
+        logger.info("enter", {
+            uploaderImages: lodash.map(uploaderImages, "_id"),
+            uploadedFiles: this.uploadedFiles,
+            fileIds
+        });
+
+        // Process uploaderImages
+        for(let image of uploaderImages) {
+            logger.debug(`processing image ${image._id}`, {
+                file: this.uploadedFiles[image._id]
+            });
+
+            if(!this.uploadedFiles[image._id]){
+                logger.debug("no uploaded file for image");
+                continue;
+            }
+
+            fileIds.push(lodash.get(this.uploadedFiles,`${image._id}._id`));
+        }
+
+        logger.debug("fileIds", {fileIds});
+
+        try {
+            await this.updateProduct({profileImages: fileIds});
+        }
+        catch(error) {
+            return logger.error("updateProduct error", error);
+        }
+
+        // Clear uploadedFiles
+        this.uploadedFiles = {};
+
+        // Clear uploaderImages.
+        this.setState({uploaderImages: []});
+    }
+
     selectMainProfileImage(image) {
         this.updateProduct({
             mainProfileImage: image._id,
-        }).then(() => {
-            this.setState({mainProfileImage: image});
         });
     }
 
-    async updateProduct(data, oldData) {
+    async updateProduct(data) {
         let response,
-            productId = lodash.get(this.props, "product._id"),
-            logger = Logger.create("onUploadComplete");
+            product = this.getProduct(),
+            logger = Logger.create("updateProduct");
 
-        if(!productId){return;}
+        if(!product){return;}
 
-        logger.info("enter", {data,oldData});
+        logger.info("enter", {data});
 
         // Update product.
         try {
             response = await Redux.dispatch(
-                Product.actions.productUpdate(productId, data, {
-                    data: oldData
-                })
+                Product.actions.productUpdate(product._id, data)
             );
             logger.debug("api productUpdate success", response);
         }
@@ -330,9 +311,11 @@ class Component extends React.Component {
     }
 
     async onApproveButtonClick() {
-        let productId = lodash.get(this.props, "product._id"),
+        let product = this.getProduct(),
             logger = Logger.create("onApproveButtonClick");
         
+        if(!product){return;}
+
         logger.info("enter");
 
         this.setState({approving: true});
@@ -340,7 +323,7 @@ class Component extends React.Component {
         // Let's approve the product (make it public).
         try {
             let response = await Redux.dispatch(
-                Product.actions.productStatusUpdate(productId, "public")
+                Product.actions.productStatusUpdate(product._id, "public")
             );
             logger.debug("api productStatusUpdate success", response);
         }
@@ -352,66 +335,27 @@ class Component extends React.Component {
     }
 
     render() {
-        let {uid,user,product} = this.props;
+        let {uid,user,productData} = this.props;
+        let product = this.getProduct();
+        let profileImages = this.processProfileImages();
         let {items} = this.props.basket;
-        let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
+        let {initializing,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(product,"brand"));
-        let isProductReady = product && product.nameId == lodash.get(this.props, "params.id");
 
         let item = lodash.find(items, (item) => {
-            return item.product.nameId == nameId;
+            return lodash.get(productData, `${item.product}.nameId`) == nameId;
+        });
+
+        let mainProfileImage = lodash.find(profileImages, (image) => {
+            return lodash.get(product, "mainProfileImage") == image._id;
         });
 
         return (
             <div className={styles.page}>
-                {/*<div className={styles.banner}>
-                    <div className={styles.bannerOverlay}></div>
-                    {screenSize != "phone" ? (
-                        <Container>
-                            {product ? (
-                                <Grid>
-                                    <Grid.Cell>
-                                    </Grid.Cell>
-
-                                    <Grid.Cell span={4}>
-                                        <div className={styles.bannerBodyContainer}>
-                                            <div className={styles.bannerBody}>
-                                                <Text scale={1.5}>{product.name}</Text>
-                                            </div>
-                                        </div>
-                                    </Grid.Cell>
-                                </Grid>
-                            ) : (null)}
-                        </Container>
-                    ) : (
-                        null
-                    )}
-
-                    <Container>
-                        {product ? (
-                            <Grid>
-                                <Grid.Cell>
-                                </Grid.Cell>
-
-                                <Grid.Cell span={4}>
-                                    <div className={styles.tabsBodyContainer}>
-                                        <div className={styles.tabsBody}>
-                                            <Tabs bordered={false}>
-                                                <Tabs.Item to={`/item/${nameId}`}>Info</Tabs.Item>
-                                                <Tabs.Item to={`/item/${nameId}/statistics`}>Estatísticas</Tabs.Item>
-                                            </Tabs>
-                                        </div>
-                                    </div>
-                                </Grid.Cell>
-                            </Grid>
-                        ) : (null)}
-                    </Container>
-                </div>*/}
-
                 <div className={styles.mainContent}>
                     <Container>
-                        {isProductReady ? (
+                        {product ? (
                             screenSize != "phone" ? (
                                 <Grid>
                                     <Grid.Cell>

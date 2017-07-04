@@ -28,7 +28,7 @@ function mapStateToProps(state) {
         product: state.product.selected,
         basket: state.basket,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -71,7 +71,7 @@ class Component extends React.Component {
 
             try {
                 let findResponse = await Api.shared.productFindByNameId(nameId, {
-                    populate: ["profileImages","tags","brand"]
+                    populate: {paths: ["profileImages","tags","brand"]}
                 });
                 
                 product = findResponse.result;

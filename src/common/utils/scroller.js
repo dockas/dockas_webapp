@@ -5,10 +5,12 @@ let Logger = new LoggerFactory("scroller", {level: "debug"});
 export default class Scroller {
     constructor({
         onLoad=()=>{},
+        isDisabled=()=>{},
         direction="bottom",
         offset=100
     }) {
         this.onLoad = onLoad;
+        this.isDisabled = isDisabled;
         this.direction = direction;
         this.offset = offset;
         this.count = 0;
@@ -25,7 +27,16 @@ export default class Scroller {
         window.removeEventListener("scroll", this.handleScroll);
     }
 
-    async load() {
+    async load(count) {
+        let logger = Logger.create("load");
+        logger.info("load", {count});
+
+        if(this.isDisabled()) {
+            logger.debug("isDisabled");
+            return Promise.resolve();
+        }
+
+        this.count = count >= 0 ? count : this.count;
         this.loading = true;
         this.count += 1;
         await Promise.resolve(this.onLoad(this.count));

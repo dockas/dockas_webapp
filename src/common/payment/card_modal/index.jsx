@@ -27,7 +27,7 @@ export default class Component extends React.Component {
         onDismiss: () => {},
         open: false
     };
-    
+
     static propTypes = {
         onComplete: React.PropTypes.func,
         onDismiss: React.PropTypes.func,
@@ -95,7 +95,10 @@ export default class Component extends React.Component {
             return this.setState({loading: false});
         }
 
-        this.props.onComplete(lodash.get(result, "action.payload"), "card_modal");
+        this.props.onComplete(
+            lodash.assign({}, lodash.get(result, "value"), {cvc: data.cvc}), 
+            this.props.name
+        );
     }
 
     onFormChange(data) {
@@ -196,7 +199,13 @@ export default class Component extends React.Component {
                             </Grid>
                         </Field.Section>
 
-                        <div className={styles.separator}><Separator.Line title="Dono do Cartão" scale={0.8} titleAlign="right"/></div>
+                        <div className={styles.separator}>
+                            <Separator.Line>
+                                <Separator.Info align="right">
+                                    <Text scale={0.8}>Dono do Cartão</Text>
+                                </Separator.Info>
+                            </Separator.Line>
+                        </div>
 
                         <Field.Section>
                             <Grid>

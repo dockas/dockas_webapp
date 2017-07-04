@@ -18,7 +18,7 @@ let Logger = new LoggerFactory("common.product.card");
  */
 function mapStateToProps(state) {
     return {
-        user: lodash.get(state.user.profiles, state.user.uid),
+        user: lodash.get(state.user.data, state.user.uid),
         uid: state.user.uid,
         basket: state.basket
     };

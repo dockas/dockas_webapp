@@ -1,5 +1,3 @@
-/* global mixpanel */
-
 import React from "react";
 import {Link,withRouter} from "react-router";
 import {LoggerFactory,Redux} from "darch/src/utils";
@@ -12,7 +10,7 @@ import i18n from "darch/src/i18n";
 import Spinner from "darch/src/spinner";
 import styles from "./styles";
 import logo from "assets/images/logo_icon_100x100.png";
-import {Auth} from "common";
+import {Auth,Tracker} from "common";
 
 let Logger = new LoggerFactory("signin", {level: "debug"});
 
@@ -58,7 +56,7 @@ class Component extends React.Component {
                 })
             );
 
-            mixpanel.track("signin success");
+            Tracker.track("signin success", {email: data.email});
 
             logger.debug("Auth signin action success", signinResponse);
 
@@ -70,7 +68,7 @@ class Component extends React.Component {
         catch(error) {
             logger.error("signin process error", error);
 
-            mixpanel.track("signin error", error);
+            Tracker.track("signin error", {email: data.email});
 
             this.setState({loading: false});
         }

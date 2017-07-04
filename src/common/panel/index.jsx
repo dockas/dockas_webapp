@@ -73,9 +73,9 @@ export default class Component extends React.Component {
 
                         {canEdit ? (
                             !editing ? (
-                                <span> • <a onClick={this.props.onEditStart}><i18n.Translate text={editText} /></a></span>
+                                <span> • <a onClick={this.props.onEditStart}><i18n.Translate text={editText} format="lower" /></a></span>
                             ) : (
-                                <span> • <Button textCase="lower" type="submit" layout="link"><i18n.Translate text={saveText} /></Button> • <a onClick={this.props.onCancel}><i18n.Translate text={cancelText} /></a></span>
+                                <span> • <Button textCase="lower" type="submit" layout="link"><i18n.Translate text={saveText} format="lower" /></Button> • <a onClick={this.props.onCancel}><i18n.Translate text={cancelText} format="lower" /></a></span>
                             )
                         ) : null}
                     </div>

@@ -1,18 +1,17 @@
 import React from "react";
+import lodash from "lodash";
 import {connect} from "react-redux";
 import {Converter} from "showdown";
 import {LoggerFactory, Redux} from "darch/src/utils";
-import Form from "darch/src/form";
 import Field from "darch/src/field";
-import Text from "darch/src/text";
-import i18n from "darch/src/i18n";
-import Button from "darch/src/button";
-import {Brand} from "common";
+import {Brand,Panel} from "common";
 
 let Logger = new LoggerFactory("brand.detail.info");
 let converter = new Converter({
     headerLevelStart: 5
 });
+
+converter.setFlavor("github");
 
 /**
  * Redux map state to props function.
@@ -22,9 +21,10 @@ let converter = new Converter({
  */
 function mapStateToProps(state) {
     return {
-        brand: state.brand.selected,
+        brandData: state.brand.data,
+        brandNameIdToId: state.brand.nameIdToId,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -49,12 +49,26 @@ class Component extends React.Component {
         saving: {}
     };
 
+    getScopeData(props=this.props) {
+        let brand,
+            nameId = lodash.get(props, "params.id"),
+            {brandData,brandNameIdToId} = props;
+
+        brand = brandNameIdToId[nameId] ?
+            brandData[brandNameIdToId[nameId]] : 
+            null;
+
+        return {brand};
+    }
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
     }
 
-    async onSubmit(data, name) {
+    async onSubmit(data, {name=null}={}) {
+        let {brand} = this.getScopeData();
+
         this.setState({
             saving: Object.assign(this.state.saving, {
                 [name]: true
@@ -62,7 +76,7 @@ class Component extends React.Component {
         });
 
         // Let's update the product info.
-        await Redux.dispatch(Brand.actions.brandUpdate(this.props.brand._id, data));
+        await Redux.dispatch(Brand.actions.brandUpdate(brand._id, data));
 
         this.setState({
             saving: Object.assign(this.state.saving, {
@@ -75,47 +89,40 @@ class Component extends React.Component {
     }
 
     render() {
+        let {brand} = this.getScopeData();
         let {editing,saving} = this.state;
-        let {brand,user} = this.props;
+        let {user} = this.props;
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, brand);
 
         return (
             <div>
-                <Field.Section>
-                    <Form name="description" loading={saving.description} onSubmit={this.onSubmit}>
-                        <div style={{textAlign: "right", borderBottom: "1px dashed transparent", marginBottom: "0px"}}>
-                            <Text scale={0.8} color="moody">
-                                <i18n.Translate text="_BRAND_DETAIL_INFO_PAGE_DESCRIPTION_FIELD_LABEL_" />
-                            </Text>
-
-                            {isAdmin||isApprovedOwner ? (
-                                !editing.description ? (
-                                    <span> • <a style={{fontSize: "0.8em"}} onClick={() => {this.setState({editing: Object.assign(editing, {description: true})});}}><i18n.Translate text="_CATALOG_ITEM_PAGE_EDIT_LABEL_" /></a></span>
-                                ) : (
-                                    <span> • <Button textCase="lower" scale={0.8} type="submit" layout="link"><i18n.Translate text="_CATALOG_ITEM_PAGE_SAVE_LABEL_" /></Button></span>
-                                )
-                            ) : null}
-                        </div>
-
-                        <div>
-                            {editing.description ? (
-                                <Field.TextArea
-                                    name="description"
-                                    rows={2}
-                                    value={brand.description}
-                                    name="description"
-                                    disabled={saving.description}
-                                    scale={1} />
-                            ) : (
-                                <div dangerouslySetInnerHTML={{
-                                    __html: brand.description ? 
-                                        converter.makeHtml(brand.description) :
-                                        ""
-                                }}></div>
-                            )}
-                        </div>
-                    </Form>
-                </Field.Section>
+                <Panel id="description"
+                    display="block"
+                    canEdit={isAdmin||isApprovedOwner}
+                    editing={editing.description}
+                    loading={saving.description}
+                    labelText="_BRAND_DETAIL_INFO_PAGE_DESCRIPTION_FIELD_LABEL_"
+                    onEditStart={() => { this.setState({editing: Object.assign(editing, {description: true})}); }}
+                    onEditEnd={this.onSubmit}
+                    onCancel={() => { this.setState({editing: Object.assign(editing, {description: false})}); }}>
+                    
+                    {editing.description ? (
+                        <Field.TextArea
+                            name="description"
+                            rows={2}
+                            value={brand.description}
+                            name="description"
+                            disabled={saving.description}
+                            scale={1}
+                            focus={true}/>
+                    ) : (
+                        <div dangerouslySetInnerHTML={{
+                            __html: brand.description ? 
+                                converter.makeHtml(brand.description) :
+                                ""
+                        }}></div>
+                    )}
+                </Panel>
             </div>
         );
     }

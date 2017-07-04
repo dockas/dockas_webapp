@@ -1,23 +1,80 @@
 import React from "react";
 import classNames from "classnames";
-import {LoggerFactory} from "darch/src/utils";
+import {connect} from "react-redux";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import i18n from "darch/src/i18n";
+import {Basket,Product} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("checkout.page");
 
 /**
+ * Redux map state to props function.
+ *
+ * @param {object} state
+ * @param {object} ownProps
+ */
+function mapStateToProps(state) {
+    return {
+        productData: state.product.data,
+        fileData: state.file.data,
+        user: state.user.uid?state.user.data[state.user.uid]:null,
+        basket: state.basket,
+        spec: state.i18n.spec
+    };
+}
+
+/**
+ * Redux dispatch to props map.
+ */
+let mapDispatchToProps = {
+    
+};
+
+/**
  * Main component class.
  */
-export default class Component extends React.Component {
+class Component extends React.Component {
     /** React properties **/
     static displayName = "checkout.page";
     static defaultProps = {};
     static propTypes = {};
 
     componentDidMount() {
-        let logger = Logger.create("componentDidMount");
+        let notFetchedProductIds = [],
+            fetchedProducts = [],
+            {productData,basket} = this.props,
+            logger = Logger.create("componentDidMount");
+
         logger.info("enter");
+
+        Redux.dispatch(Basket.actions.basketSetShowCard(false));
+
+        // Get not fetched product ids.
+        for(let productId of Object.keys(basket.items)) {
+            if(!productData[productId]) {
+                notFetchedProductIds.push(productId);
+            }
+            else {
+                fetchedProducts.push(productData[productId]);
+            }
+        }
+
+        // Fetch not fetched products.
+        if(notFetchedProductIds.length) {
+            Redux.dispatch(
+                Product.actions.productFind({_id: notFetchedProductIds}, {
+                    populate: {paths: ["mainProfileImage"]}
+                })
+            );
+        }
+
+        // Ensure that fetched products has necessary data.
+        if(fetchedProducts.length) {
+            Product.populator.populate(fetchedProducts, {
+                paths: ["mainProfileImage"]
+            });
+        }
     }
 
     render() {
@@ -68,3 +125,9 @@ export default class Component extends React.Component {
         );
     }
 }
+
+/** Export **/
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Component);

@@ -2,9 +2,9 @@ siteinfo:
     base_url: //dockas.dev
     logo_icon_url: //dockas.dev/assets/images/logo_icon.png
     logo_favicon_url: //dockas.dev/assets/images/favicon.png
-    mixpanel_key: efd14c3ced2c622f738d1137a8592c65
-
-    pagseguro_lib_url: https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js
+    #mixpanel_key: efd14c3ced2c622f738d1137a8592c65
+    woopra_key: dockas.dev
+    hotjar_id: 553997
 
 #hostnames:
 #    webapp: dockas.dev

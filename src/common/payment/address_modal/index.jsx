@@ -22,7 +22,7 @@ let Logger = new LoggerFactory("checkout.payment.address_modal");
  */
 function mapStateToProps(state) {
     return {
-        user: state.user.profiles[state.user.uid],
+        user: state.user.data[state.user.uid],
         basket: state.basket
     };
 }

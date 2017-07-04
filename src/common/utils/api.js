@@ -47,7 +47,7 @@ export default class Api {
                         })
                     );
                 }
-                
+
             }
 
             throw data;
@@ -81,8 +81,12 @@ export default class Api {
         return this.request("GET", "user/me", null, opts);
     }
 
-    userUpdate(data, opts) {
+    userUpdateMe(data, opts) {
         return this.request("PUT", "user/me", data, opts);
+    }
+
+    userUpdate(id, data, opts) {
+        return this.request("PUT", `user/${id}`, data, opts);
     }
 
     userAddAddress(data, opts) {
@@ -161,6 +165,14 @@ export default class Api {
         return this.request("PUT", `order/${id}/status`, {status}, opts);
     }
 
+    orderItemStatusUpdate(id, itemProduct, status, opts) {
+        return this.request("PUT", `order/${id}/item/${itemProduct}/status`, {status}, opts);
+    }
+
+    orderApprove(id, data, opts) {
+        return this.request("PUT", `order/${id}/approve`, data, opts);
+    }
+
     invitationCreate(data, opts) {
         return this.request("POST", "invitation", data, opts);
     }
@@ -213,8 +225,28 @@ export default class Api {
         return this.request("GET", "list", query, opts);
     }
 
+    listFindByNameId(nameId, query, opts) {
+        return this.request("GET", `list/nameId/${nameId}`, query, opts);
+    }
+
     listUpdate(id, data, opts) {
         return this.request("PUT", `list/${id}`, data, opts);
+    }
+
+    listItemUpdate(id, productId, data, opts) {
+        return this.request("PUT", `list/${id}/item/${productId}`, data, opts);
+    }
+
+    listSubscriptionCreate(data, opts) {
+        return this.request("POST", "list/subscription", data, opts);
+    }
+
+    listSubscriptionFind(query, opts) {
+        return this.request("GET", "list/subscription", query, opts);
+    }
+
+    listSubscriptionUpdate(id, data, opts) {
+        return this.request("PUT", `list/subscription/${id}`, data, opts);
     }
 
     brandCreate(data, opts) {
@@ -227,6 +259,18 @@ export default class Api {
 
     brandFind(query, opts) {
         return this.request("GET", "brand", query, opts);
+    }
+
+    brandOrdersFind(id, query, opts) {
+        return this.request("GET", `brand/${id}/orders`, query, opts);
+    }
+
+    brandTransfersFind(id, query, opts) {
+        return this.request("GET", `brand/${id}/transfers`, query, opts);
+    }
+
+    brandWalletFind(id, opts) {
+        return this.request("GET", `brand/${id}/wallet`, null, opts);
     }
 
     brandFindByNameId(nameId, query, opts) {

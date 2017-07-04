@@ -14,7 +14,7 @@ module.exports = function(nextState, replace) {
         replace("/");
     }
     else {
-        let user = lodash.get(Redux.shared.store.getState(), `user.profiles.${uid}`);
+        let user = lodash.get(Redux.shared.store.getState(), `user.data.${uid}`);
 
         if(user.roles.indexOf("admin") < 0) {
             replace("/");

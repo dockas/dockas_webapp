@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
-import {NotificationAlert} from "common";
+import {NotificationAlert,Basket} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("notifications.page");
@@ -44,6 +44,8 @@ class Component extends React.Component {
         Redux.dispatch(NotificationAlert.actions.notificationAlertFind({
             sort: {status: 1, createdAt: -1}
         }));
+
+        Redux.dispatch(Basket.actions.basketSetShowCard(false));
     }
 
     render() {

@@ -1,5 +1,3 @@
-/* global mixpanel */
-
 import "babel-polyfill";
 import config from "config";
 import React from "react";
@@ -12,7 +10,12 @@ import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
-import {Api,User,Socket,Product,Basket,Order,NotificationAlert,Location,Brand,Tag} from "common";
+import {
+    Api,User,Socket,Product,
+    Basket,Order,NotificationAlert,
+    Location,Brand,Tag,Wallet,Transfer,
+    List,ListSubscription,File,Tracker
+} from "common";
 
 let Logger = new LoggerFactory("main", {level: "debug"});
 
@@ -212,7 +215,12 @@ Form.registerValidator({
         notificationAlert: NotificationAlert.reducer,
         location: Location.reducer,
         brand: Brand.reducer,
-        tag: Tag.reducer
+        tag: Tag.reducer,
+        list: List.reducer,
+        listSubscription: ListSubscription.reducer,
+        file: File.reducer,
+        wallet: Wallet.reducer,
+        transfer: Transfer.reducer
     }, {shared: true});
 
     // Start listen to socket events
@@ -220,6 +228,10 @@ Form.registerValidator({
     Order.listenSocketEvents();
     Product.listenSocketEvents();
     User.listenSocketEvents();
+    Wallet.listenSocketEvents();
+    List.listenSocketEvents();
+    ListSubscription.listenSocketEvents();
+    Brand.listenSocketEvents();
 
     // Create an enhanced history that syncs navigation events with the store
     const history = syncHistoryWithStore(browserHistory, Redux.shared.store);
@@ -240,10 +252,9 @@ Form.registerValidator({
 
     history.listen( (data) =>  {
         Redux.dispatch(Location.actions.locationChange(data));
-        
-        mixpanel.track("page opened", {
-            pathname: window.location.pathname
-        });
+        //Redux.dispatch(Basket.actions.basketSetShowCard(true));
+
+        Tracker.pageview();
     });
 
     render(routes, document.getElementById("main-page"));

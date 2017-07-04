@@ -16,7 +16,7 @@ let Logger = new LoggerFactory("messages", {level:"debug"});
  */
 function mapStateToProps(state) {
     return {
-        user: state.user.profiles[state.user.uid],
+        user: state.user.data[state.user.uid],
         rooms: state.room.data,
         activeRoomId: state.room.activeId
     };

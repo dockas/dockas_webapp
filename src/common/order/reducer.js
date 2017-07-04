@@ -5,66 +5,74 @@ import {LoggerFactory} from "darch/src/utils";
 let Logger = new LoggerFactory("common.order.reducer", {level:"debug"});
 
 let initialState = {
-    scope: {},
-    selected: null
+    data: {},
+    scope: {}
 };
 
 export default handleActions({
-    orderFind_COMPLETED(state, action) {
-        let logger = Logger.create("orderFind_COMPLETED");
-        logger.info("enter", {action});
-
-        let {data,query,scope} = action.payload;
-
-        if(!scope||!lodash.isObject(scope)){return;}
-
-        return {
-            scope: Object.assign(
-                {},
-                state.scope,
-                {
-                    [scope.id]: Object.assign({}, scope, {
-                        data,
-                        query
-                    })
-                }
-            )
-        };
-    },
-
-    orderUpdatedEvent(state, action) {
-        let logger = Logger.create("orderUpdatedEvent");
+    orderCreate_COMPLETED(state, action) {
+        let logger = Logger.create("orderCreate_COMPLETED");
         logger.info("enter", {state, action});
 
-        let {scope,selected} = state;
+        // Add created product.
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
+        });
+    },
 
-        scope = lodash.reduce(scope, (result, scope, id) => {
-            let {data,query} = scope;
+    orderFind_COMPLETED(state, action) {
+        let ids,
+            newState = {},
+            scope = lodash.get(action, "payload.scope"),
+            logger = Logger.create("orderFind_COMPLETED");
 
-            let idx = lodash.findIndex(data, (order) => {
-                return order._id == action.payload._id;
-            });
+        logger.info("enter", {action});
 
-            if(idx >= 0) {
-                data.splice(idx, 1, lodash.merge({}, data[idx], action.payload.data, lodash.get(action,"payload.opts.data")));
+        // If has scope, then process.
+        if(scope && lodash.isObject(scope)){
+            if(action.payload.concat) {
+                ids = (lodash.get(state.scope,`${scope.id}.ids`)||[]).concat(lodash.map(action.payload.data, "_id"));
+            }
+            else {
+                ids = lodash.map(action.payload.data, "_id");
             }
 
-            return Object.assign(result, {
-                [id]: Object.assign(scope, {
-                    data: lodash.clone(data),
-                    query
+            // Update scope
+            newState.scope = Object.assign({}, state.scope, {
+                [scope.id]: Object.assign({}, scope, {
+                    ids,
+                    query: action.payload.query
                 })
             });
-        }, {});
-
-        if(selected && selected._id == action.payload._id) {
-            selected = lodash.assign({}, lodash.clone(selected), action.payload.data, lodash.get(action,"payload.opts.data"));
         }
 
-        return {
-            scope,
-            selected
-        };
+        // Reduce data.
+        let {data} = lodash.reduce(action.payload.data, (result, record) => {
+            result.data[record._id] = record;
+            return result;
+        }, {data:{}});
+
+        // Update data.
+        newState.data = Object.assign({}, state.data, data);
+
+        // Log new state
+        logger.info("newState", newState);
+
+        // Return new state
+        return Object.assign({}, state, newState);
+    },
+
+    orderUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("orderUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            })
+        });
     },
 
     signinPageOpened() {
@@ -72,8 +80,8 @@ export default handleActions({
         logger.info("enter");
 
         return {
-            scope: {},
-            selected: null
+            data: {},
+            scope: {}
         };
     }
 }, initialState);

@@ -15,7 +15,7 @@ let Logger = new LoggerFactory("signup.step2");
  */
 function mapStateToProps(state) {
     return {
-        profile: state.user.profiles[state.user.uid]
+        profile: state.user.data[state.user.uid]
     };
 }
 

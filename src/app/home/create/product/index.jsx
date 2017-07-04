@@ -17,7 +17,7 @@ import Uploader from "darch/src/uploader";
 import Toaster from "darch/src/toaster";
 import NumberUtils from "darch/src/field/number/utils";
 import placeholderImg from "assets/images/placeholder.png";
-import {Api,Product} from "common";
+import {Api,Product,Brand,File} from "common";
 import styles from "./styles";
 import TagModal from "./tag_modal";
 
@@ -33,7 +33,7 @@ function mapStateToProps(state) {
     return {
         spec: state.i18n.spec,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -77,27 +77,32 @@ class Component extends React.Component {
         // If user is not admin, then retrieve only it's
         // own brands.
         if(user.roles.indexOf("admin") < 0) {
-            let response = await Api.shared.brandFind({owners: [user._id]});
-            let brands = [];
+            try {
+                let result = await Redux.dispatch(
+                    Brand.actions.brandFind({owners: [user._id]})
+                );
 
-            for(let brand of response.results) {
-                brands.push({
-                    value: brand._id,
-                    label: brand.name
+                logger.error("action brandFind success", result);
+
+                let brands = (lodash.get(result,"value.data")||[]).map((brand) => {
+                    return {value: brand._id, label: brand.name};
                 });
-            }
 
-            if(brands.length == 1) {
-                newState.brandId = brands[0]._id;
-            }
+                if(brands.length == 1) {
+                    newState.brandId = brands[0]._id;
+                }
 
-            newState.brands = brands;
+                newState.brands = brands;
+            }
+            catch(error) {
+                logger.error("action brandFind error", error);
+            }
         }
 
         // Retrieve all tags.
         try {
             let response = await Api.shared.tagFind();
-            logger.debug("Api tagFind success", response);
+            logger.debug("api tagFind success", response);
 
             // Process tags
             let tags = response.results.map((tag) => {
@@ -126,10 +131,16 @@ class Component extends React.Component {
         // Register data
         this.data = lodash.merge({}, data, this.data);
 
+        // Supply type
+        if(!data.onDemandSupply) {
+            this.data.supplyType = "on_stock";
+        }
+
         // Bug with NumberFormat
         // https://github.com/s-yadav/react-number-format/issues/45
         this.data.priceValue = NumberUtils.parseViewToModel(this.props.spec, data.priceValue);
         this.data.priceValue = parseInt((this.data.priceValue * 100).toFixed(0));
+        delete this.data.onDemandSupply;
 
         if(this.state.uploadComplete) {
             return this.onUploadComplete();
@@ -164,21 +175,26 @@ class Component extends React.Component {
         logger.info("enter");
     }
 
-    async onUploadSuccess(fileData, fid) {
+    async onUploadSuccess(file, fid) {
         let logger = Logger.create("onUploadSuccess");
-        logger.info("enter", {fileData, fid});
+        logger.info("enter", {file, fid});
 
-        //this.data.mainImage = fileData._id;
+        //this.data.mainImage = file._id;
         this.data.profileImages = this.data.profileImages || [];
-        this.data.profileImages.push(fileData._id);
+        this.data.profileImages.push(file._id);
 
         if(lodash.get(this.state, "mainProfileImage._id") == fid) {
-            this.data.mainProfileImage = fileData._id;
+            this.data.mainProfileImage = file._id;
         }
+
+        // Add file to store
+        Redux.dispatch(
+            File.actions.fileAdd(file)
+        );
     }
 
     async onUploadComplete() {
-        let productResponse,
+        let response,
             logger = Logger.create("onUploadComplete");
 
         logger.info("enter", this.data);
@@ -191,14 +207,14 @@ class Component extends React.Component {
             logger.debug("creating brand");
 
             try {
-                let response = await Api.shared.brandCreate({
+                response = await Api.shared.brandCreate({
                     name: this.state.brandToCreate,
                     owners: this.data.owners
                 });
 
                 logger.info("api brandCreate success", response);
 
-                this.data.brand = response.result;
+                this.data.brand = response.result._id;
                 delete this.data.owners;
             }
             catch(error) {
@@ -208,8 +224,8 @@ class Component extends React.Component {
 
         // Save product.
         try {
-            productResponse = await Redux.dispatch(Product.actions.productCreate(this.data));
-            logger.info("action productCreate success", productResponse);
+            response = await Redux.dispatch(Product.actions.productCreate(this.data));
+            logger.info("action productCreate success", response);
         }
         catch(error) {
             this.setState({loading: false});
@@ -217,8 +233,7 @@ class Component extends React.Component {
         }
 
         // Everything is done... go to product page.
-        let nameId = lodash.get(productResponse, "action.payload.nameId");
-        this.props.router.replace(`/item/${nameId}`);
+        this.props.router.replace(`/item/${response.value.nameId}`);
     }
 
     /**
@@ -252,7 +267,6 @@ class Component extends React.Component {
         }
     }
 
-
     /**
      * This function open the add tag modal.
      */
@@ -275,14 +289,14 @@ class Component extends React.Component {
         this.setState({loadingBrands: true});
 
         try {
-            let response = await Api.shared.brandFind({
-                name: value
-            });
+            let result = await Redux.dispatch(
+                Brand.actions.brandFind({name: value})
+            );
 
-            logger.debug("api brandFind success", response);
+            logger.debug("action brandFind success", result);
 
             // Process brands
-            let brands = response.results.map((brand) => {
+            let brands = (lodash.get(result,"value.data")||[]).map((brand) => {
                 return {value: brand._id, label: brand.name};
             });
 
@@ -474,7 +488,7 @@ class Component extends React.Component {
 
                                     <Field.Section>
                                         <Grid>
-                                            <Grid.Cell>
+                                            <Grid.Cell span={isAdmin?5:undefined}>
                                                 <Field.Section>
                                                     <Text scale={0.8}>
                                                         <i18n.Translate text="_CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_" />
@@ -492,6 +506,24 @@ class Component extends React.Component {
                                                     </div>
                                                 </Field.Section>
                                             </Grid.Cell>
+
+                                            {isAdmin ? (
+                                                <Grid.Cell>
+                                                    <Field.Section>
+                                                        <Text scale={0.8}>
+                                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_SUPPLY_ON_DEMAND_FIELD_LABEL_" />
+                                                        </Text>
+                                                        <div>
+                                                            <Field.Switch
+                                                                name="onDemandSupply"
+                                                                value={true}
+                                                                scale={1}
+                                                                trueLabel="_YES_"
+                                                                falseLabel="_NO_" />
+                                                        </div>
+                                                    </Field.Section>
+                                                </Grid.Cell>
+                                            ) : <span></span>}
                                         </Grid>
                                     </Field.Section>
 

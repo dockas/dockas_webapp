@@ -5,17 +5,18 @@ import lodash from "lodash";
 let Logger = new LoggerFactory("common.product.reducer", {level:"debug"});
 
 let initialState = {
+    data: {},
+    nameIdToId: {},
     scope: {},
     selected: null
 };
 
 export default handleActions({
-    productSelect(state, action) {
-        var logger = Logger.create("productSelect");
-        logger.info("enter", {state,action});
-
+    productAdd(state, action) {
         return Object.assign({}, state, {
-            selected: action.payload
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
         });
     },
 
@@ -23,93 +24,93 @@ export default handleActions({
         let logger = Logger.create("productCreate_COMPLETED");
         logger.info("enter", {state, action});
 
-        return state;
+        // Add created product.
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
+        });
     },
 
     productFind_COMPLETED(state, action) {
-        let data,
+        let ids,
+            newState = {},
             scope = lodash.get(action, "payload.scope"),
             logger = Logger.create("productFind_COMPLETED");
 
-        logger.info("enter", {state, action});
+        logger.info("enter", {action});
 
-        if(!scope||!lodash.isObject(scope)){return;}
+        // If has scope, then process.
+        if(scope && lodash.isObject(scope)){
+            if(action.payload.concat) {
+                ids = (lodash.get(state.scope,`${scope.id}.ids`)||[]).concat(lodash.map(action.payload.data, "_id"));
+            }
+            else {
+                ids = lodash.map(action.payload.data, "_id");
+            }
 
-        if(action.payload.concat) {
-            data = (lodash.get(state.scope,`${scope.id}.data`)||[]).concat(action.payload.data);
+            // Update scope
+            newState.scope = Object.assign({}, state.scope, {
+                [scope.id]: Object.assign({}, scope, {
+                    ids,
+                    query: action.payload.query
+                })
+            });
         }
-        else {
-            data = action.payload.data;
-        }
 
-        return {
-            scope: Object.assign(
-                {},
-                state.scope,
-                {
-                    [scope.id]: Object.assign({}, scope, {
-                        data,
-                        query: action.payload.query
-                    })
-                }
-            )
-        };
+        // Reduce data.
+        let {data,nameIdToId} = lodash.reduce(action.payload.data, (result, record) => {
+            result.data[record._id] = record;
+            result.nameIdToId[record.nameId] = record._id;
+            return result;
+        }, {data:{}, nameIdToId:{}});
+
+        // Update data.
+        newState.data = Object.assign({}, state.data, data);
+        newState.nameIdToId = Object.assign({}, state.nameIdToId, nameIdToId);
+
+        // Log new state
+        logger.info("newState", newState);
+
+        // Return new state
+        return Object.assign({}, state, newState);
+    },
+
+    productFindByNameId_COMPLETED(state, action) {
+        let logger = Logger.create("productFindByNameId_COMPLETED");
+        logger.info("enter", {action});
+
+        if(!lodash.get(action, "payload.data._id")) {return state;}
+
+        return Object.assign({}, state, {
+            nameIdToId: Object.assign({}, state.nameIdToId, {
+                [action.payload.data.nameId]: action.payload.data._id
+            }),
+
+            data: Object.assign({}, state.data, {
+                [action.payload.data._id]: action.payload.data
+            })
+        });
     },
 
     productUpdatedEvent_COMPLETED(state, action) {
         let logger = Logger.create("productUpdatedEvent_COMPLETED");
         logger.info("enter", {state, action});
 
-        let {scope,selected} = state;
-
-        //console.log(["balofo colo", scope]);
-
-        scope = lodash.reduce(scope, (result, scope, id) => {
-            let {data,query} = scope;
-
-            //console.log(["balofo colo : one", id, data, query, scope, action]);
-
-            let idx = lodash.findIndex(data, (product) => {
-                return product._id == action.payload._id;
-            });
-
-            //console.log(["balofo colo : idx", idx]);
-
-            if(idx >= 0) {
-                data.splice(idx, 1, lodash.merge({}, data[idx], action.payload.data, lodash.get(action,"payload.opts.data")));
-            }
-
-            //console.log(["balofo colo : data", data]);
-
-            return Object.assign(result, {
-                [id]: Object.assign(scope, {
-                    data: lodash.clone(data),
-                    query
-                })
-            });
-        }, {});
-
-        //console.log(["balofo colo : new scope", scope, action, selected]);
-
-        if(selected && selected._id == action.payload._id) {
-            selected = lodash.assign({}, lodash.clone(selected), action.payload.data, lodash.get(action,"payload.opts.data"));
-
-            //console.log(["balofo colo : update selected", scope, selected]);
-        }
-
-        return {
-            scope,
-            selected
-        };
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            })
+        });
     },
 
-    signinPageOpened() {
+    signinPageOpened(state) {
         let logger = Logger.create("signinPageOpened");
         logger.info("enter");
 
-        return {
+        return Object.assign({}, state, {
             scope: {},
             selected: null
-        };
+        });
     }
 }, initialState);

@@ -5,66 +5,111 @@ import lodash from "lodash";
 let Logger = new LoggerFactory("common.brand.reducer", {level:"debug"});
 
 let initialState = {
-    data: null,
-    selected: null,
-    query: null
+    data: {},
+    nameIdToId: {},
+    scope: {}
 };
 
 export default handleActions({
-    brandSelect(state, action) {
-        var logger = Logger.create("brandSelect");
-        logger.info("enter", {state,action});
-
+    brandAdd(state, action) {
         return Object.assign({}, state, {
-            selected: action.payload
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
+        });
+    },
+
+    brandCreate_COMPLETED(state, action) {
+        let logger = Logger.create("brandCreate_COMPLETED");
+        logger.info("enter", {state, action});
+
+        // Add created product.
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
         });
     },
 
     brandFind_COMPLETED(state, action) {
-        let logger = Logger.create("brandFind_COMPLETED");
-        logger.info("enter", {state, action});
+        let ids,
+            newState = {},
+            scope = lodash.get(action, "payload.scope"),
+            logger = Logger.create("brandFind_COMPLETED");
 
-        return {
-            data: action.payload.data,
-            query: action.payload.query
-        };
-    },
+        logger.info("enter", {action});
 
-    brandUpdate_COMPLETED(state, action) {
-        let logger = Logger.create("brandUpdate_COMPLETED");
-        logger.info("enter", {state, action});
-
-        let {selected,data} = state;
-
-        if(data) {
-            let idx = lodash.findIndex(data, (brand) => {
-                return brand._id = action.payload._id;
-            });
-
-            if(idx >= 0) {
-                data.splice(idx, 1, action.payload);
+        // If has scope, then process.
+        if(scope && lodash.isObject(scope)){
+            if(action.payload.concat) {
+                ids = (lodash.get(state.scope,`${scope.id}.ids`)||[]).concat(lodash.map(action.payload.data, "_id"));
             }
+            else {
+                ids = lodash.map(action.payload.data, "_id");
+            }
+
+            // Update scope
+            newState.scope = Object.assign({}, state.scope, {
+                [scope.id]: Object.assign({}, scope, {
+                    ids,
+                    query: action.payload.query
+                })
+            });
         }
 
-        if(selected && selected._id == action.payload._id) {
-            selected = Object.assign({}, selected, action.payload);
-        }
+        // Reduce data.
+        let {data,nameIdToId} = lodash.reduce(action.payload.data, (result, record) => {
+            result.data[record._id] = record;
+            result.nameIdToId[record.nameId] = record._id;
+            return result;
+        }, {data:{}, nameIdToId:{}});
 
-        return {
-            data,
-            selected,
-            query: state.query
-        };
+        // Update data.
+        newState.data = Object.assign({}, state.data, data);
+        newState.nameIdToId = Object.assign({}, state.nameIdToId, nameIdToId);
+
+        // Log new state.
+        logger.info("newState", newState);
+
+        // Return new state
+        return Object.assign({}, state, newState);
     },
 
-    signinPageOpened() {
+    brandFindByNameId_COMPLETED(state, action) {
+        let logger = Logger.create("brandFindByNameId_COMPLETED");
+        logger.info("enter", {action});
+
+        if(!lodash.get(action, "payload.data._id")) {return state;}
+
+        return Object.assign({}, state, {
+            nameIdToId: Object.assign({}, state.nameIdToId, {
+                [action.payload.data.nameId]: action.payload.data._id
+            }),
+
+            data: Object.assign({}, state.data, {
+                [action.payload.data._id]: action.payload.data
+            })
+        });
+    },
+
+    brandUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("brandUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            })
+        });
+    },
+
+    signinPageOpened(state) {
         let logger = Logger.create("signinPageOpened");
         logger.info("enter");
 
-        return {
-            data: null,
-            selected: null,
-            query: null
-        };
+        return Object.assign({}, state, {
+            scope: {},
+            selected: null
+        });
     }
 }, initialState);

@@ -1,12 +1,12 @@
 import React from "react";
-import config from "config";
+//import config from "config";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
 import {LoggerFactory,Style} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Text from "darch/src/text";
-import numberUtils from "darch/src/field/number/utils";
+//import numberUtils from "darch/src/field/number/utils";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("basket.sidebar");
@@ -20,7 +20,8 @@ let Logger = new LoggerFactory("basket.sidebar");
 function mapStateToProps(state) {
     return {
         basket: state.basket,
-        spec: state.i18n.spec
+        spec: state.i18n.spec,
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -41,13 +42,15 @@ class Component extends React.Component {
         buttonLabel: "_CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_",
         onButtonClick: () => {},
         loading: false,
-        loadingComponent: (<span>Loading ...</span>)
+        loadingComponent: (<span>Loading ...</span>),
+        showDetails: false
     };
     static propTypes = {
         buttonLabel: React.PropTypes.string,
         onButtonClick: React.PropTypes.func,
         loading: React.PropTypes.bool,
-        loadingComponent: React.PropTypes.element
+        loadingComponent: React.PropTypes.element,
+        showDetails: React.PropTypes.bool
     };
 
     state = {};
@@ -82,13 +85,12 @@ class Component extends React.Component {
     }
 
     render() {
-        let {minOrderTotalPrice} = config.shared;
-        let {basket,spec,loading,loadingComponent} = this.props;
-        let {totalPrice,totalDiscount} = basket;
-        let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
-        let totalPriceWithDiscount = totalPrice - appliedDiscount;
+        //let {minTotalPrice} = config.shared.order;
+        let {basket,loading,loadingComponent,showDetails} = this.props;
+        let {grossTotalPrice,totalPrice,totalDiscount,totalFee} = basket;
+        //let isAdmin = user&&user.roles.indexOf("admin")>=0;
 
-        let priceLowerThanMin = (totalPrice < minOrderTotalPrice);
+        //let priceLowerThanMin = (grossTotalPrice < minTotalPrice);
 
         return (
             <div className={styles.sidebar}>
@@ -96,19 +98,29 @@ class Component extends React.Component {
                     <div className={styles.checkoutBox}>
                         <h4 className={styles.title}>RESUMO</h4>
 
-                        {appliedDiscount > 0 ? (
-                            <div className={styles.discountInfoContainer}>
-                                <div className={styles.originalTotalPriceContainer}>
+                        {showDetails && (totalDiscount > 0 || totalFee > 0) ? (
+                            <div className={styles.detailContainer}>
+                                <div className={styles.priceDetailContainer}>
                                     <Text scale={0.8}>
-                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat((totalPrice/100).toFixed(2))} numDecimals={2} />
+                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat((grossTotalPrice/100).toFixed(2))} numDecimals={2} />
                                     </Text>
                                 </div>
 
-                                <div className={styles.appliedDiscountContainer}>
-                                    <Text scale={0.8}>
-                                        <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat((appliedDiscount/100).toFixed(2))} numDecimals={2} />
-                                    </Text>
-                                </div>
+                                {totalDiscount > 0 ? (
+                                    <div className={styles.priceDetailContainer}>
+                                        <Text scale={0.8}>
+                                            <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat((totalDiscount/100).toFixed(2))} numDecimals={2} />
+                                        </Text>
+                                    </div>
+                                ) : null}
+
+                                {totalFee > 0 ? (
+                                    <div className={styles.priceDetailContainer}>
+                                        <Text scale={0.8}>
+                                            <u>entrega</u>: <i18n.Number prefix="R$" value={parseFloat((totalFee/100).toFixed(2))} numDecimals={2} />
+                                        </Text>
+                                    </div>
+                                ) : null}
                             </div>
                         ) : null}
 
@@ -118,22 +130,28 @@ class Component extends React.Component {
                             </div>
 
                             <div className={styles.priceValue}>
-                                <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount/100).toFixed(2))} numDecimals={2} />
+                                <i18n.Number prefix="R$" value={parseFloat(((showDetails?totalPrice:grossTotalPrice)/100).toFixed(2))} numDecimals={2} />
                             </div>
                         </div>
 
                         <div className={styles.buttonContainer}>
-                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={priceLowerThanMin||loading}>
+                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={loading}>
                                 {loading ? (
                                     loadingComponent
-                                ) : !priceLowerThanMin ? (
+                                ) : (
+                                    <i18n.Translate text={this.props.buttonLabel} />
+                                )}
+
+                                {/*loading ? (
+                                    loadingComponent
+                                ) : isAdmin||!priceLowerThanMin ? (
                                     <i18n.Translate text={this.props.buttonLabel} />
                                 ) : (
                                     <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
-                                        minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
-                                        diff: (minOrderTotalPrice - totalPrice)/100
+                                        minTotalPrice: numberUtils.parseModelToView(spec,minTotalPrice/100).value,
+                                        diff: (minTotalPrice - grossTotalPrice)/100
                                     }} />
-                                )}
+                                )*/}
                             </Button>
                         </div>
                     </div>

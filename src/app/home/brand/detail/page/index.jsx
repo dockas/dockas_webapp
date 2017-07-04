@@ -9,7 +9,7 @@ import i18n from "darch/src/i18n";
 import Uploader from "darch/src/uploader";
 import Tabs from "darch/src/tabs";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
-import {Api,Brand} from "common";
+import {Api,Brand,File} from "common";
 import backgroundImg from "assets/images/background.jpg";
 import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
@@ -24,10 +24,11 @@ let Logger = new LoggerFactory("item.page");
  */
 function mapStateToProps(state) {
     return {
-        brands: state.brand.data,
-        brand: state.brand.selected,
+        fileData: state.file.data,
+        brandData: state.brand.data,
+        brandNameIdToId: state.brand.nameIdToId,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -52,56 +53,53 @@ class Component extends React.Component {
         saving: {}
     };
 
+    uploadedFiles = {};
+
+    getScopeData(props=this.props) {
+        let brand,
+            nameId = lodash.get(props, "params.id"),
+            {brandData,brandNameIdToId} = props;
+
+        brand = brandNameIdToId[nameId] ?
+            brandData[brandNameIdToId[nameId]] : 
+            null;
+
+        return {brand};
+    }
+
     async componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter", {params: this.props.params});
 
         let newState = {initializing: false};
         let nameId = lodash.get(this.props, "params.id");
+        let {brand} = this.getScopeData();
 
-        // Try to get brand from brands store.
-        let brand = lodash.find(this.props.brands, (brand) => {
-            return brand.nameId == nameId;
-        });
-
-        // If nothing was found, then get it directly from the server.
+        // If record was not fetched yet, then get it 
+        // directly from the server.
         if(!brand) {
             this.setState({initializing: true});
 
             try {
-                let findResponse = await Api.shared.brandFindByNameId(nameId, {
-                    populate: ["profileImages"]
-                });
-                
-                brand = findResponse.result;
+                await Redux.dispatch(
+                    Brand.actions.brandFindByNameId(nameId, {
+                        populate: {paths: ["profileImages","company","wallet"]}
+                    })
+                );
             }
             catch(error) {
                 logger.error("api brandFindByNameId error", error);
             }
         }
-        
-        if(brand) {
-            // Process profile images
-            let profileImages = [];
-
-            for(let image of brand.profileImages||[]) {
-                profileImages.push({
-                    _id: image._id, 
-                    url: `//${config.hostnames.file}/images/${image.path}`
-                });
-            }
-
-            let mainProfileImage = lodash.find(profileImages, (image) => {
-                return image._id == brand.mainProfileImage;
-            });
-
-            newState.mainProfileImage = mainProfileImage;
-            newState.profileImages = profileImages;
-
-            // Select product
-            Redux.dispatch(Brand.actions.brandSelect(brand));
+        // Let's ensure that fetched brand is populated with necessary data.
+        else {
+            Brand.populator.populate(
+                [brand], 
+                {paths:["profileImages","company","wallet"]}
+            );
         }
 
+        // Auth token for upload profile images.
         try {
             newState.authToken = await Api.shared.http.getAuthToken();
             logger.info("api http getAuthToken success", newState.authToken);
@@ -110,16 +108,45 @@ class Component extends React.Component {
             logger.error("api http getAuthToken error", error);
         }
 
+        // Update state
         this.setState(newState);
 
         // Window resize
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleWindowResize);
+    }
+
+    processProfileImages() {
+        let profileImages = [],
+            {fileData} = this.props,
+            {uploaderImages} = this.state,
+            {brand} = this.getScopeData();
+
+        if(brand) {
+            for(let imageId of brand.profileImages) {
+                if(!fileData[imageId]){continue;}
+
+                profileImages.push({
+                    _id: fileData[imageId]._id,
+                    url: `//${config.hostnames.file}/images/${fileData[imageId].path}`
+                });
+            }
+
+            // Add uploader loaded images.
+            for(let image of uploaderImages||[]) {
+                profileImages.push({
+                    type: "localImage",
+                    _id: image._id,
+                    url: image.url
+                });
+            }
+        }
+
+        return profileImages;
     }
 
     handleWindowResize() {
@@ -135,15 +162,17 @@ class Component extends React.Component {
     }
 
     onSubmit(data, formName) {
-        let logger = Logger.create("onSubmit");
+        let {brand} = this.getScopeData(),
+            logger = Logger.create("onSubmit");
+
         logger.info("enter", {data, formName});
 
-        if(!this.props.brand) {return;}
+        if(!brand) {return;}
 
         let changed = false;
 
         for(let key of Object.keys(data)) {
-            if(this.props.brand[key] != data[key]) {
+            if(brand[key] != data[key]) {
                 changed = true;
                 break;
             }
@@ -168,69 +197,58 @@ class Component extends React.Component {
         this.flow = flow;
     }
 
+    onUploaderImagesLoad(images) {
+        this.setState({
+            uploaderImages: lodash.cloneDeep(images)
+        }, () => {
+            this.flow.upload();
+        });
+    }
+
     onUploadStart() {
         let logger = Logger.create("onUploadStart");
         logger.info("enter");
     }
 
-    async onFileUploadSuccess(fileData, fid) {
+    async onFileUploadSuccess(file, fid) {
         let logger = Logger.create("onFileUploadSuccess");
-        logger.info("enter", {fileData, fid});
+        logger.info("enter", {file, fid});
 
-        //console.log(["console onFileUploadSuccess", fileData, fid]);
+        this.uploadedFiles[fid] = file;
 
-        // Update images
-        let idx = lodash.findIndex(this.state.profileImages, (image) => {
-            return image._id == fid;
-        });
-
-        //console.log(["console onFileUploadSuccess : idx", idx]);
-
-        let profileImages = this.state.profileImages;
-        let mainProfileImage = this.state.mainProfileImage;
-
-        logger.debug("idx", {idx});
-
-        if(idx >= 0 && profileImages.length && idx < profileImages.length) {
-            let oldImage = profileImages[idx];
-            let newImage = {
-                _id: fileData._id,
-                url: `//${config.hostnames.file}/images/${fileData.path}`
-            };
-
-            if(oldImage._id == mainProfileImage._id) {
-                mainProfileImage = newImage;
-            }
-
-            profileImages.splice(idx, 1, newImage);
-        }
-
-        this.setState({mainProfileImage, profileImages});
+        Redux.dispatch(
+            File.actions.fileAdd(file)
+        );
     }
 
     async onUploadComplete() {
-        let logger = Logger.create("onUploadComplete");
-        logger.info("enter", this.data);
+        let {uploaderImages} = this.state,
+            {brand} = this.getScopeData(),
+            fileIds = lodash.get(brand, "profileImages")||[],
+            logger = Logger.create("onUploadComplete");
 
-        this.updateBrand({
-            mainProfileImage: lodash.get(this.state, "mainProfileImage._id"),
-            profileImages: lodash.map(this.state.profileImages, (image) => {
-                //console.log("console onUploadComplete : image", image);
+        logger.info("enter", {uploadedImages: uploaderImages});
 
-                return image._id;
-            })
-        });
-    }
+        // Process uploaderImages
+        for(let image of uploaderImages) {
+            if(!this.uploadedFiles[image._id]){continue;}
+            fileIds.push(lodash.get(this.uploadedFiles,`${image._id}._id`));
+        }
 
-    onUploaderImagesLoad(images) {
-        let profileImages = this.state.profileImages.concat(images);
+        logger.debug("fileIds", {fileIds});
 
-        this.setState({
-            profileImages,
-            mainProfileImage: this.state.mainProfileImage || profileImages[0]
-        }, () => {
-            this.flow.upload();
-        });
+        try {
+            await this.updateBrand({profileImages: fileIds});
+        }
+        catch(error) {
+            return logger.error("updateBrand error", error);
+        }
+
+        // Clear uploadedFiles
+        this.uploadedFiles = {};
+
+        // Clear uploaderImages.
+        this.setState({uploaderImages: []});
     }
 
     selectMainProfileImage(image) {
@@ -242,18 +260,21 @@ class Component extends React.Component {
     }
 
     async updateBrand(data) {
-        let brandResponse,
-            brandId = lodash.get(this.props, "brand._id"),
+        let response,
+            {brand} = this.getScopeData(),
             logger = Logger.create("updateBrand");
 
-        if(!brandId){return;}
+        if(!brand){return;}
 
         logger.info("enter", data);
 
         // Update product.
         try {
-            brandResponse = await Redux.dispatch(Brand.actions.brandUpdate(brandId, data));
-            logger.debug("api brandUpdate success", brandResponse);
+            response = await Redux.dispatch(
+                Brand.actions.brandUpdate(brand._id, data)
+            );
+
+            logger.debug("api brandUpdate success", response);
         }
         catch(error) {
             return logger.error("api brandUpdate error", error);
@@ -261,10 +282,16 @@ class Component extends React.Component {
     }
 
     render() {
-        let {user,brand} = this.props;
-        let {initializing,profileImages,mainProfileImage,screenSize} = this.state;
         let nameId = lodash.get(this.props, "params.id");
+        let {user} = this.props;
+        let {initializing,screenSize} = this.state;
+        let {brand} = this.getScopeData();
+        let profileImages = this.processProfileImages();
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, brand);
+
+        let mainProfileImage = lodash.find(profileImages, (image) => {
+            return lodash.get(brand, "mainProfileImage") == image._id;
+        });
 
         return (
             <div className={styles.page}>
@@ -310,6 +337,7 @@ class Component extends React.Component {
                                                 <Tabs.Item to={`/brand/${nameId}/photos`}><i18n.Translate text="_BRAND_DETAIL_PAGE_PHOTOS_TAB_LABEL_"/></Tabs.Item>
                                                 {isAdmin||isApprovedOwner ? <Tabs.Item to={`/brand/${nameId}/statistics`}><i18n.Translate text="_BRAND_DETAIL_PAGE_STATISTICS_TAB_LABEL_" /></Tabs.Item> : null}
                                                 {isAdmin||isApprovedOwner ? <Tabs.Item to={`/brand/${nameId}/orders`}><i18n.Translate text="_BRAND_DETAIL_PAGE_ORDERS_TAB_LABEL_" /></Tabs.Item> : null}
+                                                {isAdmin||isApprovedOwner ? <Tabs.Item to={`/brand/${nameId}/wallet`}><i18n.Translate text="_BRAND_DETAIL_PAGE_WALLET_TAB_LABEL_" /></Tabs.Item> : null}
                                             </Tabs>
                                         </div>
                                     </div>

@@ -105,3 +105,4 @@ FEA : Handle stock update impact in user basket.
 GIT : Commit a bug fix in darch.
 ENH : Set basket isPaying to prevent basket update during payment process (this can be improved).
 ENH : Add auth policies to lists, orders and notifications pages.
+FEA : Populate all relational data in the webapp instead of in api_rest (this is awesome).

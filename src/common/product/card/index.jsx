@@ -26,7 +26,10 @@ let Logger = new LoggerFactory("common.product.card");
  */
 function mapStateToProps(state) {
     return {
-        user: lodash.get(state.user.profiles, state.user.uid),
+        brandData: state.brand.data,
+        tagData: state.tag.data,
+        fileData: state.file.data,
+        user: lodash.get(state.user.data, state.user.uid),
         uid: state.user.uid,
         basket: state.basket
     };
@@ -47,11 +50,21 @@ class Component extends React.Component {
     static displayName = "common.product.card";
 
     static defaultProps = {
-        onChangePrice: () => {}
+        onChangePrice: () => {},
+        showBasketQuantity: true,
+        showClearButton: true,
+        canEditQuantity: true
     };
 
     static propTypes = {
-        onChangePrice: React.PropTypes.func
+        quantity: React.PropTypes.number,
+        onChangePrice: React.PropTypes.func,
+        showBasketQuantity: React.PropTypes.bool,
+        showClearButton: React.PropTypes.bool,
+        canEditQuantity: React.PropTypes.bool,
+        onAdd: React.PropTypes.func,
+        onRemove: React.PropTypes.func,
+        onClear: React.PropTypes.func
     };
 
     state = {
@@ -96,9 +109,14 @@ class Component extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
 
-        Redux.dispatch(
-            Basket.actions.basketAddProduct(this.props.data)
-        );
+        if(this.props.onAdd) {
+            this.props.onAdd(this.props.data);
+        }
+        else {
+            Redux.dispatch(
+                Basket.actions.basketAddProduct(this.props.data)
+            );
+        }
     }
 
     onRemoveBtnClick(evt) {
@@ -108,9 +126,26 @@ class Component extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
 
-        Redux.dispatch(
-            Basket.actions.basketRemoveProduct(this.props.data)
-        );
+        if(this.props.onRemove) {
+            this.props.onRemove(this.props.data);
+        }
+        else {
+            Redux.dispatch(
+                Basket.actions.basketRemoveProduct(this.props.data)
+            );
+        }
+    }
+
+    onClearBtnClick(evt) {
+        let logger = Logger.create("onClearBtnClick");
+        logger.info("enter");
+
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        if(this.props.onClear) {
+            this.props.onClear(this.props.data);
+        }
     }
 
     goToProductDetail() {
@@ -135,12 +170,14 @@ class Component extends React.Component {
     }
 
     renderTags() {
-        let {data} = this.props;
+        let {data,tagData} = this.props;
         let {loadingTag} = this.state;
         let tags = [];
 
         for(let i = 0; i < data.tags.length && i < 2; i++) {
-            let tag = data.tags[i];
+            if(!tagData[data.tags[i]]) {continue;}
+
+            let tag = tagData[data.tags[i]];
             let color = Style.darkness(tag.color) > 40 ? "#ffffff" : "#000000";
 
             tags.push(
@@ -159,13 +196,13 @@ class Component extends React.Component {
             );
         }
 
-        return tags;        
+        return tags;
     }
 
     onChangePriceBtnClicked(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        
+
         this.props.onChangePrice(this.props.data);
     }
 
@@ -173,26 +210,36 @@ class Component extends React.Component {
      * This function is responsible for generating the component's view.
      */
     render() {
-        let {data,uid,user} = this.props;
+        let {
+            data,uid,user,quantity,showClearButton,
+            showBasketQuantity,canEditQuantity,
+            brandData,fileData
+        } = this.props;
         let {showOverlay,screenSize} = this.state;
-        let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(data, "brand"));
+        let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(brandData, data.brand));
 
         let item = this.props.basket.items[data._id];
-        let mainProfileImage = lodash.find(data.profileImages, (image) => {
-            return image._id == data.mainProfileImage;
-        });
+        let mainProfileImage = lodash.get(fileData, data.mainProfileImage);
 
         return (
             <div className={classNames([
                 styles.card,
                 data.stock <= 0 ? styles.outOfStock : ""
-            ])} 
+            ])}
                 onMouseEnter={this.onMouseEnter}
                 onMouseLeave={this.onMouseLeave}
                 onClick={this.goToProductDetail}>
-                {item ? (
-                    <Badge className={styles.badge} count={item.quantity} borderWidth={8} />
-                ) : null}
+                <div className={styles.badgesContainer}>
+                    {quantity >= 0 ? (
+                        <Badge className={styles.quantityBadge} color="#eeeeee" count={quantity} borderWidth={8} />
+                    ) : null}
+
+                    {showBasketQuantity && item ? (
+                        <Badge className={classNames([
+                            styles.badge
+                        ])} count={item.quantity} borderWidth={8} />
+                    ) : null}
+                </div>
 
                 {["not_approved"].indexOf(data.status) >= 0 ? (
                     <div style={{position: "absolute", top: "18px", left: "10px", zIndex: "1", padding: "2px", backgroundColor: "white", borderRadius: "0.3em"}}>
@@ -216,11 +263,16 @@ class Component extends React.Component {
                         }}></div>
                     )}
 
-                    {data.stock <= 0 || (uid && data.status != types.Status.NOT_APPROVED && (showOverlay || screenSize == "phone")) ? (
+                    {data.stock <= 0 || (uid && data.status != types.Status.NOT_APPROVED && canEditQuantity && (showOverlay || screenSize == "phone")) ? (
                         <div className={styles.overlay}>
-                            {item && data.stock > 0 ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onRemoveBtnClick}>
+                            {quantity == 0 && showClearButton ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onClearBtnClick}>
+                                <i18n.Translate text="_PRODUCT_CARD_CLEAR_BUTTONT_LABEL_" />
+                            </Button>) : null}
+
+                            {quantity > 0 || (showBasketQuantity && item && data.stock > 0) ? (<Button scale={screenSize == "phone" ? 0.8 : 0.6} color="danger" onClick={this.onRemoveBtnClick}>
                                 <span className="icon-minus-strong"></span>
                             </Button>) : null}
+
                             <Button scale={screenSize == "phone" ? 0.8 : 0.6} color="success" onClick={this.onAddBtnClick} disabled={data.stock <= 0 || item && item.quantity == data.stock}>
                                 {data.stock <= 0 || item && item.quantity == data.stock ? (
                                     <i18n.Translate text="_OUT_OF_STOCK_" />
@@ -271,5 +323,3 @@ export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
 )(Component));
-
-

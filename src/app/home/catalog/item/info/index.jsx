@@ -28,10 +28,12 @@ converter.setFlavor("github");
  */
 function mapStateToProps(state) {
     return {
-        product: state.product.selected,
+        productData: state.product.data,
+        productNameIdToId: state.product.nameIdToId,
+        brandData: state.brand.data,
         basket: state.basket,
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -58,13 +60,40 @@ class Component extends React.Component {
 
     fieldRefs = {};
 
+    getScopeData(props=this.props) {
+        let product,
+            brand,
+            nameId = lodash.get(props, "params.id");
+
+        let {
+            productData,
+            productNameIdToId,
+            brandData
+        } = props;
+        
+        // Get product
+        product = productNameIdToId[nameId]?
+            productData[productNameIdToId[nameId]] :
+            null;
+
+        // Get brand
+        if(product) {
+            brand = brandData[product.brand];
+        }
+
+        return {product, brand};
+    }
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
+        console.log("ola balofo loco", {
+            nameId: lodash.get(this.props, "params.id")
+        });
+
         // Window resize
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
     }
 
@@ -84,7 +113,7 @@ class Component extends React.Component {
         }
     }
 
-    async onSubmit(data, name) {
+    async onSubmit(data, {name=null}={}) {
         this.setState({
             saving: Object.assign(this.state.saving, {
                 [name]: true
@@ -106,16 +135,16 @@ class Component extends React.Component {
 
     async updateProduct(data) {
         let response,
-            productId = lodash.get(this.props, "product._id"),
+            {product} = this.getScopeData(),
             logger = Logger.create("onUploadComplete");
 
-        if(!productId){return;}
+        if(!product){return;}
 
         logger.info("enter", data);
 
         // Update product.
         try {
-            response = await Redux.dispatch(Product.actions.productUpdate(productId, data));
+            response = await Redux.dispatch(Product.actions.productUpdate(product._id, data));
             logger.debug("api productUpdate success", response);
         }
         catch(error) {
@@ -124,16 +153,15 @@ class Component extends React.Component {
     }
 
     render() {
-        let {product,user} = this.props;
-        let item, {items} = this.props.basket;
+        let {product,brand} = this.getScopeData();
+        let {user} = this.props;
+        let {items} = this.props.basket;
         let {editing,saving,screenSize} = this.state;
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(product,"brand"));
 
-        if(product) {
-            item = lodash.find(items, (item) => {
-                return item.product.nameId == product.nameId;
-            });
-        }
+        let item = lodash.find(items, (item) => {
+            return item.product == product._id;
+        });
 
         return (
             <div>
@@ -170,12 +198,14 @@ class Component extends React.Component {
                 ) : null}
 
                 <div className={styles.panelRow}>
-                    <Panel id="brand"
-                        canEdit={false}
-                        labelText="_CATALOG_ITEM_PAGE_BRAND_LABEL">
+                    {brand ? (
+                        <Panel id="brand"
+                            canEdit={false}
+                            labelText="_CATALOG_ITEM_PAGE_BRAND_LABEL">
 
-                        <Link to={`/brand/${product.brand.nameId}`}>{product.brand.name}</Link>  
-                    </Panel>
+                            <Link to={`/brand/${brand.nameId}`}>{brand.name}</Link>  
+                        </Panel>
+                    ) : null}
 
                     {isAdmin||isApprovedOwner ? (
                         <Panel id="stock"

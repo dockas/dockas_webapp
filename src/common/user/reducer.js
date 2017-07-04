@@ -6,7 +6,9 @@ let Logger = new LoggerFactory("common.user.reducer", {level:"debug"});
 
 let initialState = {
     uid: null,
-    profiles: {}
+    data: {},
+    scope: {},
+    emailToId: {}
 };
 
 export default handleActions({
@@ -14,198 +16,89 @@ export default handleActions({
         let logger = Logger.create("signin_COMPLETED");
         logger.info("enter", {action});
 
-        let newState = lodash.assign(
-            {}, 
-            state, 
-            {
-                uid: action.payload._id,
-                profiles: lodash.set(
-                    state.profiles, 
-                    action.payload._id, 
-                    action.payload
-                )
-            }
-        );
+        return Object.assign({}, state, {
+            uid: action.payload._id,
 
-        logger.debug("newState", newState);
-
-        return newState;
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
+        });
     },
 
     userInit_COMPLETED(state, action) {
         let logger = Logger.create("userInit_COMPLETED");
         logger.info("enter", {action});
 
-        return lodash.assign(
-            {}, 
-            state, 
-            {
-                uid: action.payload._id,
-                profiles: lodash.set(
-                    state.profiles, 
-                    action.payload._id, 
-                    action.payload
-                )
-            }
-        );
-    },
+        return Object.assign({}, state, {
+            uid: action.payload._id,
 
-    /*userUpdate_COMPLETED(state, action) {
-        let logger = Logger.create("userUpdate_COMPLETED");
-        logger.info("enter", {action});
-
-        let profile = lodash.assign(
-            {}, 
-            state.profiles[state.uid], 
-            action.payload
-        );
-
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.set(
-                    state.profiles, 
-                    state.uid, 
-                    profile
-                )
-            }
-        );
-    },*/
-
-    /*userAddAddress_COMPLETED(state, action) {
-        let logger = Logger.create("userAddAddress_COMPLETED");
-        logger.info("enter", {action});
-
-        let profile = state.profiles[state.uid];
-        profile.addresses = action.payload.addresses;
-        profile.phones = action.payload.phones;
-
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.set(
-                    state.profiles, 
-                    state.uid, 
-                    profile
-                )
-            }
-        );
-    },
-
-    userRemoveAddress_COMPLETED(state, action) {
-        let logger = Logger.create("userRemoveAddress_COMPLETED");
-        logger.info("enter", {action});
-
-        let profile = state.profiles[state.uid];
-        profile.addresses = action.payload.addresses;
-
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.set(
-                    state.profiles, 
-                    state.uid, 
-                    profile
-                )
-            }
-        );
-    },*/
-
-    /*userAddBillingSource_COMPLETED(state, action) {
-        let logger = Logger.create("userAddBillingSource_COMPLETED");
-        logger.info("enter", {action});
-
-        let profile = state.profiles[state.uid];
-        profile.billingSources = profile.billingSources || [];
-        profile.billingSources.push(action.payload);
-
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.set(
-                    state.profiles, 
-                    state.uid, 
-                    profile
-                )
-            }
-        );
-    },
-
-    userRemoveBillingSource_COMPLETED(state, action) {
-        let logger = Logger.create("userRemoveBillingSource_COMPLETED");
-        logger.info("enter", {action});
-
-        let profile = state.profiles[state.uid];
-        lodash.remove(profile.billingSources, (source) => {
-            return source._id == action.payload._id;
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload
+            })
         });
-        
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.set(
-                    state.profiles, 
-                    state.uid, 
-                    profile
-                )
-            }
-        );
-    },*/
+    },
 
     userFind_COMPLETED(state, action) {
-        let logger = Logger.create("userFind_COMPLETED");
+        let ids,
+            newState = {},
+            scope = lodash.get(action, "payload.scope"),
+            logger = Logger.create("userFind_COMPLETED");
+
         logger.info("enter", {action});
 
-        let profiles = lodash.reduce(action.payload, (map, profile) => {
-            map[profile._id] = profile;
-            return map;
-        }, {});
-
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.assign(
-                    state.profiles, 
-                    profiles
-                )
+        // If has scope, then process.
+        if(scope && lodash.isObject(scope)){
+            if(action.payload.concat) {
+                ids = (lodash.get(state.scope,`${scope.id}.ids`)||[]).concat(lodash.map(action.payload.data, "_id"));
             }
-        );
+            else {
+                ids = lodash.map(action.payload.data, "_id");
+            }
+
+            // Update scope
+            newState.scope = Object.assign({}, state.scope, {
+                [scope.id]: Object.assign({}, scope, {
+                    ids,
+                    query: action.payload.query
+                })
+            });
+        }
+
+        // Reduce data.
+        let {data,emailToId} = lodash.reduce(action.payload.data, (result, record) => {
+            result.data[record._id] = record;
+            result.emailToId[record.email] = record._id;
+            return result;
+        }, {data:{}, emailToId:{}});
+
+        // Update data.
+        newState.data = Object.assign({}, state.data, data);
+        newState.emailToId = Object.assign({}, state.emailToId, emailToId);
+
+        // Log new state
+        logger.info("newState", newState);
+
+        // Return new state
+        return Object.assign({}, state, newState);
     },
 
-    userUpdatedEvent(state, action) {
-        let logger = Logger.create("userUpdatedEvent");
-        logger.info("enter", {action});
+    userUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("userUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
 
-        return lodash.assign(
-            {},
-            state, 
-            {
-                profiles: lodash.reduce(state.profiles, (result, profile, uid) => {
-                    if(action.payload._id == uid) {
-                        profile = Object.assign({}, profile, action.payload.data);
-                    }
-
-                    return Object.assign(result, {
-                        [uid]: profile
-                    });
-                },{})
-            }
-        );
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            })
+        });
     },
 
-    signout_COMPLETED() {
+    signout_COMPLETED(state) {
         let logger = Logger.create("signout_COMPLETED");
         logger.info("enter");
 
-        return {
-            uid: null,
-            profiles: []
-        };
+        return Object.assign({}, state, {
+            uid: null
+        });
     }
 }, initialState);

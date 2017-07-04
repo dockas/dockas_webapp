@@ -1,5 +1,3 @@
-/* global mixpanel */
-
 import React from "react";
 import lodash from "lodash";
 import classNames from "classnames";
@@ -13,10 +11,11 @@ import Button from "darch/src/button";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
 import Spinner from "darch/src/spinner";
-import Label from "darch/src/label";
-import Text from "darch/src/text";
-import Toaster from "darch/src/toaster";
-import {Api,Product,Scroller} from "common";
+//import Label from "darch/src/label";
+//import Text from "darch/src/text";
+//import Separator from "darch/src/separator";
+//import Toaster from "darch/src/toaster";
+import {Api,Product,Scroller,Tracker} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("catalog.list", {level: "debug"});
@@ -25,7 +24,7 @@ let storage = new Storage();
 /**
  * This function created a list from the basket data.
  */
-function basketToList(basket) {
+/*function basketToList(basket) {
     let list = {
         items: []
     };
@@ -38,7 +37,7 @@ function basketToList(basket) {
     }
 
     return list;
-}
+}*/
 
 
 /**
@@ -49,10 +48,12 @@ function basketToList(basket) {
  */
 function mapStateToProps(state) {
     return {
-        user: lodash.get(state.user.profiles, state.user.uid),
+        user: lodash.get(state.user.data, state.user.uid),
         basket: state.basket,
-        products: lodash.get(state.product,"scope.catalogList.data"),
-        productsQuery: lodash.get(state.product,"scope.catalogList.query"),
+        productData: state.product.data,
+        productScopeIds: lodash.get(state.product,"scope.catalogList.ids"),
+        productScopeQuery: lodash.get(state.product,"scope.catalogList.query"),
+        lists: lodash.get(state.list, "scope.catalogList.data"),
         tags: lodash.get(state.tag, "scope.global.dropdown")
     };
 }
@@ -87,39 +88,25 @@ class Component extends React.Component {
             this.setState({infoModalOpen: true});
         }
 
-        // Retrieve popular tags
-        /*try {
-            let response = await Api.shared.tagFind({
-                sort: {findCount: -1}
-            });
-
-            // Process tags
-            let tags = response.results.map((tag) => {
-                return {value: tag._id, label: tag.name, color: tag.color};
-            });
-
-            this.setState({tags});
-        }
-        catch(error) {
-            logger.error("api tagFind error", error);
-        }*/
-
         window.addEventListener("resize", this.handleWindowResize);
         this.handleWindowResize();
 
         this.scroller = new Scroller({
             onLoad: async (count) => {
-                let {products} = this.props;
-                products = products || [];
+                let logger = Logger.create("scroller.onLoad");
+                logger.info("enter");
 
-                if(count===1 && products.length) {return;}
+                let {productData,productScopeIds} = this.props;
+                productScopeIds = productScopeIds || [];
+
+                if(count===1 && productScopeIds.length) {return;}
 
                 let query = {
                     limit: 30,
                     hash: {
-                        gt: count===1 ? 
+                        gt: count===1 ?
                             "#" :
-                            products[products.length-1].hash
+                            lodash.get(productData,`${lodash.last(productScopeIds)}.hash`)
                     }
                 };
 
@@ -130,12 +117,6 @@ class Component extends React.Component {
                 if(this.tags) {
                     query.tags = this.tags;
                 }
-
-                /*if(products.length) {
-                    query.priority = {
-                        lte: products[products.length-1].priority
-                    };
-                }*/
 
                 await this.loadProducts(query);
             },
@@ -161,7 +142,9 @@ class Component extends React.Component {
     }
 
     async loadProducts(query, {isSearch=false, concat=true}={}) {
-        let logger = Logger.create("loadProducts");
+        let {user} = this.props,
+            logger = Logger.create("loadProducts");
+
         logger.info("enter", query);
 
         this.setState({
@@ -171,10 +154,12 @@ class Component extends React.Component {
 
         let mergedQuery = lodash.assign({}, query, {
             sort: {"hash": 1, "name": 1},
-            stock: {gt: 0},
-            status: ["public"],
-            populate: ["tags","profileImages","brand","brand.company"]
+            stock: {gt: 0}
         });
+
+        if(!user||user.roles.indexOf("admin") < 0) {
+            mergedQuery.status = ["public"];
+        }
 
         if(lodash.isEmpty(mergedQuery.name)){
             delete mergedQuery.name;
@@ -189,14 +174,15 @@ class Component extends React.Component {
             await Redux.dispatch(
                 Product.actions.productFind(mergedQuery, {
                     concat,
-                    scope: {id: "catalogList"}
+                    scope: {id: "catalogList"},
+                    populate: {paths: ["tags","profileImages","brand","brand.company"]}
                 })
             );
         }
         catch(error) {
             logger.error("product actions find error", error);
         }
-        
+
         this.setState({
             searchLoading: false,
             productsLoading: false
@@ -240,10 +226,12 @@ class Component extends React.Component {
         let logger = Logger.create("onSearchFormSubmit");
         logger.info("enter", data);
 
-        let {productsQuery} = this.props;
-        let query = lodash.cloneDeep(productsQuery);
+        let {productScopeQuery} = this.props;
+        let query = lodash.cloneDeep(productScopeQuery);
         query.limit = 30;
         query.hash = {gt: "#"};
+
+        logger.debug("new query", query);
 
         this.searchName = data.name;
 
@@ -251,7 +239,7 @@ class Component extends React.Component {
             query.name = data.name;
             delete query.priority;
 
-            mixpanel.track("product searched by name", {name: data.name});
+            Tracker.track("product searched by name", {name: data.name, location: "catalog.list"});
         }
         else {
             delete query.name;
@@ -272,8 +260,8 @@ class Component extends React.Component {
                 tags: loadTag ? [loadTag] : this.state.tags
             });
 
-            let {productsQuery} = this.props;
-            let query = lodash.cloneDeep(productsQuery);
+            let {productScopeQuery} = this.props;
+            let query = lodash.cloneDeep(productScopeQuery);
             query.limit = 30;
             query.hash = {gt: "#"};
 
@@ -289,14 +277,14 @@ class Component extends React.Component {
                     delete query.name;
                 }
 
-                // Send mixpanel event.
+                // Send tracker event.
                 for(let tagValue of values) {
                     let tagOpt = lodash.find(this.state.tags, (tag) => {
                         return tag.value == tagValue;
                     });
 
                     if(tagOpt) {
-                        mixpanel.track("product searched by tag", {name: tagOpt.label});
+                        Tracker.track("product searched by tag", {name: tagOpt.label, location: "catalog.list"});
                     }
                 }
             }
@@ -339,7 +327,7 @@ class Component extends React.Component {
                 products.push(items[id].product);
             }
 
-            newState.filteredProducts = products; 
+            newState.filteredProducts = products;
         }
 
         this.setState(newState);
@@ -349,80 +337,19 @@ class Component extends React.Component {
         this.setState({priceModalProduct: product});
     }
 
-    async onSaveListButtonClick() {
-        let logger = Logger.create("onSaveListButtonClick"),
-            {listId} = this.props.basket;
-
-        logger.info("enter", {listId});
-
-        if(listId) {
-            let list = basketToList(this.props.basket);
-
-            try {
-                let response = await Api.shared.listUpdate(listId, list);
-
-                logger.debug("api listUpdate success", response);
-
-                Redux.dispatch(Toaster.actions.push("success", "_LIST_UPDATE_SUCCESS_TOAST_MESSAGE_"));
-            }
-            catch(error) {
-                logger.error("api listUpdate error", error);
-            }
-        }
-        else {
-            this.setState({createListModalOpen: true});
-        }
-    }
-
-    onCreateListModalDismiss() {
-        this.setState({createListModalOpen: false});
-    }
-
-    async onCreateListSubmit(data) {
-        let {items} = this.props.basket,
-            newState = {createListModalLoading: false},
-            logger = Logger.create("onCreateListSubmit");
-
-        logger.info("enter", data);
-
-        this.setState({createListModalLoading: true});
-
-        // Build the list up
-        let list = {
-            name: data.name,
-            items: []
-        };
-
-        for(let id of Object.keys(items)) {
-            list.items.push({
-                product: id,
-                quantity: items[id].quantity
-            });
-        }
-
-        try {
-            let response = await Api.shared.listCreate(list);
-            logger.info("api listCreate success", {response});
-
-            // Set list as the loaded list.
-            newState.loadedList = Object.assign(list, {"_id": response.result});
-            newState.createListModalOpen = false;
-        }
-        catch(error) {
-            logger.error("api listCreate error", error);
-        }
-
-        logger.debug("newState", newState);
-
-        this.setState(newState);
-    }
-
     render() {
-        let {tags,products,user,basket} = this.props;
-        let {listName} = basket;
-        let {selectedTags,filterOnlySelected,priceModalProduct,createListModalLoading,screenSize,searchLoading,productsLoading,filteredProducts} = this.state;
+        let {
+            tags,productScopeIds,user,
+            productData
+        } = this.props;
+        
+        let {
+            selectedTags,priceModalProduct,
+            screenSize,productsLoading,
+            filteredProductScopeIds
+        } = this.state;
 
-        products = filteredProducts || products;
+        productScopeIds = filteredProductScopeIds || productScopeIds;
 
         return (
             <div className={styles.page}>
@@ -483,14 +410,14 @@ class Component extends React.Component {
                                     {/*user && user.roles.indexOf("admin") >= 0 ? (
                                         <div className="field-gap"><Button to="/admin/create/product" scale={screenSize == "phone"?1:0.8} color="warning"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_" /></Button></div>
                                     ) : null*/}
-                                    
-                                    {user ? <div className="field-gap"><Button scale={screenSize == "phone"?1:0.8} onClick={this.onSaveListButtonClick}><i18n.Translate text="_CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_" /></Button></div> : null}
+
+                                    {user ? <div className="field-gap"><Button scale={screenSize == "phone"?1:0.8} to="/create/list"><i18n.Translate text="_CATALOG_LIST_PAGE_CREATE_LIST_BUTTON_LABEL_" /></Button></div> : null}
                                 </div>
                             </Grid.Cell>
                         </Grid>
                     </div>
 
-                    <div className={styles.auxContainer}>
+                    {/*<div className={styles.auxContainer}>
                         <Grid noGap={false}>
                             <Grid.Cell span={2}>
                                 <div className={styles.filtersContainer}>
@@ -518,93 +445,55 @@ class Component extends React.Component {
                                 ) : null}
                             </Grid.Cell>
                         </Grid>
-                    </div>
+                    </div>*/}
 
-                    <Grid spots={10} noGap={true} bordered={true}>
-                        {products ? (
-                            /*Array(50).fill(products[0]).map((product, idx) => {
-                                return (
-                                    <Grid.Cell key={idx} span={2}>
-                                        <Product.Card data={product} onChangePrice={this.onProductChangePrice} />
-                                    </Grid.Cell>
-                                );
-                            })*/
-
-                            products.map((product) => {
-                                return product.stock > 0 ? (
-                                    <Grid.Cell key={product._id} span={2}>
-                                        <Product.Card data={product} 
-                                            onChangePrice={this.onProductChangePrice}
-                                            onTagClick={(tag) => {
-                                                let values = (this.state.selectedTags||[]).concat([tag._id]);
-                                                let loadTag = {
-                                                    value: tag._id,
-                                                    label: tag.name
-                                                };
-
-                                                return this.onSearchTagsChange(values, {loadTag});
-                                            }}
-                                        />
-                                    </Grid.Cell>
-                                ) : <span key={product._id}></span>;
-                            })
-                        ) : null}
-                    </Grid>
-
-                    {productsLoading ? (
-                        <div className={styles.loadingContainer}>
-                            <Spinner.CircSide color="moody" scale={1.5} />
+                    {/*lists && lists.length ? (
+                        <div className={styles.listCarouselContainer}>
+                            <List.Carousel lists={lists} />
                         </div>
-                    ) : null}
+                    ) : null*/}
+
+                    <div className={styles.productsContainer}>
+                        {/*<div style={{marginBottom: "30px"}}>
+                            <Separator.Line lineStyle="dashed" lineColor="#dddddd">
+                                <Separator.Info align="left">
+                                    <Text scale={0.8} color="#bbbbbb">produtos</Text>
+                                </Separator.Info>
+                            </Separator.Line>
+                        </div>*/}
+                        
+                        <Grid spots={10} noGap={true} bordered={true}>
+                            {productScopeIds ? (
+                                productScopeIds.map((productId) => {
+                                    let product = productData[productId];
+
+                                    return product.stock > 0 ? (
+                                        <Grid.Cell key={product._id} span={2}>
+                                            <Product.Card data={product}
+                                                onChangePrice={this.onProductChangePrice}
+                                                onTagClick={(tag) => {
+                                                    let values = (this.state.selectedTags||[]).concat([tag._id]);
+                                                    let loadTag = {
+                                                        value: tag._id,
+                                                        label: tag.name
+                                                    };
+
+                                                    return this.onSearchTagsChange(values, {loadTag});
+                                                }}
+                                            />
+                                        </Grid.Cell>
+                                    ) : <span key={product._id}></span>;
+                                })
+                            ) : null}
+                        </Grid>
+
+                        {productsLoading ? (
+                            <div className={styles.loadingContainer}>
+                                <Spinner.CircSide color="moody" scale={1.5} />
+                            </div>
+                        ) : null}
+                    </div>
                 </Container>
-
-                <Modal open={this.state.createListModalOpen} onDismiss={this.onCreateListModalDismiss}>
-                    <Modal.Header>
-                        <h3 style={{margin: 0}}>
-                            <i18n.Translate text="_CREATE_LIST_MODAL_TITLE_" />
-                        </h3>
-                    </Modal.Header>
-
-                    <Form onSubmit={this.onCreateListSubmit} loading={createListModalLoading}>
-                        <Modal.Body>
-                            <Field.Section>
-                                <Text scale={screenSize == "phone" ? 1 : 0.8}>
-                                    <i18n.Translate text="_CREATE_LIST_MODAL_NAME_FIELD_LABEL_" />
-                                </Text>
-                                <div>
-                                    <Field.Text name="name"
-                                        placeholder="_CREATE_LIST_MODAL_NAME_FIELD_PLACEHOLDER_"
-                                        validators="$required"/>
-                                    <Field.Error for="name"
-                                        validator="$required"
-                                        message="_FIELD_ERROR_REQUIRED_"/>
-                                </div>
-                            </Field.Section>
-                        </Modal.Body>
-
-                        <Modal.Footer align="right">
-                            <div className="field-gap">
-                                <Button scale={1} color="danger" onClick={this.onCreateListModalDismiss}>
-                                    <i18n.Translate text="_CANCEL_" />
-                                </Button>
-                            </div>
-
-                            <div className="field-gap">
-                                <Button type="submit"scale={1}
-                                    loadingComponent={
-                                        <span>
-                                            <i18n.Translate text="_SAVING_" format="lower" />
-                                            <span style={{marginLeft: "5px"}}>
-                                                <Spinner.Bars color="#fff" />
-                                            </span>
-                                        </span>
-                                    }>
-                                    <i18n.Translate text="_SAVE_" />
-                                </Button>
-                            </div>
-                        </Modal.Footer>
-                    </Form>
-                </Modal>
 
                 <Modal open={this.state.infoModalOpen}>
                     <Modal.Header>
@@ -626,7 +515,7 @@ class Component extends React.Component {
                 </Modal>
 
                 <Product.PriceModal open={!!priceModalProduct}
-                    product={priceModalProduct} 
+                    product={priceModalProduct}
                     onComplete={(result) => {
                         let logger = Logger.create("onPriceModalComplete");
                         logger.info("enter", result);
@@ -651,4 +540,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(Component);
-

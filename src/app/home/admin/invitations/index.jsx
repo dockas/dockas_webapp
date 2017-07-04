@@ -5,8 +5,8 @@ import Container from "darch/src/container";
 import Spinner from "darch/src/spinner";
 import i18n from "darch/src/i18n";
 import Toaster from "darch/src/toaster";
+import Label from "darch/src/label";
 import {Api} from "common";
-import Bar from "../bar";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("admin.invitations");
@@ -66,11 +66,13 @@ export default class Component extends React.Component {
 
         return (
             <div>
-                <Bar />
-                
                 <Container>
+                    <h2 style={{marginTop: "30px"}}>
+                        <i18n.Translate text="_ADMIN_INVITATIONS_PAGE_TITLE_" /><span style={{marginLeft: "15px"}}><Label color="#F9690E" scale={0.8} layout="outlined">admin</Label></span>
+                    </h2>
+
                     <div className="table-container">
-                        <table>
+                        <table className="table">
                             <thead>
                                 <tr>
                                     <th><i18n.Translate text="_ADMIN_INVITATIONS_PAGE_EMAIL_TH_" /></th>

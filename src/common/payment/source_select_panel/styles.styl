@@ -1,0 +1,50 @@
+.payment-methods-tabs-container
+    :global(.tabs-item-align-left)
+        > a, > span
+            padding-left: 0;
+            padding-right: 15px;
+    
+    :global(.tabs-item-align-right)
+        > a, > span
+            padding-left: 15px;
+            padding-right: 0;
+            
+    > ul
+        border-bottom-color: #ddd;
+        
+        li + li
+            margin-left: 10px;
+            
+        /*li:last-child
+            > span
+                padding-right: 0;*/
+
+.box
+    background: #f9f9f9;
+    border: 3px solid #efefef;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    cursor: pointer;
+    
+    text-align: center;
+        
+    span
+        display: inline-block;
+        vertical-align: bottom;
+        
+    span[class*="icon-"]
+        font-size: 1.8em;
+    
+    &:hover
+        background: #f6f6f6;
+        
+    &.active
+        border-color: #89C4F4;
+
+    .title
+        font-weight: 600;
+
+.credit-card-cvc-field-container
+    margin-top: 20px;
+    max-width: 300px;

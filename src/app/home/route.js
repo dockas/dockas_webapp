@@ -13,13 +13,14 @@ module.exports = {
                 require("./catalog/route"),
                 require("./brand/route"),
                 require("./account/route"),
-                require("./orders/route"),
                 require("./checkout/route"),
                 require("./invitation/route"),
                 require("./notifications/route"),
                 require("./lists/route"),
+                require("./orders/route"),
                 require("./create/route"),
-                require("./admin/route")
+                require("./admin/route"),
+                require("./approve/route")
             ]);
         });
     }

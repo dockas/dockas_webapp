@@ -8,6 +8,7 @@ module.exports = class Product {
     static PriceModal = require("./price_modal");
 
     static actions = require("./actions");
+    static populator = require("./populator");
     static reducer = require("./reducer");
     static types = require("./types");
 

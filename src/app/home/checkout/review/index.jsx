@@ -2,16 +2,17 @@ import React from "react";
 import lodash from "lodash";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
+import classNames from "classnames";
 import config from "config";
 import {LoggerFactory, Redux, Style} from "darch/src/utils";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Container from "darch/src/container";
 import Grid from "darch/src/grid";
-import Text from "darch/src/text";
+//import Text from "darch/src/text";
 //import Form from "darch/src/form";
 //import Field from "darch/src/field";
-import numberUtils from "darch/src/field/number/utils";
+//import numberUtils from "darch/src/field/number/utils";
 import Toaster from "darch/src/toaster";
 //import Label from "darch/src/label";
 import {Basket} from "common";
@@ -27,7 +28,9 @@ let Logger = new LoggerFactory("checkout.review");
  */
 function mapStateToProps(state) {
     return {
-        user: state.user.profiles[state.user.uid],
+        productData: state.product.data,
+        fileData: state.file.data,
+        user: state.user.uid?state.user.data[state.user.uid]:null,
         basket: state.basket,
         spec: state.i18n.spec
     };
@@ -56,7 +59,6 @@ class Component extends React.Component {
         logger.info("enter");
 
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
     }
 
@@ -119,16 +121,8 @@ class Component extends React.Component {
     }
 
     render() {
-        let {minOrderTotalPrice} = config.shared;
         let {screenSize} = this.state;
-        let {basket,spec} = this.props;
-        let {totalPrice,totalDiscount} = basket;
-        let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
-        let totalPriceWithDiscount = totalPrice - appliedDiscount;
-
-        let priceLowerThanMin = (totalPrice < minOrderTotalPrice);
-
-        //console.log(["screen size", screenSize]);
+        let {basket,productData,fileData} = this.props;
 
         return (
             <div className={styles.page}>
@@ -168,7 +162,10 @@ class Component extends React.Component {
 
                                 <div className={styles.itemsContainer}>
                                     <div className="table-container">
-                                        <table className={styles.table}>
+                                        <table className={classNames([
+                                            "table",
+                                            styles.table
+                                        ])}>
                                             <thead>
                                                 <tr>
                                                     <th><i18n.Translate text="_CHECKOUT_STEP_REVIEW_PRODUCT_NAME_TH_" /></th>
@@ -179,30 +176,31 @@ class Component extends React.Component {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {lodash.map(this.props.basket.items, (item) => {
-                                                    let mainImage = lodash.find(item.product.images, (image) => {
-                                                        return image._id == item.product.mainImage;
-                                                    });
+                                                {lodash.map(basket.items, (item) => {
+                                                    //console.log(["basket item bocozao", item]);
+
+                                                    let product = lodash.get(productData, item.product)||{};
+                                                    let mainProfileImage = lodash.get(fileData, product.mainProfileImage);
 
                                                     return (
-                                                        <tr key={item.product._id}>
+                                                        <tr key={item.product}>
                                                             <td className={styles.nameCell}>
-                                                                {mainImage ? (
+                                                                {mainProfileImage ? (
                                                                     <div className={styles.image} style={{
-                                                                        backgroundImage: `url(//${config.hostnames.file}/images/${mainImage.path})`,
+                                                                        backgroundImage: `url(//${config.hostnames.file}/images/${mainProfileImage.path})`,
                                                                         backgroundSize: "cover",
                                                                         backgroundPosition: "center"
                                                                     }}></div>
                                                                 ) : null}
                                                                 
-                                                                {item.product.name}
+                                                                {product.name}
                                                             </td>
-                                                            <td><i18n.Number value={item.product.priceValue/100} numDecimals={2} currency={true} /></td>
+                                                            <td><i18n.Number value={(product.priceValue||0)/100} numDecimals={2} currency={true} /></td>
                                                             <td>{item.quantity}</td>
-                                                            <td><i18n.Number value={(item.quantity * item.product.priceValue)/100} numDecimals={2} currency={true} /></td>
+                                                            <td><i18n.Number value={(item.quantity * (product.priceValue||0))/100} numDecimals={2} currency={true} /></td>
                                                             <td>
-                                                                <Button onClick={this.onRemoveButtonClick(item.product)} color="danger" scale={0.8}>-1</Button>
-                                                                <Button onClick={this.onAddButtonClick(item.product)} color="moody" scale={0.8}>+1</Button>
+                                                                <Button onClick={this.onRemoveButtonClick(product)} color="danger" scale={0.8}>-1</Button>
+                                                                <Button onClick={this.onAddButtonClick(product)} color="moody" scale={0.8}>+1</Button>
                                                             </td>
                                                         </tr>
                                                     );
@@ -216,50 +214,11 @@ class Component extends React.Component {
 
                         <Grid.Cell>
                             {screenSize != "phone" ? (
-                                <div className={styles.sidebarContainer}>
-                                    <div className={styles.checkoutBox}>
-                                        <h4 className={styles.title}>RESUMO</h4>
-
-                                        {appliedDiscount > 0.00 ? (
-                                            <div className={styles.discountInfoContainer}>
-                                                <div className={styles.originalTotalPriceContainer}>
-                                                    <Text scale={0.8}>
-                                                        <u>preço</u>: <i18n.Number prefix="R$" value={parseFloat((totalPrice/100).toFixed(2))} numDecimals={2} />
-                                                    </Text>
-                                                </div>
-
-                                                <div className={styles.appliedDiscountContainer}>
-                                                    <Text scale={0.8}>
-                                                        <u>desconto</u>: <i18n.Number prefix="R$" value={parseFloat((appliedDiscount/100).toFixed(2))} numDecimals={2} />
-                                                    </Text>
-                                                </div>
-                                            </div>
-                                        ) : null}
-
-                                        <div className={styles.totalPriceContainer}>
-                                            <div>
-                                                <Text scale={0.8}><u>total</u>:</Text>
-                                            </div>
-
-                                            <div className={styles.priceValue}>
-                                                <i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount/100).toFixed(2))} numDecimals={2} />
-                                            </div>
-                                        </div>
-
-                                        <div className={styles.buttonContainer}>
-                                            <Button block={true} color="success" onClick={this.onBasketButtonClick} disabled={priceLowerThanMin}>
-                                                {!priceLowerThanMin ? (
-                                                    <i18n.Translate text="_CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_" />
-                                                ) : (
-                                                    <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
-                                                        minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
-                                                        diff: (minOrderTotalPrice - totalPrice)/100
-                                                    }} />
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Basket.SideBar
+                                    buttonLabel="_CHECKOUT_STEP_REVIEW_CONTINUE_BUTTON_LABEL_"
+                                    onButtonClick={this.onBasketButtonClick}
+                                    showDetails={false}
+                                />
                             ) : null}        
                         </Grid.Cell>
                     </Grid>

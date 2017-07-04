@@ -1,5 +1,3 @@
-/* global mixpanel */
-
 import React from "react";
 import {withRouter} from "react-router";
 import {LoggerFactory, Redux} from "darch/src/utils";
@@ -11,7 +9,7 @@ import Spinner from "darch/src/spinner";
 import Button from "darch/src/button";
 import Grid from "darch/src/grid";
 import logo from "assets/images/logo_icon_100x100.png";
-import {Api,Auth} from "common";
+import {Api,Auth,Tracker} from "common";
 import styles from "./styles";
 import SignupStore from "./store";
 
@@ -63,7 +61,7 @@ class Component extends React.Component {
             // Signs the user up.
             let signupResponse = await Api.shared.signup(data);
 
-            mixpanel.track("signup success");
+            Tracker.track("signup success", {email: data.email});
 
             logger.debug("Api signup success", signupResponse);
 

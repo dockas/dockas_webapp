@@ -1,7 +1,5 @@
-/* global mixpanel */
-
 import React from "react";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
 import Container from "darch/src/container";
@@ -9,7 +7,7 @@ import Spinner from "darch/src/spinner";
 import i18n from "darch/src/i18n";
 import Button from "darch/src/button";
 import Text from "darch/src/text";
-import {Api} from "common";
+import {Api,Basket,Tracker} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("invitation");
@@ -28,6 +26,8 @@ export default class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        Redux.dispatch(Basket.actions.basketSetShowCard(false));
     }
 
     async onSubmit(data) {
@@ -45,7 +45,7 @@ export default class Component extends React.Component {
             let response = await Api.shared.invitationCreate(data);
             logger.info("api invitationCreate success", response);
 
-            mixpanel.track("invitation requested");
+            Tracker.track("invitation requested", data);
 
             this.setState({loading: false, success: true});
         }

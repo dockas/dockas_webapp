@@ -24,6 +24,7 @@ dictionary:
     _ADD_: Adicionar
     _ITEMS_: Itens
     _ITEM_: Item
+    _EDIT_: Editar
     _SAVE_: Salvar
     _SAVING_: Salvando
     _SENDING_: Enviando
@@ -32,17 +33,55 @@ dictionary:
     _FINALIZING_: Finalizando
     _TOTAL_IN_BASKET_: Total na Cesta
     _OUT_OF_STOCK_: sem estoque
+    _APPROVE_: Aprovar
+    _AUTHORIZE_: Autorizar
+    _HELLO_USER_: Olá, {{firstName}}
+
+    # Weekdays
+    _WEEKDAY_1_: segunda-feira
+    _WEEKDAY_2_: terça-feira
+    _WEEKDAY_3_: quarta-feira
+    _WEEKDAY_4_: quinta-feira
+    _WEEKDAY_5_: sexta-feira
+    _WEEKDAY_6_: sábado
+    _WEEKDAY_7_: domingo
+
+    # Short Weekdays
+    _SHORT_WEEKDAY_1_: seg
+    _SHORT_WEEKDAY_2_: ter
+    _SHORT_WEEKDAY_3_: qua
+    _SHORT_WEEKDAY_4_: qui
+    _SHORT_WEEKDAY_5_: sex
+    _SHORT_WEEKDAY_6_: sab
+    _SHORT_WEEKDAY_7_: dom
+
+    _MONTH_0_: janeiro
+    _MONTH_1_: fevereiro
+    _MONTH_2_: março
+    _MONTH_3_: abril
+    _MONTH_4_: maio
+    _MONTH_5_: junho
+    _MONTH_6_: julho
+    _MONTH_7_: agosto
+    _MONTH_8_: setembro
+    _MONTH_9_: outubro
+    _MONTH_10_: novembro
+    _MONTH_11_: dezembro
 
     # Nav bar
     _NAV_BAR_ACCOUNT_ITEM_LABEL_: perfil
-    _NAV_BAR_ORDERS_ITEM_LABEL_: pedidos
+    _NAV_BAR_MY_ORDERS_ITEM_LABEL_: meus pedidos
     _NAV_BAR_CREATE_BRAND_ITEM_LABEL_: nova marca
     _NAV_BAR_CREATE_PRODUCT_ITEM_LABEL_: novo produto
     _NAV_BAR_SIGNOUT_ITEM_LABEL_: sair
     _NAV_BAR_SIGNIN_ITEM_LABEL_: entrar
     _NAV_BAR_ADMIN_ITEM_LABEL_: admin
+    _NAV_BAR_ADMIN_ORDERS_ITEM_LABEL_: pedidos
+    _NAV_BAR_ADMIN_USERS_ITEM_LABEL_: usuários
+    _NAV_BAR_ADMIN_INVITATIONS_ITEM_LABEL_: convites
     _NAV_BAR_NOTIFICATIONS_ITEM_LABEL_: alertas
     _NAV_BAR_LISTS_ITEM_LABEL_: listas
+    _NAV_BAR_MY_LISTS_ITEM_LABEL_: minhas listas
 
     # Catalog Page
     _CATALOG_LIST_PAGE_SEARCH_NAME_FIELD_PLACEHOLDER_: nome do item
@@ -50,6 +89,7 @@ dictionary:
     _CATALOG_LIST_PAGE_SEARCH_BUTTON_TEXT_: procurar
     _CATALOG_LIST_PAGE_FILTER_ONLY_SELECTED_: apenas selecionados
     _CATALOG_LIST_PAGE_SAVE_LIST_BUTTON_LABEL_: salvar lista
+    _CATALOG_LIST_PAGE_CREATE_LIST_BUTTON_LABEL_: nova lista
     _CATALOG_LIST_PAGE_CREATE_PRODUCT_BUTTON_LABEL_: adicionar
     _CATALOG_LIST_PAGE_LOADED_LIST_LABEL_: lista
 
@@ -81,6 +121,7 @@ dictionary:
     _ADMIN_PRODUCTS_PAGE_CHANGE_PRICE_MODAL_TITLE_: Atualizar Preço
     _ADMIN_PRODUCTS_PAGE_CHANGE_PRICE_MODAL_VALUE_LABEL_: Valor
 
+    _ADMIN_USERS_PAGE_TITLE_: Usuários
     _ADMIN_USERS_PAGE_FULL_NAME_TH_: nome
     _ADMIN_USERS_PAGE_EMAIL_TH_: email
     _ADMIN_USERS_PAGE_ROLE_TH_: tipo
@@ -88,20 +129,26 @@ dictionary:
     _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_TITLE_: Alterar tipo
     _ADMIN_USERS_PAGE_ROLE_USER_: usuário
     _ADMIN_USERS_PAGE_ROLE_ADMIN_: admin
+    _ADMIN_USERS_PAGE_ROLE_SELLER_: vendedor
     _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_LABEL_: tipo
     _ADMIN_USERS_PAGE_CHANGE_ROLE_MODAL_ROLE_PLACEHOLDER_: -- selecionar --
 
+    _ADMIN_ORDERS_PAGE_TITLE_: Pedidos
     _ADMIN_ORDERS_PAGE_USER_TH_: usuário
     _ADMIN_ORDERS_PAGE_ADDRESS_TH_: endereço
     _ADMIN_ORDERS_PAGE_PRICE_VALUE_TH_: valor
-    _ADMIN_ORDERS_PAGE_CREATED_AT_TH_: criado em
+    _ADMIN_ORDERS_PAGE_DELIVER_DATE_TH_: entrega
     _ADMIN_ORDERS_PAGE_STATUS_TH_: estado
+    _ADMIN_ORDERS_PAGE_PRODUCT_PICKUP_DATE_TH_: coleta
     _ADMIN_ORDERS_PAGE_PRODUCT_NAME_TH_: nome
     _ADMIN_ORDERS_PAGE_PRODUCT_COUNT_TH_: quantidade total
     _ADMIN_ORDERS_PAGE_FILTER_ONLY_PRODUCTS_: apenas produtos
     _ADMIN_ORDERS_PAGE_FILTER_WITHIN_WEEK_ORDERS_: apenas da semana
     _ADMIN_ORDERS_PAGE_FILTER_OPEN_ORDERS_: abertos
 
+    _ORDERS_PAGE_DELIVER_DATE_TH_: data entrega
+
+    _ADMIN_INVITATIONS_PAGE_TITLE_: Convites
     _ADMIN_INVITATIONS_PAGE_EMAIL_TH_: email
     _ADMIN_INVITATIONS_PAGE_SENT_COUNT_TH_: envios
     _ADMIN_INVITATIONS_PAGE_SENT_AT_TH_: enviado em
@@ -118,7 +165,7 @@ dictionary:
     _ADMIN_COUPONS_PAGE_APPLIERS_COUNT_TH_: num. aplicados
     _ADMIN_COUPONS_PAGE_VALUE_TH_: valor
     _ADMIN_COUPONS_PAGE_NO_DATA_FOUND_TEXT_: nenhum cupom encontrado
-    
+
     # Signin page
     _LOGIN_FIELD_LABEL_: email
     _LOGIN_FIELD_PLACEHOLDER_: meu@email.com
@@ -140,6 +187,10 @@ dictionary:
     _INFO_MODAL_TITLE_: Informações importantes
     _INFO_MODAL_BODY_: "<p>Bem vindo ao Dockas! Antes de começar precisamos lhe avisar de algumas coisas importantes:</p><ol><li>nesse primeiro momento de operação do Dockas atendemos apenas a cidade de Belo Horizonte;</li><li>as entregas das compras por enquanto são realizadas apenas aos domingos;</li><li>limitamos o número de compras a 20 por semana, mas vamos progressivamente aumentar esse limite para atender a todos.</li></ol><p>Qualquer dúvida/crítica/sugestão entre em contato conosco pelo email <a href='mailto:contato@dockas.com'>contato@dockas.com</a>. Ótimas compras!! :)</p>"
 
+    # Approve List Order Page
+    _APPROVE_LIST_ORDER_PAGE_PASSWORD_FIELD_LABEL_: senha
+    _APPROVE_LIST_ORDER_PAGE_PASSWORD_PLACEHOLDER_LABEL_: ••••••••
+
     # Checkout page
     _CHECKOUT_PROGRESS_STEP_REVIEW_TEXT_: Revisão
     _CHECKOUT_PROGRESS_STEP_ADDRESS_TEXT_: Endereço
@@ -157,7 +208,7 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_TITLE_: Realizar o pagamento
     _CHECKOUT_STEP_PAYMENT_PAYPAL_DISCLAIMER_: Atualmente utilizamos o Paypal® para realizar os pagamentos no Dockas. Você será conduzido ao site do Paypal, onde deverá criar uma conta para gerenciamento dos pagamentos.
     _CHECKOUT_STEP_PAYMENT_BASKET_SIDEBAR_BUTTON_LABEL_: Pagar
-    
+
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_TITLE_: Cadastrar Novo Cartão
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_NUMBER_FIELD_LABEL_: número
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_NUMBER_FIELD_PLACEHOLDER_: "5555 6666 7777 8884"
@@ -174,7 +225,7 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_DOCUMENT_NUMBER_FIELD_PLACEHOLDER_: 564.464.832-01
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_PHONE_FIELD_LABEL_: telefone
     _CHECKOUT_STEP_PAYMENT_ADD_CARD_MODAL_HOLDER_PHONE_FIELD_PLACEHOLDER_: (00)99999-9999
-    
+
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_TITLE_: Adicionar Novo Endereço
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_LABEL_FIELD_LABEL_: identificador
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_LABEL_FIELD_PLACEHOLDER_: minha casa
@@ -194,7 +245,9 @@ dictionary:
     _CHECKOUT_STEP_PAYMENT_ADD_ADDRESS_MODAL_PHONE_FIELD_PLACEHOLDER_: (32) 99999-9999
 
     _CHECKOUT_STEP_PAYMENT_MISSING_CREDIT_CARD_ERROR_TOAST_MESSAGE_: Ops.. Você tem que selecionar um cartão de crédito.
+    _CHECKOUT_STEP_PAYMENT_MISSING_CREDIT_CARD_CVC_ERROR_TOAST_MESSAGE_: Ops.. Você deve inserir o código de verificação do cartão de crédito selecionado.
     _CHECKOUT_STEP_PAYMENT_MISSING_ADDRESS_ERROR_TOAST_MESSAGE_: Ops.. Você tem que selecionar um endereço de entrega.
+    _CHECKOUT_STEP_PAYMENT_MISSING_DELIVER_DATE_ERROR_TOAST_MESSAGE_: Ops.. Você tem que selecionar uma data de entrega.
 
     _CHECKOUT_STEP_FINALIZE_TITLE_: Obrigado pela preferência :)
     _CHECKOUT_STEP_FINALIZE_BODY_: <p>Seu pedido foi realizado com sucesso e agora você pode acompanhá-lo na página de <a href="/orders">Meus Pedidos</a>.</p><p>Lembramos que atualmente todos as compras são entregues apenas aos Domingos de cada semana, mas não se preocupe pois lhe notificaremos assim que suas compras estiverem à caminho.</p><p>Em caso de qualquer dúvida entre em contato com a gente pelo email <a href="mailto:contato@dockas.com">contato@dockas.com</a> ou pelo telefone {{phone}} ({{name}}).</p>
@@ -203,6 +256,7 @@ dictionary:
     _CREATE_PRODUCT_PAGE_TITLE_: Novo Produto
     _CREATE_PRODUCT_PAGE_NAME_FIELD_LABEL_: nome
     _CREATE_PRODUCT_PAGE_NAME_FIELD_PLACEHOLDER_: tomate do himaláia
+    _CREATE_PRODUCT_PAGE_SUPPLY_ON_DEMAND_FIELD_LABEL_: sob demanda?
     _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_LABEL_: identificador
     _CREATE_PRODUCT_PAGE_NAME_ID_FIELD_PLACEHOLDER_: tomate-do-himalaia
     _CREATE_PRODUCT_PAGE_BRAND_FIELD_LABEL_: marca
@@ -222,6 +276,10 @@ dictionary:
     _PRODUCT_CREATE_SUCCESS_: Produto criado com sucesso.
     _PRODUCTS_CREATE_SUCCESS_: Produtos criados com sucesso.
     _PRODUCT_UPDATE_SUCCESS_: Produto atualizado com sucesso.
+    _LIST_CREATE_SUCCESS_: Lista criada com sucesso.
+    _LIST_UPDATE_SUCCESS_: Lista atualizada com sucesso.
+    _LIST_SUBSCRIPTION_CREATE_SUCCESS_: Assinatura criada com sucesso.
+    _LIST_SUBSCRIPTION_UPDATE_SUCCESS_: Assinatura atualizada com sucesso.
 
     _NEW_TAG_MODAL_TITLE_: Adicionar Nova Tag
     _NEW_TAG_MODAL_NAME_FIELD_LABEL_: nome
@@ -244,6 +302,7 @@ dictionary:
     _CREATE_BRAND_PAGE_TITLE_: Nova Marca
     _CREATE_BRAND_PAGE_NAME_FIELD_LABEL_: nome
     _CREATE_BRAND_PAGE_NAME_FIELD_PLACEHOLDER_: minha marca fodástica
+    _CREATE_BRAND_PAGE_INCLUDE_AS_OWNER_FIELD_LABEL_: sou dono?
     _CREATE_BRAND_PAGE_NAME_ID_FIELD_LABEL_: identificador
     _CREATE_BRAND_PAGE_NAME_ID_FIELD_PLACEHOLDER_: minha-marca-fodastica
     _CREATE_BRAND_PAGE_OWNERS_FIELD_LABEL_: donos (diferentes de você)
@@ -251,6 +310,19 @@ dictionary:
     _CREATE_BRAND_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
     _CREATE_BRAND_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: Venha experimentar nossas guloseimas deliciosas :p
     _CREATE_BRAND_PAGE_SUBMIT_BUTTON_TEXT_: Salvar
+
+    # Create list page
+    _CREATE_LIST_PAGE_TITLE_: Nova Lista
+    _CREATE_LIST_PAGE_BANNER_IMAGE_FIELD_LABEL_: imagem
+    _CREATE_LIST_PAGE_NAME_FIELD_LABEL_: nome
+    _CREATE_LIST_PAGE_NAME_FIELD_PLACEHOLDER_: festão em casa
+    _CREATE_LIST_PAGE_PUBLIC_FIELD_LABEL_: pública?
+    _CREATE_LIST_PAGE_USERS_FIELD_LABEL_: usuários
+    _CREATE_LIST_PAGE_USERS_FIELD_PLACEHOLDER_: amiguinho@email.com
+    _CREATE_LIST_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+    _CREATE_LIST_PAGE_DESCRIPTION_FIELD_PLACEHOLDER_: Essa lista é pra quando os pais viajarem! :)
+    _CREATE_LIST_PAGE_SUBMIT_BUTTON_TEXT_: salvar
+    _CREATE_LIST_PAGE_ITEMS_TITLE_: Produtos
 
     # Create notification
     _CREATE_NOTIFICATION_PAGE_TITLE_: Novo Alerta
@@ -287,16 +359,19 @@ dictionary:
     _ORDERS_PAGE_STATUS_TH_: status
     _ORDERS_PAGE_NO_DATA_FOUND_TEXT_: você ainda não realizou nenhum pedido
 
+    # My Lists Page
+    _MY_LISTS_PAGE_TITLE_: Minhas Listas
+    _MY_LISTS_PAGE_NAME_TH_: nome
+    _MY_LISTS_PAGE_ITEMS_COUNT_TH_: num. itens
+    _MY_LISTS_PAGE_PRICE_TH_: preço total
+    _MY_LISTS_PAGE_LAST_PURCHASED_AT_TH_: comprado em
+    _MY_LISTS_PAGE_NO_DATA_FOUND_TEXT_: você ainda não criou nenhuma lista
+    _MY_LISTS_PAGE_LOAD_BUTTON_LABEL_: utilizar
+    _MY_LISTS_PAGE_OVERRIDE_WARNING_MODAL_TITLE_: Atenção
+    _MY_LISTS_PAGE_OVERRIDE_WARNING_MODAL_BODY_: Existem produtos selecionados atualmente na sua cesta. O carregamento dessa lista eliminará todos esses produtos selecionados para dar lugar aos produtos da lista. Tem certeza que deseja continuar?
+
     # Lists Page
-    _LISTS_PAGE_TITLE_: Minhas Listas
-    _LISTS_PAGE_NAME_TH_: nome
-    _LISTS_PAGE_ITEMS_COUNT_TH_: num. itens
-    _LISTS_PAGE_PRICE_TH_: preço total
-    _LISTS_PAGE_LAST_PURCHASED_AT_TH_: comprado em
-    _LISTS_PAGE_NO_DATA_FOUND_TEXT_: você ainda não criou nenhuma lista
-    _LISTS_PAGE_LOAD_BUTTON_LABEL_: utilizar
-    _LISTS_PAGE_OVERRIDE_WARNING_MODAL_TITLE_: Atenção
-    _LISTS_PAGE_OVERRIDE_WARNING_MODAL_BODY_: Existem produtos selecionados atualmente na sua cesta. O carregamento dessa lista eliminará todos esses produtos selecionados para dar lugar aos produtos da lista. Tem certeza que deseja continuar?
+    _LISTS_PAGE_TITLE_: Listas
 
     # Catalog Item Page
     _CATALOG_ITEM_PAGE_INFO_TAB_LABEL_: sobre
@@ -321,19 +396,43 @@ dictionary:
     _INVITATION_PAGE_SUCCESS_BODY_TEXT_: Sua requisição foi enviada com sucesso e agora você se encontra em nossa lista de espera por convites. Vamos agilizar ao máximo para que você receba seu convite e venha fazer parte da família Dockas! :)
     _INVITATION_SEND_SUCCESS_TOAST_MESSAGE_: Convite enviado com sucesso.
 
-    # Brand 
+    # Brand
     _BRAND_DETAIL_PAGE_PRODUCTS_TAB_LABEL_: produtos
     _BRAND_DETAIL_PAGE_INFO_TAB_LABEL_: sobre
     _BRAND_DETAIL_PAGE_STATISTICS_TAB_LABEL_: estatísticas
     _BRAND_DETAIL_PAGE_PHOTOS_TAB_LABEL_: fotos
     _BRAND_DETAIL_PAGE_ORDERS_TAB_LABEL_: pedidos
+    _BRAND_DETAIL_PAGE_WALLET_TAB_LABEL_: carteira
     _BRAND_DETAIL_INFO_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+    _BRAND_DETAIL_WALLET_PAGE_BALANCE_FIELD_LABEL_: saldo
+    _BRAND_DETAIL_WALLET_PAGE_TRANSFERS_SECTION_TITLE_: Transações
+    _BRAND_DETAIL_WALLET_PAGE_TRANSFERS_SECTION_CREATED_AT_TH_: data
+    _BRAND_DETAIL_WALLET_PAGE_TRANSFERS_SECTION_GROSS_VALUE_TH_: valor bruto
+    _BRAND_DETAIL_WALLET_PAGE_TRANSFERS_SECTION_NET_VALUE_TH_: valor líquido
+    _BRAND_DETAIL_WALLET_PAGE_TRANSFERS_SECTION_NOT_FOUND_: nenhuma transação realizada ainda
+
+    # List detail page
+    _LIST_DETAIL_PAGE_INFO_TAB_LABEL_: produtos
+    _LIST_DETAIL_PAGE_SUBSCRIPTION_TAB_LABEL_: assinatura
+    _LIST_DETAIL_PAGE_SETTINGS_TAB_LABEL_: config
+
+    _LIST_DETAIL_PRODUCTS_PAGE_MORE_PRODUCTS_LABEL_: adicionar produtos
+
+    _LIST_SUBSCRIPTION_NONE_RECURRENCE_: nenhuma
+    _LIST_SUBSCRIPTION_WEEKLY_RECURRENCE_: semanal
+    _LIST_SUBSCRIPTION_BIWEEKLY_RECURRENCE_: quinzenal
+    _LIST_SUBSCRIPTION_MONTHLY_RECURRENCE_: mensal
+
+    _LIST_DETAIL_SETTINGS_PAGE_NAME_FIELD_LABEL_: nome
+
+
 
     # Notifications Page
     _NOTIFICATIONS_PAGE_TITLE_: Alertas
     _NOTIFICATIONS_PAGE_NO_DATA_FOUND_MESSAGE_: Não há alertas ainda
 
     # Notification Messages
+    _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_PAYMENT_PENDING_: Sua ordem <b>#{{result.count}}</b> foi autorizada com sucesso e o pagamento está sendo processado.
     _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_PAYMENT_AUTHORIZED_: O pagamento do seu pedido <b>#{{result.count}}</b> foi realizado com sucesso.
     _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_PACKAGED_: Seu pedido <b>#{{result.count}}</b> está embalado e pronto para a entrega.
     _NOTIFICATION_MESSAGE_ORDER_STATUS_UPDATED_TO_DELIVERING_: Seu pedido <b>#{{result.count}}</b> está a caminho da sua casa.
@@ -349,9 +448,10 @@ dictionary:
     _BASKET_CARD_PAY_BUTTON_TEXT_: Continuar
     _BASKET_CARD_FINISH_BUTTON_TEXT_: Encerrar
     _BASKET_CARD_INVITATION_BUTTON_TEXT_: quero comprar
-    _BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_: Mínimo de R$ {{minOrderTotalPrice}}
+    _BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_: Mínimo de R$ {{minTotalPrice}}
 
     # Order Status
+    _ORDER_STATUS_UNAPPROVED_: não aprovado
     _ORDER_STATUS_PAYMENT_PENDING_: pagamento pendente
     _ORDER_STATUS_PAYMENT_AUTHORIZED_: pagamento autorizado
     _ORDER_STATUS_PACKAGED_: embalado
@@ -360,6 +460,9 @@ dictionary:
 
     # Produc status
     _PRODUCT_STATUS_NOT_APPROVED_: em aprovação
+
+    # Product card
+    _PRODUCT_CARD_CLEAR_BUTTONT_LABEL_: apagar
 
     # Field errors
     _FIELD_ERROR_REQUIRED_: Este campo é obrigatório

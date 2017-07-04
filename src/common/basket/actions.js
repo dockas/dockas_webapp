@@ -1,9 +1,7 @@
-/* global mixpanel */
-
 import {createActions} from "redux-actions";
 import {LoggerFactory, Storage} from "darch/src/utils";
-//import Toaster from "darch/src/toaster";
 import Api from "../utils/api";
+import Tracker from "../utils/tracker";
 //import Socket from "../utils/socket";
 
 
@@ -14,8 +12,16 @@ export default createActions({
         let storage = new Storage();
 
         let state = await storage.get("basket");
+        state = state ? JSON.parse(state) : null;
 
-        return state ? JSON.parse(state) : null;
+        return state;
+    },
+
+    basketSetShowCard(showCard) {
+        var logger = Logger.create("basketSetShowCard");
+        logger.info("enter", {showCard});
+
+        return {showCard};
     },
 
     basketSetIsPaying(isPaying) {
@@ -29,7 +35,7 @@ export default createActions({
         var logger = Logger.create("basketAddProduct");
         logger.info("enter", product);
 
-        mixpanel.track("basket product added", {
+        Tracker.track("basket product added", {
             product: product.nameId
         });
 
@@ -40,7 +46,7 @@ export default createActions({
         var logger = Logger.create("basketRemoveProduct");
         logger.info("enter", product);
 
-        mixpanel.track("basket product removed", {
+        Tracker.track("basket product removed", {
             product: product.nameId
         });
 
@@ -70,6 +76,20 @@ export default createActions({
         logger.info("enter", address);
 
         return address;
+    },
+
+    basketSelectBillingSource(source) {
+        var logger = Logger.create("basketSelectBillingSource");
+        logger.info("enter", source);
+
+        return source;
+    },
+
+    basketSelectDeliverDate(date) {
+        var logger = Logger.create("basketSelectDeliverDate");
+        logger.info("enter", date);
+
+        return date;
     },
 
     basketClear() {

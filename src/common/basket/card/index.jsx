@@ -1,16 +1,15 @@
-/* global mixpanel */
-
 import React from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
 import lodash from "lodash";
-import config from "config";
+//import config from "config";
 import {LoggerFactory,Style} from "darch/src/utils";
 import Button from "darch/src/button";
-import numberUtils from "darch/src/field/number/utils";
+//import numberUtils from "darch/src/field/number/utils";
 //import Label from "darch/src/label";
 //import Modal from "darch/src/modal";
 import i18n from "darch/src/i18n";
+import Tracker from "common/utils/tracker";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("common.product.card");
@@ -25,7 +24,8 @@ function mapStateToProps(state) {
     return {
         uid: state.user.uid,
         basket: state.basket,
-        spec: state.i18n.spec
+        spec: state.i18n.spec,
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -96,7 +96,7 @@ class Component extends React.Component {
         let logger = Logger.create("onGetInivitationBtnClick");
         logger.info("enter");
 
-        mixpanel.track("get invitation button clicked");
+        Tracker.track("get invitation button clicked");
 
         this.props.router.push("invitation");
     }
@@ -105,14 +105,13 @@ class Component extends React.Component {
      * This function is responsible for generating the component's view.
      */
     render() {
-        let {minOrderTotalPrice} = config.shared;
+        //let {minTotalPrice} = config.shared.order;
         let {screenSize} = this.state;
-        let {items,totalPrice,totalDiscount} = this.props.basket;
-        let {uid,buttonLabel,spec} = this.props;
-        let appliedDiscount = totalDiscount > totalPrice ? totalPrice : totalDiscount;
-        let totalPriceWithDiscount = totalPrice - appliedDiscount;
+        let {items,grossTotalPrice} = this.props.basket;
+        let {uid,buttonLabel} = this.props;
+        //let isAdmin = user&&user.roles.indexOf("admin")>=0;
 
-        let priceLowerThanMin = (totalPrice < minOrderTotalPrice);
+        //let priceLowerThanMin = (grossTotalPrice < minTotalPrice);
 
         return uid ? (
             <div>
@@ -123,8 +122,14 @@ class Component extends React.Component {
                         </div>
                     ) : null*/}
 
+                    {/*grossTotalPrice != totalPrice ? (
+                        <div className={styles.totalWithFees}>
+                            <span style={{fontWeight: "600"}}><i18n.Number prefix="R$" value={parseFloat((totalPrice/100).toFixed(2))} numDecimals={2} /></span> c/ taxas
+                        </div>
+                    ) : null*/}
+
                     <div>
-                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat((totalPriceWithDiscount/100).toFixed(2))} numDecimals={2} /></span>
+                        <span className={styles.price}><i18n.Number prefix="R$" value={parseFloat((grossTotalPrice/100).toFixed(2))} numDecimals={2} /></span>
                         <span className={styles.items}>
                             <span className={styles.separator}>/</span>
                             {lodash.size(items) == 1 ? (
@@ -136,15 +141,17 @@ class Component extends React.Component {
                     </div>
 
                     <div>
-                        <Button scale={screenSize != "phone" ? 0.8 : 1} block={true} color="success" onClick={this.props.onClick} disabled={priceLowerThanMin || !lodash.size(items) || this.props.disabled}>
-                            {!priceLowerThanMin ? (
+                        <Button scale={screenSize != "phone" ? 0.8 : 1} block={true} color="success" onClick={this.props.onClick} disabled={!lodash.size(items) || this.props.disabled}>
+                            <i18n.Translate text={buttonLabel} />
+
+                            {/*isAdmin||!priceLowerThanMin ? (
                                 <i18n.Translate text={buttonLabel} />
                             ) : (
                                 <i18n.Translate text="_BASKET_CARD_PRICE_LOWER_THAN_MIN_MESSAGE_" data={{
-                                    minOrderTotalPrice: numberUtils.parseModelToView(spec,minOrderTotalPrice/100).value,
-                                    diff: (minOrderTotalPrice - totalPrice)/100
+                                    minTotalPrice: numberUtils.parseModelToView(spec,minTotalPrice/100).value,
+                                    diff: (minTotalPrice - grossTotalPrice)/100
                                 }} />
-                            )}
+                            )*/}
                         </Button>
                     </div>
                 </div>

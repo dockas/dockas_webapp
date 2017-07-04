@@ -14,7 +14,8 @@ module.exports = {
                 require("./info/route"),
                 require("./statistics/route"),
                 require("./photos/route"),
-                require("./orders/route")
+                require("./orders/route"),
+                require("./wallet/route")
             ]);
         });
     },

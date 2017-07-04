@@ -10,7 +10,7 @@ export default createActions({
         scope="",
         concat=false,
         opts=null
-    }) {
+    }={}) {
         var logger = Logger.create("tagFind");
         logger.info("enter", {query,scope,concat,opts});
 

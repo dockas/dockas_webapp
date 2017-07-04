@@ -7,6 +7,7 @@ module.exports = class Order {
     static actions = require("./actions");
     static reducer = require("./reducer");
     static types = require("./types");
+    static populator = require("./populator");
 
     // Register to socket events.
     static listenSocketEvents() {

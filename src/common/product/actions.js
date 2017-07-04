@@ -1,17 +1,16 @@
-import lodash from "lodash";
+//import lodash from "lodash";
 import {createActions} from "redux-actions";
 import {LoggerFactory,Redux} from "darch/src/utils";
 import Toaster from "darch/src/toaster";
 import Api from "../utils/api";
+import Populator from "./populator";
 //import Socket from "../utils/socket";
 
 let Logger = new LoggerFactory("common.product.actions");
 
+// Export actions.
 export default createActions({
-    productSelect(product) {
-        var logger = Logger.create("productSelect");
-        logger.info("enter", product);
-
+    productAdd(product) {
         return product;
     },
 
@@ -19,30 +18,49 @@ export default createActions({
         var logger = Logger.create("productCreate");
         logger.info("enter", data);
 
-        let createResponse = await Api.shared.productCreate(data, opts);
+        let response = await Api.shared.productCreate(data, opts);
 
-        logger.debug("Api productCreate success", createResponse);
+        logger.debug("Api productCreate success", response);
 
         Redux.dispatch(
             Toaster.actions.push("success", "_PRODUCT_CREATE_SUCCESS_")
         );
 
-        return createResponse.result;
+        return response.result;
     },
 
     async productFind(query, {
         scope=null, 
         concat=false,
+        populate={},
         opts=null
     }={}) {
-        var logger = Logger.create("productFind");
+        let logger = Logger.create("productFind");
         logger.info("enter", {query,scope,concat});
 
         let response = await Api.shared.productFind(query, opts);
-
         logger.debug("api productFind success", response);
 
+        // Async populate results.
+        Populator.populate(response.results, populate);
+
         return {data: response.results, query, scope, concat};
+    },
+
+    async productFindByNameId(nameId, {
+        populate={},
+        opts=null
+    }={}) {
+        let logger = Logger.create("productFindByNameId");
+        logger.info("enter", {nameId,populate});
+
+        let response = await Api.shared.productFindByNameId(nameId, opts);
+        logger.debug("api productFindByNameId success", response);
+
+        // Async populate results.
+        Populator.populate([response.result], populate);
+
+        return {data: response.result, nameId};
     },
 
     async productUpdate(id, data, {
@@ -110,39 +128,18 @@ export default createActions({
         logger.info("enter", {data});
 
         let {result, updatedKeys} = data;
-        data = lodash.pick(result, updatedKeys);
 
         logger.debug("updated data", data);
 
-        // @TODO : If any profile images has changed, then we must
-        // populate it.
-        if(updatedKeys.indexOf("profileImages") >= 0) {
-            try {
-                let response = await Api.shared.fileFind({
-                    _id: data.profileImages
-                });
-
-                data.profileImages = response.results;
-
-                console.log("balofo colo : new profile images", data.profileImages);
-
-                logger.debug("api fileFind success", response);
-            }
-            catch(error) {
-                logger.error("api fileFind error", error);
-                delete data.profileImages;
-            }
-        }
-        
-        // @TODO : If any tags has changed, then we must
-        // populate it.
-
+        // Async populate results.
+        Populator.populate([result], updatedKeys);
+    
         // @TODO : If price has changed, then notify user
         // about that.
         if(updatedKeys.indexOf("priceValue") >= 0) {
             logger.debug("price updated");
         }
 
-        return {data, _id: result._id};
+        return {data: result, _id: result._id};
     }
 });

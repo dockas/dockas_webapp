@@ -1,0 +1,47 @@
+.box
+    background: #f9f9f9;
+
+    .header
+        border-bottom: 1px solid #ddd;
+        
+        .title-container
+            padding: 20px 20px 20px 20px;
+
+    
+    .body
+        padding: 40px 40px 40px 40px;
+        
+        table
+            font-size: 0.8em;
+            
+            th
+                border-top: none;
+
+.box + .box
+    margin-top: 20px;
+
+.card
+    background: #f9f9f9;
+    border: 3px solid #efefef;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    cursor: pointer;
+    
+    text-align: center;
+        
+    span
+        display: inline-block;
+        vertical-align: bottom;
+        
+    span[class*="icon-"]
+        font-size: 1.8em;
+    
+    &:hover
+        background: #f6f6f6;
+        
+    &.active
+        border-color: #89C4F4;
+
+    .title
+        font-weight: 600;

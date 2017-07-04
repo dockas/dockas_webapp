@@ -1,5 +1,6 @@
 import React from "react";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
+import {Basket} from "common";
 
 let Logger = new LoggerFactory("create.page");
 
@@ -15,6 +16,8 @@ export default class Component extends React.Component {
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
+
+        Redux.dispatch(Basket.actions.basketSetShowCard(false));
     }
 
     render() {

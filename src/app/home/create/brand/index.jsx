@@ -3,7 +3,7 @@ import lodash from "lodash";
 import config from "config";
 import {connect} from "react-redux";
 import {withRouter} from "react-router";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import Container from "darch/src/container";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
@@ -13,7 +13,7 @@ import Grid from "darch/src/grid";
 import Text from "darch/src/text";
 import Button from "darch/src/button";
 import Spinner from "darch/src/spinner";
-import {Api} from "common";
+import {Api,Brand} from "common";
 import placeholderImg from "assets/images/placeholder.png";
 import styles from "./styles";
 
@@ -28,7 +28,7 @@ let Logger = new LoggerFactory("create.brand");
 function mapStateToProps(state) {
     return {
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -131,14 +131,19 @@ class Component extends React.Component {
 
         // Process owners
         let owners = [];
+
+        if(data.isMeOwner) {
+            owners.push({user: this.props.uid});
+        }
         
         for(let uid of this.data.owners||[]) {
-            // Do not include self user.
+            // Do not include self user here.
             if(uid == this.props.uid) {continue;}
             owners.push({user: uid});
         }
 
         this.data.owners = owners;
+        delete this.data.isMeOwner;
 
         if(this.state.uploadComplete) {
             return this.onUploadComplete();
@@ -175,16 +180,17 @@ class Component extends React.Component {
 
         // Save brand.
         try {
-            response = await Api.shared.brandCreate(this.data);
+            response = await Redux.dispatch(Brand.actions.brandCreate(this.data));
             logger.info("action brandCreate success", response);
         }
         catch(error) {
-            this.setState({loading: false});
-            return logger.error("api brandCreate error", error);
+            return logger.error("action brandCreate error", error);
         }
 
+        this.setState({loading: false});
+
         // Go to brand page
-        this.props.router.replace(`/brand/${response.result.nameId}`);
+        this.props.router.replace(`/brand/${response.value.nameId}`);
     }
 
     selectMainProfileImage(image) {
@@ -196,6 +202,9 @@ class Component extends React.Component {
             authToken,mainProfileImage,profileImages,
             loading,users,loadingUsers, uploadComplete
         } = this.state;
+
+        let {user} = this.props;
+        let isAdmin = user.roles.indexOf("admin") >= 0;
 
         return (
             <div>
@@ -227,7 +236,7 @@ class Component extends React.Component {
 
                                     <Field.Section>
                                         <Grid>
-                                            <Grid.Cell>
+                                            <Grid.Cell span={isAdmin?5:undefined}>
                                                 <Field.Section>
                                                     <Text scale={0.8}>
                                                         <i18n.Translate text="_CREATE_BRAND_PAGE_NAME_FIELD_LABEL_" />
@@ -245,6 +254,23 @@ class Component extends React.Component {
                                                     </div>
                                                 </Field.Section>
                                             </Grid.Cell>
+
+                                            {isAdmin ? (
+                                                <Grid.Cell>
+                                                    <Field.Section>
+                                                        <Text scale={0.8}>
+                                                            <i18n.Translate text="_CREATE_BRAND_PAGE_INCLUDE_AS_OWNER_FIELD_LABEL_" />
+                                                        </Text>
+                                                        <div>
+                                                            <Field.Switch
+                                                                name="isMeOwner"
+                                                                scale={1}
+                                                                trueLabel="_YES_"
+                                                                falseLabel="_NO_" />
+                                                        </div>
+                                                    </Field.Section>
+                                                </Grid.Cell>
+                                            ) : <span></span>}
 
                                             {/*<Grid.Cell>
                                                 <Field.Section>

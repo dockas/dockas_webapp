@@ -5,7 +5,9 @@ siteinfo:
     title: Dockas
     keywords: startup,tech,chat
     #fb_app_id: 250528625300602
-    mixpanel_key: 2376ce562fae83abb04ff50606c430fd
+    #mixpanel_key: 2376ce562fae83abb04ff50606c430fd
+    woopra_key: dockas.com
+    hotjar_id: 553989
     #analytics_key: UA-79995910-2
     #optimizely_key: 5385733009
     #google_maps_key: AIzaSyDOko7oldevlasKPWl1x1sqZje1nzBZNvk

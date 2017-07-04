@@ -7,13 +7,16 @@ let Logger = new LoggerFactory("policies.can_checkout");
 module.exports = function(nextState, replace) {
     let logger = Logger.create("policy"),
         basket = lodash.get(Redux.shared.store.getState(), "basket"),
+        //{uid,data} = lodash.get(Redux.shared.store.getState(), "user"),
+        //user = uid?data[uid]:null,
+        //isAdmin = user?user.roles.indexOf("admin")>=0:false,
         {totalPrice} = basket,
-        {minOrderTotalPrice} = config.shared,
-        priceLowerThanMin = (totalPrice < minOrderTotalPrice);
+        {minTotalPrice} = config.shared.order,
+        priceLowerThanMin = (totalPrice < minTotalPrice);
 
-    logger.info("enter", {totalPrice,minOrderTotalPrice,priceLowerThanMin});
+    logger.info("enter", {totalPrice,minTotalPrice,priceLowerThanMin});
 
-    if(priceLowerThanMin || !lodash.size(basket.items)) {
+    if(!lodash.size(basket.items)) {
         replace("/");
     }
     else { logger.info("pass"); }

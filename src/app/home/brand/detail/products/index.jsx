@@ -18,12 +18,13 @@ let Logger = new LoggerFactory("brand.detail.products");
  */
 function mapStateToProps(state) {
     return {
-        brand: state.brand.selected,
-        productsBrand: lodash.get(state.product,"scope.brandProducts.brand"),
-        products: lodash.get(state.product,"scope.brandProducts.data"),
-        query: lodash.get(state.product,"scope.brandProducts.query"),
+        productData: state.product.data,
+        brandData: state.brand.data,
+        brandNameIdToId: state.brand.nameIdToId,
+        productScopeIds: lodash.get(state.product,"scope.brandProducts.ids"),
+        productScopeQuery: lodash.get(state.product,"scope.brandProducts.query"),
         uid: state.user.uid,
-        user: state.user.uid?state.user.profiles[state.user.uid]:null
+        user: state.user.uid?state.user.data[state.user.uid]:null
     };
 }
 
@@ -45,24 +46,44 @@ class Component extends React.Component {
 
     state = {};
 
+    getScopeData(props=this.props) {
+        let result = {},
+            nameId = lodash.get(props, "params.id"),
+            {productScopeIds,productScopeQuery,
+                brandData,brandNameIdToId} = props;
+
+        result.brand = brandNameIdToId[nameId] ?
+            brandData[brandNameIdToId[nameId]] : 
+            null;
+
+        result.productIds = productScopeIds;
+        result.productQuery = productScopeQuery;
+
+        return result;
+    }
+
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
         this.scroller = new Scroller({
             onLoad: async (count) => {
-                let {products} = this.props;
-                products = products || [];
+                let logger = Logger.create("scroller.onLoad");
+                logger.info("enter");
 
-                if(count===1 && products.length) {return;}
+                let {productData} = this.props;
+                let {brand,productIds} = this.getScopeData();
+                productIds = productIds || [];
+
+                if(count===1 && productIds.length) {return;}
 
                 let query = {
                     limit: 30,
-                    brand: [this.props.brand._id],
+                    brand: [brand._id],
                     hash: {
                         gt: count===1 ? 
                             "#" :
-                            products[products.length-1].hash
+                            lodash.get(productData,`${lodash.last(productIds)}.hash`)
                     }
                 };
 
@@ -73,12 +94,6 @@ class Component extends React.Component {
                 if(this.tags) {
                     query.tags = this.tags;
                 }
-
-                /*if(products.length) {
-                    query.priority = {
-                        lte: products[products.length-1].priority
-                    };
-                }*/
 
                 await this.loadProducts(query);
             },
@@ -91,7 +106,8 @@ class Component extends React.Component {
     }
 
     async loadProducts(query, {isSearch=false, concat=true}={}) {
-        let logger = Logger.create("loadProducts");
+        let {brand} = this.getScopeData(),
+            logger = Logger.create("loadProducts");
 
         logger.info("enter", query);
 
@@ -101,8 +117,7 @@ class Component extends React.Component {
         });
 
         let mergedQuery = lodash.assign({}, query, {
-            sort: {"hash": 1, "name": 1},
-            populate: ["tags","profileImages","brand","brand.company"]
+            sort: {"hash": 1, "name": 1}
         });
 
         if(lodash.isEmpty(mergedQuery.name)){
@@ -120,7 +135,10 @@ class Component extends React.Component {
                     concat,
                     scope: {
                         id: "brandProducts", 
-                        brand: this.props.brand._id
+                        brand: brand._id
+                    },
+                    populate: {
+                        paths: ["tags","profileImages","brand","brand.company"]
                     }
                 })
             );
@@ -140,7 +158,8 @@ class Component extends React.Component {
     }
 
     render() {
-        let {user,brand,products} = this.props;
+        let {brand,productIds} = this.getScopeData();
+        let {user,productData} = this.props;
         let {productsLoading, priceModalProduct} = this.state;
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, brand);
 
@@ -153,10 +172,12 @@ class Component extends React.Component {
                 </div>
 
                 <Grid spots={4} noGap={true} bordered={true}>
-                    {products ? (
-                        products.map((product) => {
+                    {productIds ? (
+                        productIds.map((productId) => {
+                            let product = productData[productId];
+
                             return (
-                                <Grid.Cell key={product._id} span={1}>
+                                <Grid.Cell key={productId} span={1}>
                                     <Product.Card data={product} 
                                         onChangePrice={this.onProductChangePrice}
                                     />
@@ -180,17 +201,7 @@ class Component extends React.Component {
                         let logger = Logger.create("onPriceModalComplete");
                         logger.info("enter", result);
 
-                        let newState = {
-                            priceModalProduct: null,
-                            products: this.state.products
-                        };
-
-                        if(result) {
-                            // Next setState gonna trigger the ui change for this.
-                            this.state.priceModalProduct.priceValue = result.value;
-                        }
-
-                        this.setState(newState);
+                        this.setState({priceModalProduct: null});
                     }}
                 />
             </div>

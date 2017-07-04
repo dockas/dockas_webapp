@@ -2,6 +2,7 @@ import {createActions} from "redux-actions";
 import {LoggerFactory,Redux} from "darch/src";
 import Api from "../utils/api";
 import Socket from "../utils/socket";
+import Tracker from "../utils/tracker";
 import NotificationAlertActions from "../notification_alert/actions";
 
 let Logger = new LoggerFactory("common.auth.actions", {level:"error"});
@@ -16,18 +17,18 @@ export default createActions({
         var logger = Logger.create("signin");
         logger.info("enter", {email, password});
 
-        let signinResponse = await Api.shared.signin({
+        let response = await Api.shared.signin({
             email, password
         }, opts);
 
-        logger.debug("Api signin success", signinResponse);
+        logger.debug("Api signin success", response);
 
         // Set api http auth token
-        await Api.shared.http.setAuthToken(signinResponse.result);
+        await Api.shared.http.setAuthToken(response.result);
         logger.debug("Api http setAuthToken success");
 
         // Sign socket
-        Socket.shared.sign(signinResponse.result);
+        Socket.shared.sign(response.result);
 
         // Get user new alerts count
         await Redux.dispatch(
@@ -35,10 +36,13 @@ export default createActions({
         );
 
         // Get user profile.
-        let userMeResponse = await Api.shared.userMe(opts);
-        logger.debug("Api userMe success", {userMeResponse});
+        response = await Api.shared.userMe(opts);
+        logger.debug("Api userMe success", {response});
 
-        return userMeResponse.result;
+        // Track
+        Tracker.identify(response.result);
+
+        return response.result;
     },
 
     async signout() {

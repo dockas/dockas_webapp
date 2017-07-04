@@ -2,22 +2,22 @@ import React from "react";
 import lodash from "lodash";
 import {withRouter} from "react-router";
 import {connect} from "react-redux";
-import classNames from "classnames";
+//import classNames from "classnames";
+import config from "config";
+import moment from "moment";
 import {LoggerFactory,Redux,Style} from "darch/src/utils";
 import Container from "darch/src/container";
 import i18n from "darch/src/i18n";
 import Grid from "darch/src/grid";
-import Tabs from "darch/src/tabs";
 import Form from "darch/src/form";
 import Field from "darch/src/field";
 import Button from "darch/src/button";
 import Text from "darch/src/text";
 import Toaster from "darch/src/toaster";
 import Spinner from "darch/src/spinner";
-import {Api,Basket} from "common";
+import Calendar from "darch/src/calendar";
+import {Api,Basket,Payment,List,Tracker} from "common";
 import moipImg from "assets/images/poweredbymoip30px.png";
-import CardModal from "./card_modal";
-import AddressModal from "./address_modal";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("checkout.payment", {level: "debug"});
@@ -30,7 +30,9 @@ let Logger = new LoggerFactory("checkout.payment", {level: "debug"});
  */
 function mapStateToProps(state) {
     return {
-        user: state.user.profiles[state.user.uid],
+        productData: state.product.data,
+        brandData: state.brand.data,
+        user: state.user.data[state.user.uid],
         basket: state.basket
     };
 }
@@ -53,15 +55,22 @@ class Component extends React.Component {
 
     state = {
         openModals: {},
-        selectedBillingSourceTab: "credit_card"
+        selectedBillingSourceTab: "credit_card",
+        recurrence: "none"
     };
+
+    recurrenceOptions = [
+        {value: "none", label: "_LIST_SUBSCRIPTION_NONE_RECURRENCE_"},
+        {value: "weekly", label: "_LIST_SUBSCRIPTION_WEEKLY_RECURRENCE_"},
+        {value: "biweekly", label: "_LIST_SUBSCRIPTION_BIWEEKLY_RECURRENCE_"},
+        {value: "monthly", label: "_LIST_SUBSCRIPTION_MONTHLY_RECURRENCE_"}
+    ];
 
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
         window.addEventListener("resize", this.handleWindowResize);
-
         this.handleWindowResize();
     }
 
@@ -83,17 +92,21 @@ class Component extends React.Component {
 
     async pay() {
         let response,
-            logger = Logger.create("pay order");
+            {basket} = this.props,
+            logger = Logger.create("pay");
 
         logger.info("enter");
 
         // Validate
         if(this.state.selectedBillingSourceTab == "credit_card"
-        && !this.state.selectedCreditCardId) {
+        && !lodash.get(basket,"billingSource._id")) {
             return Redux.dispatch(Toaster.actions.push("danger", "_CHECKOUT_STEP_PAYMENT_MISSING_CREDIT_CARD_ERROR_TOAST_MESSAGE_"));
         }
-        else if(!this.state.selectedAddressId) {
+        else if(!lodash.get(basket,"address._id")) {
             return Redux.dispatch(Toaster.actions.push("danger", "_CHECKOUT_STEP_PAYMENT_MISSING_ADDRESS_ERROR_TOAST_MESSAGE_"));
+        }
+        else if(!lodash.get(basket,"deliverDate")) {
+            return Redux.dispatch(Toaster.actions.push("danger", "_CHECKOUT_STEP_PAYMENT_MISSING_DELIVER_DATE_ERROR_TOAST_MESSAGE_"));
         }
 
         // Set basket as beeing payed
@@ -102,26 +115,58 @@ class Component extends React.Component {
         // Loading
         this.setState({loading: true});
 
-        let address = lodash.find(this.props.user.addresses || [], (address) => {
-            return address._id == this.state.selectedAddressId;
-        });
-
-        let items = this.props.basket.items;
+        let {productData,brandData} = this.props;
+        let brands = {};
+        let companies = {};
         let order = {
-            totalPrice: this.props.basket.totalPrice,
+            totalPrice: basket.totalPrice,
+            grossTotalPrice: basket.grossTotalPrice,
+            totalFee: basket.totalFee,
+            totalDiscount: basket.totalDiscount,
+            fees: basket.appliedFees,
+            deliverDate: basket.deliverDate,
             items: [],
-            address
+            address: basket.address
         };
 
         // Add items to order
-        for(let key of Object.keys(items)) {
-            order.items.push({
-                product: items[key].product._id,
-                priceValue: items[key].product.priceValue,
-                quantity: items[key].quantity
+        for(let productId of Object.keys(basket.items)) {
+            let item = basket.items[productId];
+            let product = productData[productId]||null;
+            let brand = product?brandData[product.brand]:null;
+
+            logger.debug("processing item", {
+                productId,
+                item,
+                product,
+                brand
             });
+
+            if(!product) {return;}
+
+            order.items.push({
+                product: item.product,
+                priceValue: product.priceValue,
+                quantity: item.quantity
+            });
+
+            brands[product.brand] = true;
+
+            if(brand && brand.company) {
+                companies[brand.company] = true;
+            }
         }
 
+        // Set brands and companies
+        order.brands = Object.keys(brands);
+        order.companies = Object.keys(companies);
+
+        if(this.state.selectedBillingSourceTab == "pay_on_deliver") {
+            order.paymentType = "on_deliver";
+            order.status = "payment_authorized";
+        }
+
+        // Log
         logger.debug("order data", order);
 
         // Create the order.
@@ -135,21 +180,78 @@ class Component extends React.Component {
             return this.setState({loading: false});
         }
 
-        // Pay the order right away.
-        try {
-            response = await Api.shared.orderCharge(order._id, {
-                source: {
-                    method: "credit_card",
-                    _id: this.state.selectedCreditCardId
-                }
-            });
+        if(this.state.selectedBillingSourceTab == "credit_card") {
+            // Pay the order right away.
+            try {
+                response = await Api.shared.orderCharge(order._id, {
+                    source: {
+                        method: basket.billingSource.method,
+                        _id: basket.billingSource._id,
+                        hash: basket.billingSource.hash
+                    }
+                });
 
-            logger.info("api orderCharge success", response);
+                logger.info("api orderCharge success", response);
+            }
+            catch(error) {
+                logger.error("api orderCharge error", error);
+                return this.setState({loading: false});
+            }   
         }
-        catch(error) {
-            logger.error("api orderCharge error", error);
-            return this.setState({loading: false});
+
+        Tracker.track("order created", {
+            count: order.count,
+            totalPrice: order.totalPrice,
+            grossTotalPrice: order.grossTotalPrice,
+            paymentType: order.paymentType,
+            paymentMethod: this.state.selectedBillingSourceTab
+        });
+
+        // Create the list
+        if(!lodash.isEmpty(this.state.listName)) {
+            let list = {
+                name: this.state.listName,
+                items: []
+            };
+
+            for(let productId of Object.keys(basket.items)) {
+                list.items.push({
+                    product: productId,
+                    quantity: basket.items[productId].quantity
+                });
+            }
+
+            try {
+                await Redux.dispatch(
+                    List.actions.listCreate(list)
+                );
+
+                logger.info("action listCreate success");
+            }
+            catch(error) {
+                logger.error("action listCreate error", error);
+            }
         }
+
+        // Generate a list
+        /*if(this.state.recurrence) { 
+            try {
+                await Redux.dispatch(
+                    List.actions.listSubscriptionCreate({
+                        list: this.props.list._id,
+                        recurrence: this.state.recurrence,
+                        address: this.state.address,
+                        billingSource: this.state.source,
+                        delay: 1    // the order gonna be deliverd in delay 0
+                    })
+                );
+
+                logger.info("list action listSubscriptionCreate success");
+            }
+            catch(error) {
+                logger.error("list action listSubscriptionCreate error", error);
+            }
+        }*/
 
         // Go to last step.
         this.props.router.replace({
@@ -165,159 +267,47 @@ class Component extends React.Component {
         logger.info("enter");
     }
 
-    async onPaymentComplete(data) {
-        let logger = Logger.create("onPaymentComplete");
-        logger.info("enter", data);
-
-        // Create order
-        this.setState({loading: true});
-
-        let items = this.props.basket.items;
-        let order = {
-            totalPrice: this.props.basket.totalPrice,
-            address: this.props.basket.address.id,
-            items: [],
-            paypal: {
-                id: data.id,
-                state: data.state,
-                paymentMethod: lodash.get(data, "payer.payment_method"),
-                allData: JSON.stringify(data)
-            }
-        };
-
-        //console.log("PAYMENT COMPLETE 1", order);
-
-        // Add items to order
-        for(let key of Object.keys(items)) {
-            order.items.push({
-                product: items[key].product._id,
-                priceValue: items[key].product.priceValue,
-                quantity: items[key].quantity
+    onRecurrenceOptionSelect(option) {
+        return () => {
+            this.setState({
+                recurrence: option.value
             });
-        }
-
-        // Create order
-        try {
-            let orderCreateResponse = await Api.shared.orderCreate(order);
-            logger.info("api orderCreate success", orderCreateResponse);
-        }
-        catch(error) {
-            logger.error("api orderCreate error", error);
-            this.setState({loading: false});
-        }
-
-        // Clear the basket
-        Redux.dispatch(Basket.actions.basketClear());
-
-        // Redirect to success page
-        this.props.router.replace("/checkout/finalize");
-    }
-
-    openModal(modalName) {
-        let logger = Logger.create("openModal");
-        logger.info("enter", {modalName});
-
-        this.setState({
-            openModals: Object.assign({}, this.state.openModals, {
-                [modalName]: true
-            })
-        });
-    }
-
-    onModalDismiss(modalName) {
-        let logger = Logger.create("onModalDismiss");
-        logger.info("enter", {modalName});
-
-        this.setState({
-            openModals: Object.assign({}, this.state.openModals, {
-                [modalName]: false
-            })
-        });
-    }
-
-    onModalComplete(data, modalName) {
-        let logger = Logger.create("onModalComplete");
-        logger.info("enter", {data,modalName});
-
-        this.setState({
-            openModals: Object.assign({}, this.state.openModals, {
-                [modalName]: false
-            })
-        });
-    }
-
-    selectAddress(address) {
-        return () => {
-            this.setState({selectedAddressId: address._id});
         };
     }
 
-    selectCreditCard(card) {
-        return () => {
-            this.setState({selectedCreditCardId: card._id});
-        };
+    onAddressSelected(address) {
+        Redux.dispatch(Basket.actions.basketSelectAddress(address));
     }
 
-    getCardIcon(card) {
-        let iconName;
-
-        switch(card.brand) {
-            case "VISA": iconName = "icon-card-visa"; break;
-            case "MASTERCARD": iconName = "icon-card-mastercard"; break;
-            case "AMEX": iconName = "icon-card-amex"; break;
-            default: iconName = "icon-bank-card"; break;
-        }
-
-        return <span className={iconName} />;
+    onSourceTabSelected(tabName) {
+        this.setState({selectedBillingSourceTab: tabName});
     }
 
-    selectBillingSourceTab(tabName) {
-        return () => {
-            this.setState({selectedBillingSourceTab: tabName});
-        };
+    onSourceSelected(source) {
+        Redux.dispatch(Basket.actions.basketSelectBillingSource(source));
     }
 
-    renderCreditCardTab() {
-        let {user} = this.props;
-        let {selectedCreditCardId} = this.state;
-        let billingSources = user.billingSources || [];
-
-        return billingSources.length ? (
-            <Grid spots={5}>
-                {billingSources.map((source) => {
-                    return source.method == "credit_card" ? (
-                        <Grid.Cell key={source._id}>
-                            <div className={classNames([
-                                styles.panel,
-                                styles.panelCard,
-                                selectedCreditCardId == source._id ? styles.active : ""
-                            ])} onClick={this.selectCreditCard(source)}>
-                                <div className={styles.body}>
-                                    {this.getCardIcon(source)} <span style={{marginLeft: "5px"}}>••••{source.lastDigits}</span>
-                                </div>
-                            </div>
-                        </Grid.Cell>
-                    ) : <span></span>;
-                })}
-            </Grid>
-        ) : (
-            <Text scale={0.8}>Nenhum cartão de crédito cadastrado. Clique no botão <b>Adicionar</b> para cadastrar um novo cartão.</Text>
-        );
-    }
-
-    renderBankSlipTab() {
-        return (
-            <Text scale={0.8}>Em breve</Text>
-        );
+    onDeliverDateSelected(deliverDate) {
+        Redux.dispatch(Basket.actions.basketSelectDeliverDate(deliverDate));
     }
 
     render() {
         let logger = Logger.create("render");
-        let {user,basket} = this.props;
-        let {screenSize,selectedAddressId,selectedBillingSourceTab} = this.state;
+        let {basket} = this.props;
+        let {screenSize} = this.state;
+
+        let allowedWeekdays = lodash.map(lodash.get(config, "shared.order.allowedDeliverWeekdays"), (obj, weekday) => {
+            return moment().isoWeekday(weekday).isoWeekday();
+        });
+
+        let minimumDaysToDeliver = lodash.get(config, "shared.order.minimumDaysToDeliver");
+        let startDeliverMoment = minimumDaysToDeliver > 0 ?
+            moment().add(minimumDaysToDeliver, "days") :
+            moment();
+
+
         let {coupons} = basket;
-        
-        let addresses = user.addresses || [];
+        //let {deliverDateDatetimes} = config.shared.order;
 
         logger.info("enter", basket);
 
@@ -332,58 +322,106 @@ class Component extends React.Component {
                                 {/*<div className={styles.separator}></div>*/}
 
                                 <div className={styles.section}>
-                                    <div className={styles.paymentMethodsTabsContainer}>
-                                        <Tabs>
-                                            <Tabs.Item active={selectedBillingSourceTab=="credit_card"} onClick={this.selectBillingSourceTab("credit_card")}>
-                                                <span className="icon-bank-cards" style={{marginRight: "5px"}}></span> Cartão de Crédito
-                                            </Tabs.Item>
-                                            <Tabs.Item active={selectedBillingSourceTab=="bank_slip"} onClick={this.selectBillingSourceTab("bank_slip")}>
-                                                <span className="icon-barcode" style={{marginRight: "5px"}}></span> Boleto
-                                            </Tabs.Item>
-                                            {selectedBillingSourceTab=="credit_card"?(
-                                                <Tabs.Item align="right" onClick={()=>{this.openModal("card_modal");}}>
-                                                    <Text color="moody">Adicionar</Text>
-                                                </Tabs.Item>
-                                            ) : <span></span>}
-                                        </Tabs>
-                                    </div>
-
-                                    <div className={styles.paymentMethodsBody} style={{marginTop: "10px"}}>
-                                        {selectedBillingSourceTab=="credit_card" ? (
-                                            this.renderCreditCardTab()
-                                        ) : selectedBillingSourceTab=="bank_slip" ? (
-                                            this.renderBankSlipTab()
-                                        ) : null}
-                                    </div>
+                                    <Payment.SourceSelectPanel onSourceSelected={this.onSourceSelected}
+                                        onTabSelected={this.onSourceTabSelected}
+                                        selectedSourceId={lodash.get(basket,"billingSource._id")}
+                                        paymentMethods={["credit_card","pay_on_deliver"]}
+                                    />
                                 </div>
 
-                                <div className={styles.separator}></div>
+                                <Payment.Separator.Stripped/>
+
+                                <div className={styles.section}>
+                                    <Payment.AddressSelectPanel onAddressSelected={this.onAddressSelected} 
+                                        selectedAddressId={lodash.get(basket,"address._id")}/>
+                                </div>
+
+                                <Payment.Separator.Stripped/>
 
                                 <div className={styles.section}>
                                     <div className="headline" style={{overflow: "auto", "paddingBottom": "10px"}}>
-                                        <span><span className="icon-marker" style={{marginRight: "5px"}}></span>Endereço de Entrega</span>
-                                        <div style={{float: "right"}}>
-                                            <a onClick={()=>{this.openModal("address_modal");}}><Text color="moody">Adicionar</Text></a>
+                                        <span><span className="icon-calendar" style={{marginRight: "5px"}}></span>Data de Entrega</span>
+                                    </div>
+
+                                    {/*<div style={{marginTop: "10px"}}>
+                                        <Text scale={0.8}>Por enquanto só entregamos às quartas e domingos, uma semana após</Text>
+                                    </div>*/}
+
+                                    <div style={{marginTop: "10px"}}>
+                                        <Calendar scale={0.8}
+                                            startDate={startDeliverMoment.toISOString()}
+                                            multi={false}
+                                            value={lodash.get(basket, "deliverDate")} 
+                                            onChange={(value) => {
+                                                this.onDeliverDateSelected(value);
+                                            }}
+                                            allow={(date) => {
+                                                let dateMoment = moment(date);
+                                                return allowedWeekdays.indexOf(dateMoment.isoWeekday())>=0;
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <Payment.Separator.Stripped/>
+
+                                <div className={styles.section}>
+                                    <div className="headline" style={{overflow: "auto", "paddingBottom": "10px"}}>
+                                        <span><span className="icon-wish-list" style={{marginRight: "5px"}}></span>Lista</span>
+                                    </div>
+
+                                    {/*<div style={{marginTop: "10px"}}>
+                                        <Text scale={0.8}>Por enquanto só entregamos às quartas e domingos, uma semana após</Text>
+                                    </div>*/}
+
+                                    <div style={{marginTop: "10px"}}>
+                                        <Text scale={0.8}>Se você quiser criar uma lista com os items desta compra, basta escolher um nome para ela.</Text>
+
+                                        <div style={{marginTop: "10px"}}>
+                                            <Field.Text
+                                                name="name"
+                                                value={this.state.listName}
+                                                onChange={(value) => {
+                                                    this.setState({listName: value});
+                                                }}
+                                                scale={1}
+                                                placeholder="minha super lista"
+                                            />
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/*<Payment.Separator.Stripped/>
+
+                                <div className={styles.section}>
+                                    <div className="headline" style={{overflow: "auto", "paddingBottom": "10px"}}>
+                                        <span><span className="icon-marker" style={{marginRight: "5px"}}></span>Recorrência</span>
                                     </div>
 
                                     <div style={{marginTop: "10px"}}>
-                                        {addresses.length ? addresses.map((address) => {
-                                            return (
-                                                <div key={address._id} className={classNames([
-                                                    styles.panel,
-                                                    styles.addressPanel,
-                                                    selectedAddressId == address._id ? styles.active : ""
-                                                ])} onClick={this.selectAddress(address)}>
-                                                    <div className={styles.title}>{address.label}</div>
-                                                    <div className={styles.body}>{address.street}, {address.number} - {address.neighborhood}</div>
-                                                </div>
-                                            );
-                                        }) : (
-                                            <Text scale={0.8}>Nenhum endereço cadastrado. Clique no botão <b>Adicionar</b> para cadastrar um novo endereço.</Text>
-                                        )}
+                                        <div style={{marginBottom: "10px"}}>
+                                            <Text scale={0.8}>
+                                                A recorrência determina de quanto em quanto tempo iremos lhe entregar esta lista.
+                                            </Text>
+                                        </div>
+
+                                        <Grid spots={5}>
+                                            {this.recurrenceOptions.map((recurrenceOption) => {
+                                                return (
+                                                    <Grid.Cell key={recurrenceOption.value}>
+                                                        <div className={classNames([
+                                                            styles.panel,
+                                                            styles.panelCard,
+                                                            recurrence == recurrenceOption.value ? styles.active : ""
+                                                        ])} onClick={this.onRecurrenceOptionSelect(recurrenceOption)}>
+                                                            <i18n.Translate text={recurrenceOption.label} />
+                                                        </div>
+                                                    </Grid.Cell>
+                                                );
+                                            })}
+                                        </Grid>
                                     </div>
-                                </div>
+                                </div>*/}
 
                                 <div className={styles.separator}></div>
 
@@ -431,6 +469,7 @@ class Component extends React.Component {
                                         loadingComponent={<Spinner.CircSide color="white" />}
                                         buttonLabel="_CHECKOUT_STEP_PAYMENT_BASKET_SIDEBAR_BUTTON_LABEL_"
                                         onButtonClick={this.pay}
+                                        showDetails={true}
                                     />
                                     <div style={{textAlign: "right", marginTop: "10px"}}>
                                         <img src={moipImg} />
@@ -440,10 +479,6 @@ class Component extends React.Component {
                         </Grid.Cell>
                     </Grid>
                 </Container>
-
-                <CardModal open={this.state.openModals["card_modal"]} onDismiss={this.onModalDismiss} onComplete={this.onModalComplete} />
-                <AddressModal open={this.state.openModals["address_modal"]} onDismiss={this.onModalDismiss} onComplete={this.onModalComplete} />
-                {/*<Basket.Card onClick={this.onBasketButtonClick} buttonLabel="_BASKET_CARD_PAY_BUTTON_TEXT_" />*/}
             </div>
         );
     }
