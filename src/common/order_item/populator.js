@@ -1,26 +1,26 @@
 import lodash from "lodash";
-import OrderItem from "../order_item";
-import User from "../user";
+import Product from "../product";
+import Order from "../order";
 import {LoggerFactory,Redux} from "darch/src/utils";
 
-let Logger = new LoggerFactory("common.order.populator");
+let Logger = new LoggerFactory("common.order_item.populator");
 
 export default class Populator {
-    static async populateUser(records, {
+    static async populateOrder(records, {
         pathsSet={},
         reload=false
     }={}) {
         let ids = {},
-            userData = lodash.get(Redux.getState(), "user.data"),
-            logger = Logger.create("populateUser");
+            orderData = lodash.get(Redux.getState(), "order.data"),
+            logger = Logger.create("populateOrder");
 
         logger.info("enter", {count: records.length, pathsSet});
 
-        if(!pathsSet["user"]) {return Promise.resolve();}
+        if(!pathsSet["order"]) {return Promise.resolve();}
 
         for(let record of records) {
-            if(!reload && userData[record.user]) {continue;}
-            ids[record.user] = true;
+            if(!reload && orderData[record.order]) {continue;}
+            ids[record.order] = true;
         }
 
         // Get only keys.
@@ -32,34 +32,32 @@ export default class Populator {
         }
 
         return await Redux.dispatch(
-            User.actions.userFind({_id: ids})
+            Order.actions.orderFind({_id: ids})
         );
     }
 
-    static async populateItems(records, {
+    static async populateProduct(records, {
         paths=[],
         pathsSet={},
         reload=false
     }={}) {
         let ids = {},
             fetchedRecords = {},
-            orderItemData = lodash.get(Redux.getState(), "orderItem.data"),
-            logger = Logger.create("populateItems");
+            productData = lodash.get(Redux.getState(), "product.data"),
+            logger = Logger.create("populateProduct");
 
         logger.info("enter", {count: records.length, pathsSet, paths});
 
-        if(!pathsSet["items"]) {return Promise.resolve();}
+        if(!pathsSet["product"]) {return Promise.resolve();}
 
         // Get not fetched records.
         for(let record of records) {
-            for(let itemId of record.items) {
-                if(!reload && orderItemData[itemId]) {
-                    fetchedRecords[itemId] = orderItemData[itemId];
-                    continue;
-                }
-
-                ids[itemId] = true;
+            if(!reload && productData[record.product]) {
+                fetchedRecords[record.product] = productData[record.product];
+                continue;
             }
+
+            ids[record.product] = true;
         }
 
         // Get only keys.
@@ -70,7 +68,7 @@ export default class Populator {
         logger.debug("ids", {ids, fetchedRecords});
 
         // Build populate paths
-        let baseRegex = /^items\[\]\./,
+        let baseRegex = /^product\./,
             populatePaths = [];
 
         for(let path of paths) {
@@ -83,7 +81,7 @@ export default class Populator {
 
         // Populate fetched records.
         if(fetchedRecords.length) {
-            OrderItem.populator.populate(fetchedRecords, {
+            Product.populator.populate(fetchedRecords, {
                 paths: populatePaths
             });
         }
@@ -95,7 +93,7 @@ export default class Populator {
 
         // Fetch non fetched records.
         return await Redux.dispatch(
-            OrderItem.actions.orderItemFind({_id: ids}, {
+            Product.actions.productFind({_id: ids}, {
                 populate: {paths: populatePaths}
             })
         );
@@ -119,8 +117,8 @@ export default class Populator {
 
         try {
             result = await Promise.all([
-                Populator.populateUser(records, opts),
-                Populator.populateItems(records, opts)
+                Populator.populateOrder(records, opts),
+                Populator.populateProduct(records, opts)
             ]);
 
             logger.info("all populate success");

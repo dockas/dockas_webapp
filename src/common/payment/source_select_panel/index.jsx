@@ -139,7 +139,7 @@ class Component extends React.Component {
             }, 100);
         }
 
-        console.log(["billingSources capiroto", billingSources]);
+        //console.log(["billingSources capiroto", billingSources]);
 
         return billingSources && billingSources.length ? (
             <div>

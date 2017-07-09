@@ -196,6 +196,18 @@ class Component extends React.Component {
             );
         }
 
+        // No tags...so let's render a "no tags tag".
+        if(!tags.length) {
+            tags.push(
+                <div key={0} className={styles.tag} style={{
+                    backgroundColor: "#eeeeee",
+                    color: "#777777"
+                }}>
+                    <i18n.Translate text="_NO_TAGS_" />
+                </div>
+            );
+        }
+
         return tags;
     }
 
@@ -308,7 +320,7 @@ class Component extends React.Component {
                     <textarea disabled rows="2" value={data.name}></textarea>
                 </div>
 
-                {data.tags && data.tags.length ? (
+                {data.tags ? (
                     <div className={styles.tagsContainer}>
                         {this.renderTags()}
                     </div>

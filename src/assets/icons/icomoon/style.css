@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?lgmhfs');
-  src:  url('fonts/icomoon.eot?lgmhfs#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?lgmhfs') format('truetype'),
-    url('fonts/icomoon.woff?lgmhfs') format('woff'),
-    url('fonts/icomoon.svg?lgmhfs#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?gp9bvr');
+  src:  url('fonts/icomoon.eot?gp9bvr#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?gp9bvr') format('truetype'),
+    url('fonts/icomoon.woff?gp9bvr') format('woff'),
+    url('fonts/icomoon.svg?gp9bvr#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-ninja-head:before {
+  content: "\e93f";
+}
 .icon-delivery-truck:before {
   content: "\e93e";
 }

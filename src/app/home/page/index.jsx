@@ -325,6 +325,11 @@ class Component extends React.Component {
                                                     <i18n.Translate text="_NAV_BAR_ADMIN_INVITATIONS_ITEM_LABEL_" />{/*<span style={{marginLeft: "5px"}}><Label color="#F9690E" scale={0.5}><i18n.Translate text="_NAV_BAR_ADMIN_ITEM_LABEL_" /></Label></span>*/}
                                                 </Dropdown.Item>
                                             ) : <span></span>}
+                                            {isAdmin ? (
+                                                <Dropdown.Item to="/admin/tags">
+                                                    <i18n.Translate text="_NAV_BAR_ADMIN_TAGS_ITEM_LABEL_" />{/*<span style={{marginLeft: "5px"}}><Label color="#F9690E" scale={0.5}><i18n.Translate text="_NAV_BAR_ADMIN_ITEM_LABEL_" /></Label></span>*/}
+                                                </Dropdown.Item>
+                                            ) : <span></span>}
                                             <Dropdown.Separator></Dropdown.Separator>
                                             <Dropdown.Item onClick={this.onSignoutClick}>
                                                 <i18n.Translate text="_NAV_BAR_SIGNOUT_ITEM_LABEL_" />

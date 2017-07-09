@@ -146,8 +146,8 @@ class Component extends React.Component {
                                     return transfer ? (
                                         <tr key={transfer._id}>
                                             <td>{moment(transfer.createdAt).format("DD/MM/YYYY")}</td>
+                                            <td><i18n.Number prefix="R$" numDecimals={2} value={transfer.grossValue/100} /></td>
                                             <td><i18n.Number prefix="R$" numDecimals={2} value={transfer.value/100} /></td>
-                                            <td><i18n.Number prefix="R$" numDecimals={2} value={transfer.netValue/100} /></td>
                                         </tr>
                                     ) : (
                                         <tr key={transferId}></tr>

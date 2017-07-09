@@ -339,7 +339,7 @@ class Component extends React.Component {
         let product = this.getProduct();
         let profileImages = this.processProfileImages();
         let {items} = this.props.basket;
-        let {initializing,screenSize} = this.state;
+        let {initializing,screenSize,isPriceModalOpen} = this.state;
         let nameId = lodash.get(this.props, "params.id");
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, lodash.get(product,"brand"));
 
@@ -384,6 +384,12 @@ class Component extends React.Component {
                                             <div className={styles.priceContainer}>
                                                 <Text scale={2}>
                                                     <b><i18n.Number prefix="R$" numDecimals={2} value={product.priceValue/100} /></b>
+
+                                                    {isAdmin||isApprovedOwner ? (
+                                                        <a className={styles.changePriceButton} onClick={() => {this.setState({isPriceModalOpen: true});}} title="change price">
+                                                            <span className="icon-price-tag"></span>
+                                                        </a>
+                                                    ) : null}
                                                 </Text>
                                             </div>
 
@@ -543,6 +549,16 @@ class Component extends React.Component {
                         )}
                     </Container>
                 </div>
+
+                <Product.PriceModal open={isPriceModalOpen}
+                    product={product}
+                    onComplete={(result) => {
+                        let logger = Logger.create("onPriceModalComplete");
+                        logger.info("enter", result);
+
+                        this.setState({isPriceModalOpen: false});
+                    }}
+                />
             </div>
         );
     }

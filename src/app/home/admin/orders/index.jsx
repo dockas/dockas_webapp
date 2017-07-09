@@ -10,11 +10,11 @@ import Label from "darch/src/label";
 import Spinner from "darch/src/spinner";
 //import Button from "darch/src/button";
 //import Tabs from "darch/src/tabs";
-import {Order,Api} from "common";
+import {Order,OrderItem} from "common";
 //import Bar from "../bar";
 import styles from "./styles";
 
-let Logger = new LoggerFactory("admin.orders.list");
+let Logger = new LoggerFactory("admin.orders");
 
 /**
  * Redux map state to props function.
@@ -27,6 +27,7 @@ function mapStateToProps(state) {
         productData: state.product.data,
         userData: state.user.data,
         orderData: state.order.data,
+        orderItemData: state.orderItem.data,
         fileData: state.file.data,
         orderScopeIds: lodash.get(state.order,"scope.adminOrders.ids"),
         orderScopeQuery: lodash.get(state.order,"scope.adminOrders.query")
@@ -49,7 +50,10 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
-    state = {};
+    state = {
+        withinWeek: true,
+        onlyOpen: true
+    };
 
     statusSequence = [
         Order.types.Status.PAYMENT_PENDING,
@@ -83,24 +87,51 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        Redux.dispatch(Order.actions.orderFind({
+        this.loadOrders();
+    }
+
+    async loadOrders() {
+        let {withinWeek,onlyOpen} = this.state,
+            logger = Logger.create("loadOrders");
+
+        this.setState({loadingOrders: true});
+
+        let query = {
             status: [ // all but delivered
                 Order.types.Status.PAYMENT_PENDING,
                 Order.types.Status.PAYMENT_AUTHORIZED,
                 Order.types.Status.PACKAGED,
                 Order.types.Status.DELIVERING
             ],
-            deliverDate: {
+            sort: {"deliverDate": -1, "statusPriority": -1}
+        };
+
+        if(!onlyOpen) {
+            query.status.push(Order.types.Status.DELIVERED);
+        }
+
+        if(withinWeek) {
+            query.deliverDate = {
                 gte: moment().startOf("isoWeek").startOf("day").toISOString(), // from last saturday
                 lte: moment().endOf("isoWeek").endOf("day").toISOString() // to next friday
-            },
-            sort: {"deliverDate": 1}
-        }, {
-            scope: {id: "adminOrders"},
-            populate: {
-                paths: ["user","items[].product", "items[].product.mainProfileImage"]
-            }
-        }));
+            };
+        }
+
+        try {
+            let result = Redux.dispatch(Order.actions.orderFind(query, {
+                scope: {id: "adminOrders"},
+                populate: {
+                    paths: ["user","items","items[].product", "items[].product.mainProfileImage"]
+                }
+            }));
+
+            logger.info("action orderFind success", result);
+        }
+        catch(error) {
+            logger.error("action orderFind error", error);
+        }
+
+        this.setState({loadingOrders: false});
     }
 
     onStatusUpdateClick(order, targetStatus) {
@@ -136,34 +167,27 @@ class Component extends React.Component {
         return false;
     }
 
-    setItemStateForProduct(productId, status) {
+    setItemStatus(item, status) {
         return async () => {
-            let {orderData,orderScopeIds} = this.props,
-                logger = Logger.create("setItemStateForProduct");
-            logger.info("enter", {productId,status});
+            let logger = Logger.create("setItemStateForProduct");
+            logger.info("enter", {item,status});
 
-            let promises = [];
+            let result = await Redux.dispatch(
+                OrderItem.actions.orderItemUpdate(item._id, {status})
+            );
 
-            // Let's update items assotiated with product in all orders.
-            for(let orderId of orderScopeIds||[]) {
-                let order = orderData[orderId];
+            logger.info("action orderItemUpdate success", result);
 
-                if(!order){continue;}
+            /*try {
+                let result = await Redux.dispatch(
+                    OrderItem.action.orderItemUpdate(item._id, {status})
+                );
 
-                for(let item of order.items) {
-                    if(item.product != productId) {continue;}
-
-                    promises.push(Api.shared.orderItemStatusUpdate(order._id, productId, status));
-                }
-            }
-
-            try {
-                let results = await Promise.all(promises);
-                logger.info("api orderItemStatusUpdate all success", results);
+                logger.info("action orderItemUpdate success", result);
             }
             catch(error) {
-                logger.error("api orderItemStatusUpdate all error", error);
-            }
+                logger.error("action orderItemUpdate error", error);
+            }*/
         };
     }
 
@@ -187,12 +211,12 @@ class Component extends React.Component {
                         {orderScopeIds && orderScopeIds.length ? (
                             orderScopeIds.map((orderId) => {
                                 let order = orderData[orderId];
-                                let user = lodash.get(userData, lodash.get(order, "user"));
+                                let user = lodash.get(userData, lodash.get(order, "user"))||{};
                                 let phoneAreaCode = lodash.get(order, "address.phone.areaCode")||""; 
                                 let phoneNumber = lodash.get(order, "address.phone.number")||"";
                                 let phone = phoneAreaCode&&phoneNumber?`${phoneAreaCode}${phoneNumber}`:null;
 
-                                return order ?(
+                                return order ? (
                                     <tr key={order._id}>
                                         <td>{user.fullName}</td>
                                         <td>{order.address.street}, {order.address.number} {order.address.complement||""} - {order.address.neighborhood} (<u>{phone}</u>)</td>
@@ -206,7 +230,10 @@ class Component extends React.Component {
                                         <td className={styles.buttonsContainer}>
                                             {this.statusSequence.map((status) => {
                                                 let isActive = this.isStatusActive(status, order.status);
-                                                let isDisabled = isActive || [Order.types.Status.PAYMENT_PENDING,Order.types.Status.PAYMENT_AUTHORIZED].indexOf(status) >= 0;
+                                                let isDisabled = isActive || [
+                                                    Order.types.Status.PAYMENT_PENDING,
+                                                    Order.types.Status.PAYMENT_AUTHORIZED
+                                                ].indexOf(status) >= 0;
 
                                                 return order.paymentType != "on_deliver" || status != Order.types.Status.PAYMENT_AUTHORIZED ? (
                                                     <a key={status} title={i18n.utils.translate({text: `_ORDER_STATUS_${lodash.toUpper(status)}_`})} className={isActive?styles.active:""} disabled={isDisabled} onClick={this.onStatusUpdateClick(order, status)}>
@@ -227,8 +254,8 @@ class Component extends React.Component {
 
     renderProductsTable() {
         let logger = Logger.create("renderProductsTable");
-        let {orderData,productData,fileData,orderScopeIds} = this.props;
-        let products = {};
+        let {orderItemData,orderData,productData,fileData,orderScopeIds} = this.props;
+        let items = [];
 
         logger.info("enter");
 
@@ -239,49 +266,27 @@ class Component extends React.Component {
 
             if(!order){continue;}
 
-            let pickupDate = (order.pickupDate?moment(pickupDate):moment(order.deliverDate).subtract(1, "day")).format("YYYY-MM-DD");
+            for(let itemId of order.items) {
+                let item = orderItemData[itemId];
 
-            logger.debug("pickupDate", {pickupDate});
+                if(!item){continue;}
 
-            for(let item of order.items) {
-                let product = productData[item.product];
+                logger.debug("item", item);
 
-                if(!product){continue;}
-
-                logger.debug("product", product);
-
-                //console.log(["item",item]);
-                products[item.status] = products[item.status]||{};
-                products[item.status][pickupDate] = products[item.status][pickupDate] || {};
-                products[item.status][pickupDate][item.product] = products[item.status][pickupDate][item.product] || {
-                    quantity: 0,
-                    status: item.status,
-                    product,
-                    pickupDate
-                };
-
-                products[item.status][pickupDate][item.product].quantity += item.quantity;
+                items.push(item);
             }
         }
 
         //console.log(["renderProductsTable : result products", products]);
 
-        // Sort.
-        let results = [];
+        // Sort items
+        items = lodash.orderBy(items, [(item) => {
+            return ["stocket","ready","pending"].indexOf(item.status);
+        }, (item) => {
+            return item.pickupDate;
+        }], ["desc", "desc"]);
 
-        for(let status of Object.keys(products)) {
-            for(let date of Object.keys(products[status])) {
-                results = results.concat(Object.values(products[status][date]));
-            }
-        }
-
-        results = lodash.orderBy(results, [(result) => {
-            return result.status == "pending" ? 0 : 1;
-        }, (result) => {
-            return result.pickupDate;
-        }], ["asc", "desc"]);
-
-        //console.log(["renderProductsTable : final results", results]);
+        console.log(["renderProductsTable : final items", items]);
 
         return (
             <div className="table-container">
@@ -296,12 +301,15 @@ class Component extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {results.length ? (
-                            lodash.map(results, (result) => {
-                                let productMainProfileImage = fileData[result.product.mainProfileImage];
+                        {items.length ? (
+                            lodash.map(items, (item) => {
+                                let product = productData[item.product];
+                                let productMainProfileImage = product ?
+                                    fileData[product.mainProfileImage] :
+                                    null;
 
-                                return (
-                                    <tr key={result.product._id}>
+                                return product ? (
+                                    <tr key={`${item.order}:${item.product}`}>
                                         <td>
                                             {productMainProfileImage ? (
                                                 <div className={styles.productImage} style={{
@@ -312,27 +320,29 @@ class Component extends React.Component {
                                             ) : null}
                                         </td>
                                         <td>
-                                            {result.product.supplyType == "on_demand" ? (
-                                                <i18n.Moment date={result.pickupDate} format="date" />
+                                            {product.supplyType == "on_demand" ? (
+                                                <i18n.Moment date={item.pickupDate} format="date" />
                                             ) : "-"}
                                         </td>
-                                        <td>{result.product.name}</td>
-                                        <td>{result.quantity}</td>
+                                        <td>{product.name}</td>
+                                        <td>{item.quantity}</td>
 
                                         <td>
-                                            {result.product.supplyType == "on_demand" ? (
-                                                result.status == "pending" ? (
-                                                    <Label color="#eeeeee" scale={0.8}>{result.status}</Label>
-                                                ) : result.status == "ready" ? (
-                                                    <Label color="moody" scale={0.8} onClick={this.setItemStateForProduct(result.product._id, "stocked")}>{result.status}</Label>
-                                                ) : result.status == "stocked" ? (
-                                                    <Label color="#F9690E" scale={0.8}>{result.status}</Label>
+                                            {product.supplyType == "on_demand" ? (
+                                                item.status == "pending" ? (
+                                                    <Label color="#eeeeee" scale={0.8}>{item.status}</Label>
+                                                ) : item.status == "ready" ? (
+                                                    <Label color="moody" scale={0.8} onClick={this.setItemStatus(item, "stocked")}>{item.status}</Label>
+                                                ) : item.status == "stocked" ? (
+                                                    <Label color="#F9690E" scale={0.8}>{item.status}</Label>
                                                 ) : null
                                             ) : (
                                                 <Label color="#F9690E" scale={0.8}>stocked</Label>
                                             )}
                                         </td>
                                     </tr>
+                                ) : (
+                                    <tr key={`${item.order}:${item.product}`}></tr>
                                 );
                             })
                         ) : null}
@@ -342,54 +352,8 @@ class Component extends React.Component {
         );
     }
 
-    filterWithinWeek() {
-        if(this.state.filtering){return;}
-        
-        this.setState({filtering: true});
-
-        let query = lodash.cloneDeep(this.props.ordersQuery);
-
-        if(query.createdAt) {
-            delete query.createdAt;
-        }
-        else {
-            query.createdAt = {
-                gte: moment().subtract(1,"week").day("Saturday").startOf("day").toISOString(), // from last saturday
-                lte: moment().day("Friday").endOf("day").toISOString() // to next friday
-            };
-        }
-
-        Redux.dispatch(Order.actions.orderFind(query, {
-            scope: {id: "adminOrders"}
-        })).then(() => {
-            this.setState({filtering: false});
-        });
-    }
-
-    filterOpenStatus() {
-        if(this.state.filtering){return;}
-
-        this.setState({filtering: true});
-
-        let query = lodash.cloneDeep(this.props.ordersQuery);
-
-        if(query.status) {
-            delete query.status;
-        }
-        else {
-            query.status = "open";
-        }
-
-        Redux.dispatch(Order.actions.orderFind(query, {
-            scope: {"id": "adminOrders"}
-        })).then(() => {
-            this.setState({filtering: false});
-        });
-    }
-
     render() {
-        let {filtering, showProducts} = this.state;
-        let {ordersQuery} = this.props;
+        let {loadingOrders,onlyOpen,withinWeek,showProducts} = this.state;
 
         console.log(["render admin orders", this.props.orders]);
 
@@ -401,17 +365,17 @@ class Component extends React.Component {
                     </h2>
 
                     <div className={styles.filtersContainer}>
-                        {filtering ? (<Spinner.CircSide scale={0.8} color="moody" />) : null}
+                        {loadingOrders ? (<Spinner.CircSide scale={0.8} color="moody" />) : null}
 
                         <Label scale={0.8} color={showProducts?"moody":"#eeeeee"} onClick={() => {this.setState({showProducts: !showProducts});}}>
                             <i18n.Translate text="_ADMIN_ORDERS_PAGE_FILTER_ONLY_PRODUCTS_" />
                         </Label>
 
-                        <Label scale={0.8} color={ordersQuery && ordersQuery.createdAt?"moody":"#eeeeee"} onClick={this.filterWithinWeek}>
+                        <Label scale={0.8} color={withinWeek?"moody":"#eeeeee"} onClick={() => {this.setState({withinWeek: !withinWeek}, this.loadOrders);}}>
                             <i18n.Translate text="_ADMIN_ORDERS_PAGE_FILTER_WITHIN_WEEK_ORDERS_" />
                         </Label>
 
-                        <Label scale={0.8} color={ordersQuery && ordersQuery.status?"moody":"#eeeeee"} onClick={this.filterOpenStatus}>
+                        <Label scale={0.8} color={onlyOpen?"moody":"#eeeeee"} onClick={() => {this.setState({onlyOpen: !onlyOpen}, this.loadOrders);}}>
                             <i18n.Translate text="_ADMIN_ORDERS_PAGE_FILTER_OPEN_ORDERS_" />
                         </Label>
                     </div>

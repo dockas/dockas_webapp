@@ -7,11 +7,28 @@ let Logger = new LoggerFactory("common.tag.reducer", {level:"debug"});
 let initialState = {
     data: {},
     scope: {},
-    dropdown: [],
-    selected: null
+    dropdown: []
 };
 
 export default handleActions({
+    /*tagCreate_COMPLETED(state, action) {
+        let logger = Logger.create("tagCreate_COMPLETED");
+        logger.info("enter", {state, action});
+
+        // Add created product.
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload.data._id]: action.payload.data
+            }),
+
+            dropdown: state.dropdown.concat([{
+                label: action.payload.data.name,
+                value: action.payload.data._id,
+                color: action.payload.data.color
+            }])
+        });
+    },*/
+
     tagFind_COMPLETED(state, action) {
         let ids,
             newState = {},
@@ -33,6 +50,7 @@ export default handleActions({
             newState.scope = Object.assign({}, state.scope, {
                 [scope.id]: Object.assign({}, scope, {
                     ids,
+                    dropdown: action.payload.dropdown,
                     query: action.payload.query
                 })
             });
@@ -46,19 +64,62 @@ export default handleActions({
 
         // Update data.
         newState.data = Object.assign({}, state.data, data);
-        newState.dropdown = action.payload.dropdown;
-
-        // Get only keys.
-        ids = Object.keys(ids);
-
-        // If no ids to fetch, then resolve right away.
-        if(ids.length === 0) {
-            return Promise.resolve();
-        }
+    
+        // Generate new global dropdown from new data.
+        newState.dropdown = lodash.map(newState.data, (tag) => {
+            return {
+                label: tag.name,
+                value: tag._id,
+                color: tag.color
+            };
+        });
 
         logger.info("newState", newState);
 
         // Return new state
         return Object.assign({}, state, newState);
+    },
+
+    tagCreatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("tagCreatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        // Add created tag.
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            }),
+
+            dropdown: state.dropdown.concat([{
+                label: action.payload.data.name,
+                value: action.payload.data._id,
+                color: action.payload.data.color
+            }])
+        });
+    },
+
+    tagUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("tagUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, {
+                [action.payload._id]: action.payload.data
+            })
+        });
+    },
+
+    tagsUpdatedEvent_COMPLETED(state, action) {
+        let logger = Logger.create("tagsUpdatedEvent_COMPLETED");
+        logger.info("enter", {state, action});
+
+        let data = lodash.reduce(action.payload.data, (result, tag) => {
+            result[tag._id] = tag;
+            return result;
+        }, {});
+
+        return Object.assign({}, state, {
+            data: Object.assign({}, state.data, data)
+        });
     }
 }, initialState);

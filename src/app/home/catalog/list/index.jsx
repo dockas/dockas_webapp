@@ -82,11 +82,11 @@ class Component extends React.Component {
         let logger = Logger.create("componentDidMount");
         logger.info("enter");
 
-        let infoModalViewed = await storage.get("infoModalViewed");
+        /*let infoModalViewed = await storage.get("infoModalViewed");
 
         if(!infoModalViewed) {
             this.setState({infoModalOpen: true});
-        }
+        }*/
 
         window.addEventListener("resize", this.handleWindowResize);
         this.handleWindowResize();

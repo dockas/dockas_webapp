@@ -82,7 +82,7 @@ class Component extends React.Component {
                     Brand.actions.brandFind({owners: [user._id]})
                 );
 
-                logger.error("action brandFind success", result);
+                logger.info("action brandFind success", result);
 
                 let brands = (lodash.get(result,"value.data")||[]).map((brand) => {
                     return {value: brand._id, label: brand.name};
@@ -122,7 +122,7 @@ class Component extends React.Component {
      * This function submits the create form.
      */
     onFormSubmit(data) {
-        let logger = Logger.create("onSubmit");
+        let logger = Logger.create("onFormSubmit");
         logger.info("enter", data);
         //console.log("onFormSubmit", data);
 
@@ -132,7 +132,7 @@ class Component extends React.Component {
         this.data = lodash.merge({}, data, this.data);
 
         // Supply type
-        if(!data.onDemandSupply) {
+        if(data.onDemandSupply === false) {
             this.data.supplyType = "on_stock";
         }
 
@@ -648,41 +648,42 @@ class Component extends React.Component {
                                         </Grid>
                                     </Field.Section>
 
-                                    <Field.Section>
-                                        <Text width="100%" scale={0.8}>
-                                            <i18n.Translate text="_CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_" />
+                                    {isAdmin ? (
+                                        <Field.Section>
+                                            <Text width="100%" scale={0.8}>
+                                                <i18n.Translate text="_CREATE_PRODUCT_PAGE_TAGS_FIELD_LABEL_" />
 
-                                            {isAdmin ? (
-                                                <div style={{float: "right"}}>
-                                                    <a onClick={this.openNewTagModal} style={{cursor: "pointer"}}>Adicionar</a>
+                                                {isAdmin ? (
+                                                    <div style={{float: "right"}}>
+                                                        <a onClick={this.openNewTagModal} style={{cursor: "pointer"}}>Adicionar</a>
 
-                                                    <span style={{margin: "0px 5px"}}>•</span>
+                                                        <span style={{margin: "0px 5px"}}>•</span>
 
-                                                    <span className={styles.fileInputButton}>
-                                                        <label htmlFor="tagCSV">CSV Tags</label>
-                                                        <input name="tagCSV" id="tagCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("tags")} style={inputFileStyle} />
-                                                    </span>
-                                                </div>
-                                            ) : null}
-                                        </Text>
-                                        <div>
-                                            <Field.Select
-                                                name="selectedTags"
-                                                placeholder="_CREATE_PRODUCT_PAGE_TAGS_FIELD_PLACEHOLDER_"
-                                                options={tags}
-                                                loading={loadingTags}
-                                                clearSearchOnSelect={true}
-                                                creatable={false}
-                                                multi={true}
-                                                scale={1}
-                                                loaderComponent={<Spinner.CircSide color="#555" />}
-                                                validators="$required"/>
-                                            <Field.Error
-                                                for="selectedTags"
-                                                validator="$required"
-                                                message="_FIELD_ERROR_REQUIRED_"/>
-                                        </div>
-                                    </Field.Section>
+                                                        <span className={styles.fileInputButton}>
+                                                            <label htmlFor="tagCSV">CSV Tags</label>
+                                                            <input name="tagCSV" id="tagCSV" type="file" accept=".csv" onChange={this.onCSVInputChange("tags")} style={inputFileStyle} />
+                                                        </span>
+                                                    </div>
+                                                ) : null}
+                                            </Text>
+                                            <div>
+                                                <Field.Select
+                                                    name="selectedTags"
+                                                    placeholder="_CREATE_PRODUCT_PAGE_TAGS_FIELD_PLACEHOLDER_"
+                                                    options={tags}
+                                                    loading={loadingTags}
+                                                    clearSearchOnSelect={true}
+                                                    creatable={false}
+                                                    multi={true}
+                                                    scale={1}
+                                                    loaderComponent={<Spinner.CircSide color="#555" />}/>
+                                                <Field.Error
+                                                    for="selectedTags"
+                                                    validator="$required"
+                                                    message="_FIELD_ERROR_REQUIRED_"/>
+                                            </div>
+                                        </Field.Section>
+                                    ) : null}
 
                                     <Field.Section>
                                         <div className={styles.buttonContainer}>

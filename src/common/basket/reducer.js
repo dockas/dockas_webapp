@@ -83,8 +83,9 @@ function getTotalFee(state) {
         totalFee += lodash.get(fees, "deliver.value")||0;
         
         appliedFees.push({
+            id: "deliver",
             value: lodash.get(fees, "deliver.value")||0,
-            type: "deliver"
+            type: lodash.get(fees, "deliver.type")||"fixed"
         });
     }
 

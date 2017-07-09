@@ -55,7 +55,10 @@ class Component extends React.Component {
 
         try {
             await Redux.dispatch(Order.actions.orderFind(query, {
-                scope: {id: "myOrders"}
+                scope: {id: "myOrders"},
+                populate: {
+                    paths: ["items", "items[].product"]
+                }
             }));
         }
         catch(error) {

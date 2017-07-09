@@ -2,7 +2,8 @@ siteinfo:
     base_url: //stage.dockas.com
     logo_icon_url: //stage.dockas.com/assets/images/logo_icon.png
     logo_favicon_url: //stage.dockas.com/assets/images/favicon.png
-    mixpanel_key: ec10a901aca367101e5fe8af71d248e8
+    #mixpanel_key: ec10a901aca367101e5fe8af71d248e8
+    woopra_key: stage.dockas.com
 
 hostnames:
     webapp: stage.dockas.com

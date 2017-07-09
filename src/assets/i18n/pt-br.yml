@@ -36,6 +36,7 @@ dictionary:
     _APPROVE_: Aprovar
     _AUTHORIZE_: Autorizar
     _HELLO_USER_: Olá, {{firstName}}
+    _NO_TAGS_: sem tags
 
     # Weekdays
     _WEEKDAY_1_: segunda-feira
@@ -79,6 +80,7 @@ dictionary:
     _NAV_BAR_ADMIN_ORDERS_ITEM_LABEL_: pedidos
     _NAV_BAR_ADMIN_USERS_ITEM_LABEL_: usuários
     _NAV_BAR_ADMIN_INVITATIONS_ITEM_LABEL_: convites
+    _NAV_BAR_ADMIN_TAGS_ITEM_LABEL_: tags
     _NAV_BAR_NOTIFICATIONS_ITEM_LABEL_: alertas
     _NAV_BAR_LISTS_ITEM_LABEL_: listas
     _NAV_BAR_MY_LISTS_ITEM_LABEL_: minhas listas
@@ -145,6 +147,8 @@ dictionary:
     _ADMIN_ORDERS_PAGE_FILTER_ONLY_PRODUCTS_: apenas produtos
     _ADMIN_ORDERS_PAGE_FILTER_WITHIN_WEEK_ORDERS_: apenas da semana
     _ADMIN_ORDERS_PAGE_FILTER_OPEN_ORDERS_: abertos
+
+    _ADMIN_TAGS_PAGE_TITLE_: Tags
 
     _ORDERS_PAGE_DELIVER_DATE_TH_: data entrega
 
@@ -284,6 +288,9 @@ dictionary:
     _NEW_TAG_MODAL_TITLE_: Adicionar Nova Tag
     _NEW_TAG_MODAL_NAME_FIELD_LABEL_: nome
     _NEW_TAG_MODAL_NAME_FIELD_PLACEHOLDER_: minha tag
+    _NEW_TAG_MODAL_PRIORITY_FIELD_LABEL_: prioridade
+    _NEW_TAG_MODAL_CATEGORIES_FIELD_LABEL_: categorias
+    _NEW_TAG_MODAL_CATEGORIES_PLACEHOLDER_LABEL_: -- selecionar --
     _NEW_TAG_MODAL_TEXTCOLOR_FIELD_LABEL_: cor do texto
     _NEW_TAG_MODAL_TEXTCOLOR_FIELD_PLACEHOLDER_: ffffff
     _NEW_TAG_MODAL_BACKGROUNDCOLOR_FIELD_LABEL_: cor de fundo
@@ -378,12 +385,16 @@ dictionary:
     _CATALOG_ITEM_PAGE_STATISTICS_TAB_LABEL_: estatísticas
     _CATALOG_ITEM_PAGE_NAME_FIELD_LABEL_: nome
     _CATALOG_ITEM_PAGE_DESCRIPTION_FIELD_LABEL_: descrição
+    _CATALOG_ITEM_PAGE_TAGS_FIELD_LABEL_: tags
+    _CATALOG_ITEM_PAGE_TAGS_FIELD_PLACEHOLDER_: -- selecionar --
     _CATALOG_ITEM_PAGE_EDIT_LABEL_: editar
     _CATALOG_ITEM_PAGE_SAVE_LABEL_: salvar
     _CATALOG_ITEM_PAGE_CANCEL_LABEL_: cancelar
     _CATALOG_ITEM_PAGE_PRICE_FIELD_LABEL_: preço
     _CATALOG_ITEM_PAGE_BRAND_LABEL: marca
     _CATALOG_ITEM_PAGE_STOCK_FIELD_LABEL_: estoque
+    _CATALOG_ITEM_PAGE_COST_FIELD_LABEL_: custo
+    _CATALOG_ITEM_PAGE_VALIDITY_DATE_FIELD_LABEL_: validade
 
     # Invitation Page
     _INVITATION_PAGE_TITLE_: Solicite seu convite
@@ -476,6 +487,7 @@ dictionary:
     _FIELD_ERROR_CARD_EXP_DATE_: Insira uma data válida.
     _FIELD_ERROR_DOCUMENT_CPF_: Insira um CPF válido.
     _FIELD_ERROR_BIRTHDATE_: Insira uma data válida.
+    _FIELD_ERROR_VALIDITY_: Insira uma data de validade válida.
 
     # Warning messages
     _WARNING_PRODUCT_STOCK_BECAME_LOWER_THAN_SELECTED_QUANTITY_: O estoque do produto <b>{{product.name}}</b> acabou de se tornar menor do que a quantidade que você havia selecionado. Alteramos a quantidade selecionada para o número disponível no novo estoque.

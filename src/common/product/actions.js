@@ -100,6 +100,26 @@ export default createActions({
         };
     },
 
+    async productCostUpdate(id, data, {
+        opts=null
+    }={}) {
+        var logger = Logger.create("productCostUpdate");
+        logger.info("enter", {id, data});
+
+        let response = await Api.shared.productCostUpdate(id, data, opts);
+
+        logger.debug("api productCostUpdate success", response);
+
+        Redux.dispatch(
+            Toaster.actions.push("success", "_PRODUCT_UPDATE_SUCCESS_")
+        );
+
+        return {
+            _id: id,
+            value: data.value
+        };
+    },
+
     async productStatusUpdate(id, status, {
         opts=null
     }={}) {

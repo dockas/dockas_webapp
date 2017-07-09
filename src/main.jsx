@@ -12,9 +12,9 @@ import i18n from "darch/src/i18n";
 import Form from "darch/src/form";
 import {
     Api,User,Socket,Product,
-    Basket,Order,NotificationAlert,
+    Basket,Order,OrderItem,NotificationAlert,
     Location,Brand,Tag,Wallet,Transfer,
-    List,ListSubscription,File,Tracker
+    List,ListSubscription,File,Tracker,Price
 } from "common";
 
 let Logger = new LoggerFactory("main", {level: "debug"});
@@ -144,8 +144,6 @@ Form.registerValidator({
 
         let date = moment(value, opts[0], true);
 
-        console.log(["date macuna",date]);
-
         if(!date.isValid()) {return false;}
 
         return true;
@@ -175,6 +173,24 @@ Form.registerValidator({
         }
 
         return false;
+    }
+});
+
+Form.registerValidator({
+    name: "validity",
+    validate: (value, opts) => {
+        let logger = Logger.create("validity validate");
+        logger.debug("enter", {value,opts});
+
+        if(!value){return true;}
+
+        let date = moment(value, opts[0], true);
+
+        logger.info("isValid", {isValid: date.isValid()});
+
+        if(!date.isValid()) {return false;}
+
+        return true;
     }
 });
 
@@ -212,6 +228,7 @@ Form.registerValidator({
         product: Product.reducer,
         basket: Basket.reducer,
         order: Order.reducer,
+        orderItem: OrderItem.reducer,
         notificationAlert: NotificationAlert.reducer,
         location: Location.reducer,
         brand: Brand.reducer,
@@ -220,18 +237,21 @@ Form.registerValidator({
         listSubscription: ListSubscription.reducer,
         file: File.reducer,
         wallet: Wallet.reducer,
-        transfer: Transfer.reducer
+        transfer: Transfer.reducer,
+        price: Price.reducer
     }, {shared: true});
 
     // Start listen to socket events
     NotificationAlert.listenSocketEvents();
     Order.listenSocketEvents();
+    OrderItem.listenSocketEvents();
     Product.listenSocketEvents();
     User.listenSocketEvents();
     Wallet.listenSocketEvents();
     List.listenSocketEvents();
     ListSubscription.listenSocketEvents();
     Brand.listenSocketEvents();
+    Tag.listenSocketEvents();
 
     // Create an enhanced history that syncs navigation events with the store
     const history = syncHistoryWithStore(browserHistory, Redux.shared.store);

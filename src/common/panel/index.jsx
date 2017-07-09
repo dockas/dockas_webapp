@@ -19,6 +19,7 @@ export default class Component extends React.Component {
         editing: false,
         loading: false,
         canEdit: true,
+        isPrivate: false,
         onEditStart: () => {},
         onEditEnd: () => {},
         editText: "_EDIT_",
@@ -34,6 +35,7 @@ export default class Component extends React.Component {
         editing: React.PropTypes.bool,
         loading: React.PropTypes.bool,
         canEdit: React.PropTypes.bool,
+        isPrivate: React.PropTypes.bool,
         onEditStart: React.PropTypes.func,
         onEditEnd: React.PropTypes.func,
         labelText: React.PropTypes.string.isRequired,
@@ -58,7 +60,7 @@ export default class Component extends React.Component {
         let {
             id,canEdit,editing,loading,
             labelText,saveText,editText,
-            display,cancelText
+            display,cancelText,isPrivate
         } = this.props;
 
         return (
@@ -79,6 +81,12 @@ export default class Component extends React.Component {
                             )
                         ) : null}
                     </div>
+
+                    {isPrivate ? (
+                        <div className={styles.privateLabel}>
+                            <span className="icon-ninja-head"></span>
+                        </div>
+                    ) : null}
 
                     {this.props.children}
                 </Form>

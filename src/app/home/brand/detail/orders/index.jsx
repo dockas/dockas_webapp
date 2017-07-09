@@ -3,11 +3,11 @@ import {connect} from "react-redux";
 import config from "config";
 import moment from "moment";
 import lodash from "lodash";
-import {LoggerFactory} from "darch/src/utils";
+import {LoggerFactory,Redux} from "darch/src/utils";
 import Spinner from "darch/src/spinner";
 import Label from "darch/src/label";
 import i18n from "darch/src/i18n";
-import {Api} from "common";
+import {OrderItem} from "common";
 import styles from "./styles";
 
 let Logger = new LoggerFactory("brand.detail.orders");
@@ -20,11 +20,13 @@ let Logger = new LoggerFactory("brand.detail.orders");
  */
 function mapStateToProps(state) {
     return {
+        fileData: state.file.data,
+        productData: state.product.data,
         brandData: state.brand.data,
         brandNameIdToId: state.brand.nameIdToId,
-        orderData: state.order.data,
-        orderScopeIds: lodash.get(state.order,"scope.brandOrders.ids"),
-        orderScopeQuery: lodash.get(state.order,"scope.brandOrders.query"),
+        orderItemData: state.orderItem.data,
+        orderItemScopeIds: lodash.get(state.orderItem,"scope.brandItems.ids"),
+        orderItemScopeQuery: lodash.get(state.orderItem,"scope.brandItems.query"),
         uid: state.user.uid,
         user: state.user.uid?state.user.data[state.user.uid]:null
     };
@@ -46,7 +48,9 @@ class Component extends React.Component {
     static defaultProps = {};
     static propTypes = {};
 
-    state = {};
+    state = {
+        withinWeek: true
+    };
 
     getScopeData(props=this.props) {
         let brand,
@@ -61,83 +65,111 @@ class Component extends React.Component {
     }
 
     async componentDidMount() {
-        let newState = {initializing: false},
-            {brand} = this.getScopeData(),
-            logger = Logger.create("componentDidMount");
+        let logger = Logger.create("componentDidMount");
+
         logger.info("enter");
 
-        this.setState({initializing: true});
-
-        try {
-            let response = await Api.shared.brandOrdersFind(brand._id, {
-                status: ["payment_authorized"],
-                deliverDate: {
-                    gte: moment().startOf("isoWeek").startOf("day").toISOString(),
-                    lte: moment().endOf("isoWeek").endOf("day").toISOString()
-                }
-            });
-
-            logger.info("api brandOrdersFind success", response);
-
-            newState.requests = response.results;
-        }
-        catch(error) {
-            logger.error("api brandOrdersFind error", error);
-        }
-
-        this.setState(newState);
+        // Load brand items.
+        this.loadItems();
     }
 
-    updateOrderItemStatus(request) {
+    async loadItems() {
+        let result,
+            {brand} = this.getScopeData(),
+            {withinWeek} = this.state,
+            logger = Logger.create("loadItems");
+
+        logger.info("enter", {brand, withinWeek});
+
+        this.setState({loadingItems: true});
+
+        let query = {
+            brand: [brand._id],
+            status: [
+                OrderItem.types.Status.PENDING,
+                OrderItem.types.Status.READY,
+                OrderItem.types.Status.STOCKED
+            ],
+            sort: {statusPriority: -1, pickupDate: 1}
+        };
+
+        if(withinWeek) {
+            query.deliverDate = {
+                gte: moment().startOf("isoWeek").startOf("day").toISOString(),
+                lte: moment().endOf("isoWeek").endOf("day").toISOString()
+            };
+        }
+
+        logger.debug("query", query);
+
+        result = await Redux.dispatch(
+            OrderItem.actions.orderItemFind(query, {
+                scope: {id: "brandItems"},
+                populate: {
+                    paths: ["product","product.mainProfileImage"]
+                }
+            })
+        );
+
+        logger.info("action orderItemFind success", result);
+
+        // Find brand items 
+        /*try {
+        }
+        catch(error) {
+            logger.error("action orderItemFind error", error);
+        }*/
+
+        this.setState({loadingItems: false});
+    }
+
+    updateItemStatus(item) {
         return async () => {
-            let promises = [],
-                {brand} = this.getScopeData(),
-                logger = Logger.create("componentDidMount");
+            let result,
+                logger = Logger.create("updateItemStatus");
 
-            logger.info("enter");
+            logger.info("enter", item);
 
-            for(let order of request.orders) {
-                promises.push(Api.shared.orderItemStatusUpdate(
-                    order,
-                    request.product._id,
-                    request.status == "pending" ? "ready" : "pending"
-                ));
-            }
+            result = await Redux.dispatch(
+                OrderItem.actions.orderItemUpdate(
+                    item._id, 
+                    {status: item.status == "pending" ? "ready" : "pending"}
+                )
+            );
 
-            try {
-                let responses = await Promise.all(promises);
-                logger.info("api orderItemStatusUpdate all success", responses);
-            }
-            catch(error) {
-                logger.error("api orderItemStatusUpdate all error", error);
-            }
+            logger.info("action orderItemUpdate success", result);
 
-            // Refresh
-            try {
-                let response = await Api.shared.brandOrdersFind(brand._id, {
-                    status: ["payment_authorized"],
-                    deliverDate: {
-                        gte: moment().startOf("isoWeek").startOf("day").toISOString(),
-                        lte: moment().endOf("isoWeek").endOf("day").toISOString()
-                    }
-                });
+            // Find brand items 
+            /*try {
+                result = await Redux.dispatch(
+                    OrderItem.actions.orderItemUpdate(item._id, {
+                        status: item.status == "pending" ? "ready" : "pending"
+                    })
+                );
 
-                logger.info("api brandOrdersFind success", response);
-
-                this.setState({requests: response.results});
+                logger.info("action orderItemUpdate success", result);
             }
             catch(error) {
-                logger.error("api brandOrdersFind error", error);
-            }
+                logger.error("action orderItemUpdate error", error);
+            }*/
         };
     }
 
     render() {
-        let {initializing,requests} = this.state;
+        let {fileData,productData,orderItemData,orderItemScopeIds} = this.props;
+        let {loadingItems,withinWeek} = this.state;
 
         return (
             <div>
                 <div className="table-container">
+                    <div className={styles.filtersContainer}>
+                        {loadingItems ? (<Spinner.CircSide scale={0.8} color="moody" />) : null}
+
+                        <Label scale={0.8} color={withinWeek?"moody":"#eeeeee"} onClick={() => {this.setState({withinWeek: !withinWeek}, this.loadItems);}}>
+                            <i18n.Translate text="_ADMIN_ORDERS_PAGE_FILTER_WITHIN_WEEK_ORDERS_" />
+                        </Label>
+                    </div>
+
                     <table className="table">
                         <thead>
                             <tr>
@@ -150,33 +182,41 @@ class Component extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {initializing ? (
+                            {!orderItemScopeIds && loadingItems ? (
                                 <tr>
-                                    <td colSpan="6" className={styles.infoCellContainer}><Spinner.CircSide color="moody" /></td>
+                                    <td colSpan="5" style={{textAlign: "center"}}>loading</td>
                                 </tr>
-                            ) : requests && requests.length ? (
-                                requests.map((request) => {
-                                    return (
-                                        <tr key={request.product._id}>
+                            ) : orderItemScopeIds && orderItemScopeIds.length ? (
+                                orderItemScopeIds.map((itemId) => {
+                                    let item = orderItemData[itemId];
+                                    let product = item?productData[item.product]:null;
+                                    let productMainProfileImage = product?fileData[product.mainProfileImage]:null;
+
+                                    return item ? (
+                                        <tr key={item._id}>
                                             <td>
-                                                <div className={styles.productImage} style={{
-                                                    backgroundImage: `url(//${config.hostnames.file}/images/${request.product.mainProfileImage.path})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center"
-                                                }}></div>
+                                                {productMainProfileImage ? (
+                                                    <div className={styles.productImage} style={{
+                                                        backgroundImage: `url(//${config.hostnames.file}/images/${productMainProfileImage.path})`,
+                                                        backgroundSize: "cover",
+                                                        backgroundPosition: "center"
+                                                    }}></div>
+                                                ) : null}
                                             </td>
-                                            <td><i18n.Moment date={request.pickupDate} format="date" /></td>
-                                            <td>{request.product.name}</td>
-                                            <td>{request.quantity}</td>
-                                            <td style={{whiteSpace: "nowrap"}}><i18n.Number prefix="R$" numDecimals={2} value={request.totalPrice/100} /></td>
+                                            <td>{item.pickupDate ? <i18n.Moment date={item.pickupDate} format="date" /> : "-"}</td>
+                                            <td>{product?product.name:null}</td>
+                                            <td>{item.quantity}</td>
+                                            <td style={{whiteSpace: "nowrap"}}><i18n.Number prefix="R$" numDecimals={2} value={item.totalPrice/100} /></td>
                                             <td style={{whiteSpace: "nowrap"}}>
-                                                {["pending","ready"].indexOf(request.status) >= 0 ? (
-                                                    <Label scale={0.8} color={request.status=="ready"?"moody":"#eeeeee"} onClick={this.updateOrderItemStatus(request)}>{request.status}</Label>
+                                                {["pending","ready"].indexOf(item.status) >= 0 ? (
+                                                    <Label scale={0.8} color={item.status=="ready"?"moody":"#eeeeee"} onClick={this.updateItemStatus(item)}>{item.status}</Label>
                                                 ) : (
-                                                    <Label scale={0.8} color="#000000">{request.status}</Label>
+                                                    <Label scale={0.8} color="#000000">{item.status}</Label>
                                                 )}
                                             </td>
                                         </tr>
+                                    ) : (
+                                        <tr key={itemId}></tr>
                                     );
                                 })
                             ) : (

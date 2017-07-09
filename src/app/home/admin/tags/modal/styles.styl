@@ -1,0 +1,15 @@
+.color-box-active
+    border-color: #eee !important;
+
+.color-box
+    display: inline-block;
+    border: 2px solid transparent;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    
+    &:hover
+        @extend .color-box-active;
+
+.spinner-container
+    padding-left: 0.8em;

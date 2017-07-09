@@ -180,7 +180,7 @@ class Component extends React.Component {
     }
 
     async onUploadComplete() {
-        let productResponse,
+        let response,
             logger = Logger.create("onUploadComplete");
 
         logger.info("enter", this.data);
@@ -190,7 +190,7 @@ class Component extends React.Component {
             logger.debug("creating brand");
 
             try {
-                let response = await Api.shared.brandCreate({
+                response = await Api.shared.brandCreate({
                     name: this.state.brandToCreate,
                     owners: this.data.owners
                 });
@@ -207,15 +207,15 @@ class Component extends React.Component {
 
         // Save product.
         try {
-            productResponse = await Redux.dispatch(Product.actions.productCreate(this.data));
-            logger.info("action productCreate success", productResponse);
+            response = await Redux.dispatch(Product.actions.productCreate(this.data));
+            logger.info("action productCreate success", response);
         }
         catch(error) {
             return logger.error("api productCreate error", error);
         }
 
         // Create the price.
-        try {
+        /*try {
             await Api.shared.priceCreate({
                 value: this.data.priceValue,
                 product: productResponse.action.payload
@@ -223,7 +223,7 @@ class Component extends React.Component {
         }
         catch(error) {
             return logger.error("api priceCreate error", error);
-        }
+        }*/
 
         // Everithing is done... go to catalog
         this.props.router.replace("/");

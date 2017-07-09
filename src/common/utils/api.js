@@ -121,6 +121,10 @@ export default class Api {
         return this.request("PUT", `product/${id}/price`, data, opts);
     }
 
+    productCostUpdate(id, data, opts) {
+        return this.request("PUT", `product/${id}/cost`, data, opts);
+    }
+
     productStatusUpdate(id, data, opts) {
         return this.request("PUT", `product/${id}/status`, data, opts);
     }
@@ -137,12 +141,20 @@ export default class Api {
         return this.request("GET", "tag", query, opts);
     }
 
+    tagUpdate(id, data, opts) {
+        return this.request("PUT", `tag/${Api.idToKey(id)}`, data, opts);
+    }
+
     tagIncFindCount(id, opts) {
         return this.request("PUT", `tag/${Api.idToKey(id)}/find/count`, null, opts);
     }
 
     priceCreate(data, opts) {
         return this.request("POST", "price", data, opts);
+    }
+
+    priceFind(query, opts) {
+        return this.request("GET", "price", query, opts);
     }
 
     orderCreate(data, opts) {
@@ -165,12 +177,24 @@ export default class Api {
         return this.request("PUT", `order/${id}/status`, {status}, opts);
     }
 
-    orderItemStatusUpdate(id, itemProduct, status, opts) {
-        return this.request("PUT", `order/${id}/item/${itemProduct}/status`, {status}, opts);
-    }
-
     orderApprove(id, data, opts) {
         return this.request("PUT", `order/${id}/approve`, data, opts);
+    }
+
+    orderItemFind(query, opts) {
+        return this.request("GET", "order/item", query, opts);
+    }
+
+    orderItemFindById(id, opts) {
+        return this.request("GET", `order/item/${id}`, null, opts);
+    }
+
+    orderItemUpdate(id, data, opts) {
+        return this.request("PUT", `order/item/${id}`, data, opts);
+    }
+
+    orderItemStatusUpdate(id, status, opts) {
+        return this.request("PUT", `order/item/${id}/status`, {status}, opts);
     }
 
     invitationCreate(data, opts) {

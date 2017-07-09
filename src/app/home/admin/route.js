@@ -24,6 +24,7 @@ module.exports = {
             cb(null, [
                 require("./products/route"),
                 require("./users/route"),
+                require("./tags/route"),
                 require("./orders/route"),
                 require("./invitations/route"),
                 require("./notifications/route"),

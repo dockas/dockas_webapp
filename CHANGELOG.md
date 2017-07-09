@@ -106,3 +106,11 @@ GIT : Commit a bug fix in darch.
 ENH : Set basket isPaying to prevent basket update during payment process (this can be improved).
 ENH : Add auth policies to lists, orders and notifications pages.
 FEA : Populate all relational data in the webapp instead of in api_rest (this is awesome).
+BUG : Correct woopra domain in stage environment.
+ENH : Remove junk from # folder.
+FEA : Add admin tags page to manage all tags and it's relationships.
+ENH : Add price change modal in catalog item page.
+ENH : Add cost price and validity panels to catalog item page.
+ENH : Allow admins to change product tags in catalog item page.
+ENH : Remove tag select from product create page for non admin users (i.e., only admins can add/modify product tags).
+ENH : Handle new order item entity in admin orders and brand orders page.
