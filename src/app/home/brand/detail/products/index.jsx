@@ -22,6 +22,7 @@ function mapStateToProps(state) {
         brandData: state.brand.data,
         brandNameIdToId: state.brand.nameIdToId,
         productScopeIds: lodash.get(state.product,"scope.brandProducts.ids"),
+        productScopeBrandId: lodash.get(state.product,"scope.brandProducts.brand"),
         productScopeQuery: lodash.get(state.product,"scope.brandProducts.query"),
         uid: state.user.uid,
         user: state.user.uid?state.user.data[state.user.uid]:null
@@ -50,6 +51,7 @@ class Component extends React.Component {
         let result = {},
             nameId = lodash.get(props, "params.id"),
             {productScopeIds,productScopeQuery,
+                productScopeBrandId,
                 brandData,brandNameIdToId} = props;
 
         result.brand = brandNameIdToId[nameId] ?
@@ -58,13 +60,14 @@ class Component extends React.Component {
 
         result.productIds = productScopeIds;
         result.productQuery = productScopeQuery;
+        result.productBrand = productScopeBrandId;
 
         return result;
     }
 
     componentDidMount() {
         let logger = Logger.create("componentDidMount");
-        logger.info("enter");
+        logger.info("enter", this.getScopeData());
 
         this.scroller = new Scroller({
             onLoad: async (count) => {
@@ -72,10 +75,12 @@ class Component extends React.Component {
                 logger.info("enter");
 
                 let {productData} = this.props;
-                let {brand,productIds} = this.getScopeData();
+                let {brand,productIds,productBrand} = this.getScopeData();
                 productIds = productIds || [];
 
-                if(count===1 && productIds.length) {return;}
+                if(count===1
+                && productIds.length 
+                && productBrand == brand._id) {return;}
 
                 let query = {
                     limit: 30,
@@ -95,7 +100,9 @@ class Component extends React.Component {
                     query.tags = this.tags;
                 }
 
-                await this.loadProducts(query);
+                await this.loadProducts(query, {
+                    concat: count!==1
+                });
             },
             offset: 500
         });
@@ -158,12 +165,12 @@ class Component extends React.Component {
     }
 
     render() {
-        let {brand,productIds} = this.getScopeData();
+        let {brand,productIds,productBrand} = this.getScopeData();
         let {user,productData} = this.props;
         let {productsLoading, priceModalProduct} = this.state;
         let {isApprovedOwner,isAdmin} = Brand.utils.getOwner(user, brand);
 
-        return (
+        return productBrand == brand._id ? (
             <div>
                 <div className={styles.buttonsContainer}>
                     {isAdmin||isApprovedOwner ? (
@@ -205,6 +212,8 @@ class Component extends React.Component {
                     }}
                 />
             </div>
+        ) : (
+            <div>loading ...</div>
         );
     }
 }
