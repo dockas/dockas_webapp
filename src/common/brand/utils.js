@@ -16,6 +16,8 @@ export default class Utils {
 
         logger.debug("got brand", brand);
 
+        //console.log(["zacumba lele : getOwner", user, brand]);
+
         if(!user || !brand){
             return {
                 isOwner: false,
@@ -33,11 +35,17 @@ export default class Utils {
             return user._id == uid;
         });
 
-        return {
+        //console.log(["zacumba lele : getOwner : owner", owner]);
+
+        let data = {
             owner,
             isOwner: !!owner,
-            isApprovedOwner: owner && owner.status == "approved",
+            isApprovedOwner: !!owner && owner.status == "approved",
             isAdmin: (user && user.roles.indexOf("admin") >= 0)
         };
+
+        //console.log(["zacumba lele : getOwner : final data", data]);
+
+        return data;
     }
 }

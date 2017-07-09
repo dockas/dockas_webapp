@@ -115,3 +115,4 @@ ENH : Allow admins to change product tags in catalog item page.
 ENH : Remove tag select from product create page for non admin users (i.e., only admins can add/modify product tags).
 ENH : Handle new order item entity in admin orders and brand orders page.
 BUG : Correct a bug that load products of previous accessed brand.
+BUG : Correct a bug that was enabling anyone to upload photos for products.

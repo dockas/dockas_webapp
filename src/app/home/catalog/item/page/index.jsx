@@ -351,6 +351,9 @@ class Component extends React.Component {
             return lodash.get(product, "mainProfileImage") == image._id;
         });
 
+
+        //console.log(["zacumba lele", isApprovedOwner, isAdmin]);
+
         return (
             <div className={styles.page}>
                 <div className={styles.mainContent}>
