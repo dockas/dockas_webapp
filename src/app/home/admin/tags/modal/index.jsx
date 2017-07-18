@@ -1,21 +1,21 @@
-import React from "react";
-import {connect} from "react-redux";
-import classNames from "classnames";
-import lodash from "lodash";
+import React from "react"
+import {connect} from "react-redux"
+import classNames from "classnames"
+import lodash from "lodash"
 //import config from "config";
-import {LoggerFactory,Redux} from "darch/src/utils";
-import Modal from "darch/src/modal";
-import i18n from "darch/src/i18n";
-import Field from "darch/src/field";
-import Form from "darch/src/form";
-import Grid from "darch/src/grid";
-import Text from "darch/src/text";
-import Spinner from "darch/src/spinner";
-import Button from "darch/src/button";
-import {Tag} from "common";
-import styles from "./styles";
+import {LoggerFactory,Redux} from "darch/src/utils"
+import Modal from "darch/src/modal"
+import i18n from "darch/src/i18n"
+import Field from "darch/src/field"
+import Form from "darch/src/form"
+import Grid from "darch/src/grid"
+import Text from "darch/src/text"
+import Spinner from "darch/src/spinner"
+import Button from "darch/src/button"
+import {Tag} from "common"
+import styles from "./styles"
 
-let Logger = new LoggerFactory("lists.detail.subscribe");
+let Logger = new LoggerFactory("lists.detail.subscribe")
 
 /**
  * Redux map state to props function.
@@ -24,13 +24,13 @@ let Logger = new LoggerFactory("lists.detail.subscribe");
  * @param {object} ownProps
  */
 function mapStateToProps(state) {
-    console.log(["macunae maluco", state.tag]);
+    console.log(["macunae maluco", state.tag])
 
     return {
         tagDropdown: state.tag.dropdown,
         uid: state.user.uid,
         user: state.user.uid?state.user.data[state.user.uid]:null
-    };
+    }
 }
 
 /**
@@ -38,7 +38,7 @@ function mapStateToProps(state) {
  */
 let mapDispatchToProps = {
 
-};
+}
 
 /**
  * Main component class.
@@ -159,133 +159,133 @@ class Component extends React.Component {
     ];
 
     async componentDidMount() {
-        let logger = Logger.create("componentDidMount");
-        logger.info("enter");
+        let logger = Logger.create("componentDidMount")
+        logger.info("enter")
 
-        this.selectColor()();
+        this.selectColor()()
     }
 
     componentDidUpdate(prevProps) {
-        let tag = this.props.tag;
-        let prevTag = prevProps.tag;
+        let tag = this.props.tag
+        let prevTag = prevProps.tag
 
-        console.log(["componentDidUpdate maluco doido", tag, prevTag]);
+        console.log(["componentDidUpdate maluco doido", tag, prevTag])
 
         // Tag changed
         if(!lodash.isEqual(tag, prevTag)) {
-            console.log(["componentDidUpdate maluco doido : changed"]);
-            this.selectColor(lodash.get(tag,"color"))();
+            console.log(["componentDidUpdate maluco doido : changed"])
+            this.selectColor(lodash.get(tag,"color"))()
         }
     }
 
     selectColor(color) {
         return () => {
-            let logger = Logger.create("selectColor");
-            logger.info("enter", {color});
+            let logger = Logger.create("selectColor")
+            logger.info("enter", {color})
 
             if(!color) {
                 // Select a random color.
-                let min = 0, max = this.colors.length-1;
-                let randomIdx = Math.floor(Math.random() * (max - min)) + min;
-                color = this.colors[randomIdx];
+                let min = 0, max = this.colors.length-1
+                let randomIdx = Math.floor(Math.random() * (max - min)) + min
+                color = this.colors[randomIdx]
             }
 
-            this.setState({selectedColor: color});
-        };
+            this.setState({selectedColor: color})
+        }
     }
 
     async reloadTagScope() {
         if(!this.props.reloadTagScope) {
-            return Promise.resolve();
+            return Promise.resolve()
         }
 
         let result,
             {query,opts} = this.props.reloadTagScope,
-            logger = Logger.create("reloadTagScope");
+            logger = Logger.create("reloadTagScope")
 
         try {
             result = await Redux.dispatch(
                 Tag.actions.tagFind(query,opts)
-            );
+            )
 
-            logger.info("action tagFind success", result);
+            logger.info("action tagFind success", result)
         }
         catch(error) {
-            logger.error("action tagFind error", error);
+            logger.error("action tagFind error", error)
         }
     }
 
     async updateTag(data) {
         let result,
             {tag} = this.props,
-            logger = Logger.create("updateTag");
+            logger = Logger.create("updateTag")
 
-        logger.info("enter", data);
+        logger.info("enter", data)
 
         // Strip non modified fields.
         data = lodash.pickBy(data, (value, key) => {
-            return !lodash.isEqual(value,tag[key]);
-        });
+            return !lodash.isEqual(value,tag[key])
+        })
 
         // Color
         if(tag.color != this.state.selectedColor) {
-            data.color = this.state.selectedColor;
+            data.color = this.state.selectedColor
         }
 
-        logger.debug("modified data", data);
+        logger.debug("modified data", data)
 
         try {
             result = await Redux.dispatch(
                 Tag.actions.tagUpdate(tag._id, data)
-            );
+            )
 
-            logger.info("action tagUpdate success", result);
+            logger.info("action tagUpdate success", result)
         }
         catch(error) {
-            logger.error("action tagUpdate error", error);
-            return this.setState({loading: false});
+            logger.error("action tagUpdate error", error)
+            return this.setState({loading: false})
         }
 
         // Update state
-        this.setState({loading: false});
-        this.props.onComplete(data);
+        this.setState({loading: false})
+        this.props.onComplete(data)
     }
 
     async onSubmit(data) {
-        if(this.props.tag) { return this.updateTag(data); }
+        if(this.props.tag) { return this.updateTag(data) }
 
         let result,
             {selectedColor} = this.state,
-            logger = Logger.create("onSubmit");
+            logger = Logger.create("onSubmit")
 
-        logger.info("enter", data);
+        logger.info("enter", data)
 
-        this.setState({loading: true});
-        data.color = selectedColor;
+        this.setState({loading: true})
+        data.color = selectedColor
 
         try {
             result = await Redux.dispatch(
                 Tag.actions.tagCreate(data)
-            );
+            )
 
-            logger.info("action tagCreate success", result);
+            logger.info("action tagCreate success", result)
         }
         catch(error) {
-            logger.error("action tagCreate error", error);
-            return this.setState({loading: false});
+            logger.error("action tagCreate error", error)
+            return this.setState({loading: false})
         }
 
         // Reload tag scope
-        await this.reloadTagScope();
+        await this.reloadTagScope()
 
         // Update state
-        this.setState({loading: false});
-        this.props.onComplete(data);
+        this.setState({loading: false})
+        this.props.onComplete(data)
     }
 
     render() {
-        let {open,onDismiss,tag,tagDropdown} = this.props;
-        let {loading,selectedColor} = this.state;
+        let {open,onDismiss,tag,tagDropdown} = this.props
+        let {loading,selectedColor} = this.state
 
         return (
             <Modal open={open} onDismiss={onDismiss}>
@@ -370,7 +370,7 @@ class Component extends React.Component {
                                         <div style={{lineHeight: 0}}>
                                             {this.colors.map((color) => {
                                                 //console.log(["SELECTED COLOR", color, this.state.selectedTagColor]);
-                                                return (<a key={color} onClick={this.selectColor(color)} className={classNames([styles.colorBox, (selectedColor == color ? styles.colorBoxActive : "")])} style={{backgroundColor: color}}></a>);
+                                                return (<a key={color} onClick={this.selectColor(color)} className={classNames([styles.colorBox, (selectedColor == color ? styles.colorBoxActive : "")])} style={{backgroundColor: color}}></a>)
                                             })}
                                         </div>
                                     </Field.Section>
@@ -395,7 +395,7 @@ class Component extends React.Component {
                     </Modal.Footer>
                 </Form>
             </Modal>
-        );
+        )
     }
 }
 
@@ -403,4 +403,4 @@ class Component extends React.Component {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Component);
+)(Component)

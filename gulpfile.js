@@ -41,7 +41,7 @@ gulp.task("config", function() {
     var str = ("module.exports = "+JSON.stringify(config.appConfig, null, 4));
 
     return file("index.js", str, { src: true })
-    .pipe(gulp.dest("./config"));
+        .pipe(gulp.dest("./config"));
 });
 
 /****************************************************************
@@ -49,12 +49,12 @@ gulp.task("config", function() {
 ****************************************************************/
 gulp.task("assets", function() {
     return gulp.src(config.src.assets)
-    .pipe(gulp.dest(config.dest+"/assets"));
+        .pipe(gulp.dest(config.dest+"/assets"));
 });
 
 gulp.task("assets:images", function() {
     return gulp.src(config.src.images)
-    .pipe(gulp.dest(config.dest+"/assets/images"));
+        .pipe(gulp.dest(config.dest+"/assets/images"));
 });
 
 /****************************************************************
@@ -62,8 +62,8 @@ gulp.task("assets:images", function() {
 ****************************************************************/
 gulp.task("i18n", function() {
     return gulp.src(config.src.i18n)
-    .pipe(yaml({space: 4}))
-    .pipe(gulp.dest(config.dest+"/assets/i18n"));
+        .pipe(yaml({space: 4}))
+        .pipe(gulp.dest(config.dest+"/assets/i18n"));
 });
 
 /****************************************************************
@@ -71,10 +71,10 @@ gulp.task("i18n", function() {
 ****************************************************************/
 gulp.task("pug", function() {
     return gulp.src(config.src.html)
-    .pipe(pug({
-        locals: config.appConfig.siteinfo
-    }))
-    .pipe(gulp.dest(config.dest));
+        .pipe(pug({
+            locals: config.appConfig.siteinfo
+        }))
+        .pipe(gulp.dest(config.dest));
 });
 
 /****************************************************************

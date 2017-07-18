@@ -116,3 +116,7 @@ ENH : Remove tag select from product create page for non admin users (i.e., only
 ENH : Handle new order item entity in admin orders and brand orders page.
 BUG : Correct a bug that load products of previous accessed brand.
 BUG : Correct a bug that was enabling anyone to upload photos for products.
+ENH : Set default supplyType of product to on_stock for admins in product create page.
+ENH : Update all dependencies versions.
+ENH : Update route schema to react-router v4.
+ENH : Replace all jsx file extensions to js.

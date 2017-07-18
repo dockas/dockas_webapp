@@ -1,26 +1,35 @@
-import lodash from "lodash";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import lodash from "lodash"
+import qs from "qs"
+import {LoggerFactory,Redux} from "darch/src/utils"
 
-let Logger = new LoggerFactory("policies.not_auth");
+let Logger = new LoggerFactory("policies.not_auth")
 
-module.exports = function(nextState, replace) {
+module.exports = function(history, location) {
     let logger = Logger.create("policy"),
-        uid = lodash.get(Redux.shared.store.getState(), "user.uid");
+        uid = lodash.get(Redux.shared.store.getState(), "user.uid")
 
-    logger.info("enter", {uid});
+    logger.info("enter", {uid})
 
-    //console.log(["nextState", nextState]);
+    let pathname = "/signin"
+
+    if(location && location.pathname) {
+        let queryStr = qs.stringify({
+            redirect: location.pathname
+        })
+
+        pathname = `${pathname}?${queryStr}`
+    }
 
     if(!uid) {
-        logger.info("not pass");
-        replace({
-            pathname: "/signin",
-            query: {
-                redirect: nextState.location.pathname
-            }
-        });
-    }
-    else {logger.info("pass");}
+        logger.info("not pass")
+        
+        if(history) {
+            history.replace(pathname)
+        }
 
-    return Promise.resolve();
-};
+        throw new Error("not authenticated")
+    }
+    else {logger.info("pass")}
+
+    return Promise.resolve()
+}

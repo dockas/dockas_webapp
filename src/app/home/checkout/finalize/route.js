@@ -1,12 +1,17 @@
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
+
 module.exports = {
     path: "finalize",
 
-    // @TODO : If there are no order count (oc) query string
-    // parameter, then prevent user enter this state.
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
+
+    routes: [],
     
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./index"));
-        });
-    }
-};
+    loadPage
+}

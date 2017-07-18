@@ -1,7 +1,7 @@
-import Socket from "../utils/socket";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import Socket from "../utils/socket"
+import {LoggerFactory,Redux} from "darch/src/utils"
 
-let Logger = new LoggerFactory("wallet", {level: "debug"});
+let Logger = new LoggerFactory("wallet", {level: "debug"})
 
 module.exports = class Wallet {
     static actions = require("./actions");
@@ -10,10 +10,10 @@ module.exports = class Wallet {
     // Register to socket events.
     static listenSocketEvents() {
         Socket.shared.on("wallet:updated", (data) => {
-            let logger = Logger.create("wallet:updated");
-            logger.info("enter", data);
+            let logger = Logger.create("wallet:updated")
+            logger.info("enter", data)
 
-            Redux.dispatch(Wallet.actions.walletUpdatedEvent(data));
-        });
+            Redux.dispatch(Wallet.actions.walletUpdatedEvent(data))
+        })
     }
-};
+}

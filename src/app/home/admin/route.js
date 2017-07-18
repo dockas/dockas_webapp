@@ -1,36 +1,29 @@
-import adminPol from "policies/admin";
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
 
 module.exports = {
+    name: "admin.route",
+
     path: "admin",
 
-    indexRoute: { 
-        onEnter: (nextState, replace) => {
-            replace("/admin/users");
-        }
+    Page: (props) => {
+        console.log(["caralha : admin", props])
+
+        return (
+            <Bundle load={loadPage}>
+                {(Page) => <Page {...props}/>}
+            </Bundle>
+        )
     },
 
-    onEnter(nextState, replace, cb) {
-        adminPol(nextState,replace).then(cb);
-    },
+    routes: [
+        require("./users/route"),
+        require("./tags/route"),
+        require("./orders/route"),
+        require("./invitations/route"),
+        require("./create/route")
+    ],
 
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./page"));
-        });
-    },
-
-    getChildRoutes(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, [
-                require("./products/route"),
-                require("./users/route"),
-                require("./tags/route"),
-                require("./orders/route"),
-                require("./invitations/route"),
-                require("./notifications/route"),
-                require("./coupons/route"),
-                require("./create/route")
-            ]);
-        });
-    }
-};
+    loadPage
+}

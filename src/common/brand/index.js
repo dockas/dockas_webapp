@@ -1,7 +1,7 @@
-import Socket from "../utils/socket";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import Socket from "../utils/socket"
+import {LoggerFactory,Redux} from "darch/src/utils"
 
-let Logger = new LoggerFactory("brand", {level: "debug"});
+let Logger = new LoggerFactory("brand", {level: "debug"})
 
 module.exports = class Brand {
     static Card = require("./card");
@@ -11,13 +11,13 @@ module.exports = class Brand {
     static reducer = require("./reducer");
     static utils = require("./utils");
 
-     // Register to socket events.
+    // Register to socket events.
     static listenSocketEvents() {
         Socket.shared.on("brand:updated", (data) => {
-            let logger = Logger.create("brand:updated");
-            logger.info("enter", data);
+            let logger = Logger.create("brand:updated")
+            logger.info("enter", data)
 
-            Redux.dispatch(Brand.actions.brandUpdatedEvent(data));
-        });
+            Redux.dispatch(Brand.actions.brandUpdatedEvent(data))
+        })
     }
-};
+}

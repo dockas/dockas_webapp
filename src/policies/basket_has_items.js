@@ -1,18 +1,18 @@
-import lodash from "lodash";
-import {LoggerFactory,Redux} from "darch/src/utils";
+import lodash from "lodash"
+import {LoggerFactory,Redux} from "darch/src/utils"
 
-let Logger = new LoggerFactory("policies.basket_has_items");
+let Logger = new LoggerFactory("policies.basket_has_items")
 
-module.exports = function(nextState, replace) {
+module.exports = function(history) {
     let logger = Logger.create("policy"),
-        basket = lodash.get(Redux.shared.store.getState(), "basket");
+        basket = lodash.get(Redux.shared.store.getState(), "basket")
 
-    logger.info("enter", {basket});
+    logger.info("enter", {basket})
 
     if(!lodash.size(basket.items)) {
-        replace("/");
+        if(history){ history.replace("/") }
     }
-    else { logger.info("pass"); }
+    else { logger.info("pass") }
 
-    return Promise.resolve();
-};
+    return Promise.resolve()
+}

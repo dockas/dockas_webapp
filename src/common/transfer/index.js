@@ -6,4 +6,4 @@
 module.exports = class Wallet {
     static actions = require("./actions");
     static reducer = require("./reducer");
-};
+}

@@ -1,9 +1,17 @@
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
+
 module.exports = {
     path: "list",
 
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./index"));
-        });
-    }
-};
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
+
+    routes: [],
+    
+    loadPage
+}

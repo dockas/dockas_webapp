@@ -1,9 +1,9 @@
-import {createActions} from "redux-actions";
-import {LoggerFactory} from "darch/src/utils";
-import Api from "../utils/api";
+import {createActions} from "redux-actions"
+import {LoggerFactory} from "darch/src/utils"
+import Api from "../utils/api"
 //import Socket from "../utils/socket";
 
-let Logger = new LoggerFactory("common.company.actions");
+let Logger = new LoggerFactory("common.company.actions")
 
 export default createActions({
     async companyFind(query, {
@@ -11,13 +11,13 @@ export default createActions({
         concat=false,
         opts=null
     }={}) {
-        var logger = Logger.create("companyFind");
-        logger.info("enter", query);
+        var logger = Logger.create("companyFind")
+        logger.info("enter", query)
 
-        let response = await Api.shared.companyFind(query, opts);
+        let response = await Api.shared.companyFind(query, opts)
 
-        logger.debug("api companyFind success", response);
+        logger.debug("api companyFind success", response)
 
-        return {data: response.results, query, scope, concat};
+        return {data: response.results, query, scope, concat}
     }
-});
+})

@@ -1,0 +1,30 @@
+@require "~darch/src/styles/variables";
+
+.menu
+    list-style: none;
+    padding: 0px;
+    
+    li
+        &:not(:last-child)
+            border-bottom: 1px solid white;
+        
+        > a
+            display: block;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            background: #f5f5f5;
+            
+            &:hover
+                background: #f0f0f0;
+            
+            &.active
+                color: #4183D7;
+                border-left-color: #4183D7;
+            
+            &:not(.active)
+                color: #666;
+
+.body
+    @media (min-width: $screen-desktop-min)
+        padding-left: 40px;

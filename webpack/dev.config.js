@@ -1,5 +1,4 @@
 let lodash          = require("lodash"),
-    path            = require("path"),
     baseConfig      = require("./base.config");
 
 // Merge with base config

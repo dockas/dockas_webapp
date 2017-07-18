@@ -1,32 +1,21 @@
-import canCheckoutPol from "policies/can_checkout";
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
 
 module.exports = {
     path: "checkout",
 
-    onEnter(nextState, replace, cb) {
-        canCheckoutPol(nextState,replace).then(cb);
-    },
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
+
+    routes: [
+        require("./review/route"),
+        require("./payment/route"),
+        require("./finalize/route")
+    ],
     
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./page"));
-        });
-    },
-
-    getChildRoutes(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, [
-                require("./review/route"),
-                require("./address/route"),
-                require("./payment/route"),
-                require("./finalize/route"),
-            ]);
-        });
-    },
-
-    getIndexRoute(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./review/route"));
-        });
-    }
-};
+    loadPage
+}

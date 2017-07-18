@@ -1,3 +1,5 @@
+/* globals __dirname */
+
 var path                = require("path"),
     webpack             = require("webpack"),
     config              = require("../gulp.config");
@@ -5,15 +7,7 @@ var path                = require("path"),
 module.exports = {
     entry: {
         main: [config.src.main_js],
-        vendor: [
-            "babel-polyfill",
-            "config",
-            "react",
-            "react-dom",
-            "react-redux",
-            "react-router",
-            "darch/src"
-        ]
+        vendor: config.vendor.modules
     },
     output: {
         path: config.dest+"/assets/",
@@ -71,7 +65,7 @@ module.exports = {
                 exclude: /node_modules/,
                 use: [
                     {loader: "babel-loader", options: {
-                        presets: ["latest", "react"],
+                        presets: ["latest", "react", "flow"],
                         plugins: [
                             "autobind-class-methods",
                             "transform-class-properties",

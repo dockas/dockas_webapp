@@ -10,4 +10,4 @@ module.exports = {
         CANCELED: "canceled",
         DELIVER_FAILED: "deliver_failed"
     }
-};
+}

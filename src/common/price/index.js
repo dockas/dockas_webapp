@@ -16,4 +16,4 @@ module.exports = class OrderItem {
             Redux.dispatch(OrderItem.actions.orderItemUpdatedEvent(data));
         });
     }*/
-};
+}

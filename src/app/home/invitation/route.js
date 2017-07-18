@@ -1,20 +1,17 @@
-import lodash from "lodash";
-import {Redux} from "darch/src/utils";
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
 
 module.exports = {
     path: "invitation",
 
-    onEnter(nextState, replace, cb) {
-        if(lodash.get(Redux.shared.store.getState(), "user.uid")) {
-            return replace("/");
-        }
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
 
-        cb();
-    },
-
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./index"));
-        });
-    }
-};
+    routes: [],
+    
+    loadPage
+}

@@ -4,4 +4,4 @@ module.exports = {
         BIWEEKLY: "biweekly",
         MONTHLY: "monthly"
     }
-};
+}

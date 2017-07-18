@@ -1,30 +1,20 @@
-import authPol from "policies/auth";
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
 
 module.exports = {
     path: "orders",
 
-    onEnter(nextState, replace, cb) {
-        authPol(nextState,replace).then(cb);
-    },
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
 
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./page"));
-        });
-    },
-
-    getChildRoutes(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, [
-                require("./list/route"),
-                require("./detail/route")
-            ]);
-        });
-    },
-
-    getIndexRoute(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./list/route"));
-        });
-    }
-};
+    routes: [
+        require("./list/route"),
+        require("./detail/route")
+    ],
+    
+    loadPage
+}

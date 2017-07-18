@@ -1,19 +1,21 @@
+import React from "react"
+import {Bundle} from "common"
+import loadPage from "bundle-loader?lazy!./index"
+
 module.exports = {
     path: "create",
 
-    getComponent(nextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, require("./page"));
-        });
-    },
+    Page: (props) => (
+        <Bundle load={loadPage}>
+            {(Page) => <Page {...props}/>}
+        </Bundle>
+    ),
 
-    getChildRoutes(partialNextState, cb) {
-        require.ensure([], (require) => {
-            cb(null, [
-                require("./product/route"),
-                require("./notification/route"),
-                require("./coupon/route")
-            ]);
-        });
-    }
-};
+    routes: [
+        require("./product/route"),
+        require("./notification/route"),
+        require("./coupon/route")
+    ],
+    
+    loadPage
+}

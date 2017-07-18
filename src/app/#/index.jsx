@@ -1,11 +1,11 @@
-import React from "react";
-import {connect} from "react-redux";
+import React from "react"
+import {connect} from "react-redux"
 //import lodash from "lodash";
 //import config from "config";
-import {LoggerFactory} from "darch/src/utils";
-import styles from "./styles";
+import {LoggerFactory} from "darch/src/utils"
+import styles from "./styles"
 
-let Logger = new LoggerFactory("lists.detail.subscribe");
+let Logger = new LoggerFactory("lists.detail.subscribe")
 
 /**
  * Redux map state to props function.
@@ -17,7 +17,7 @@ function mapStateToProps(state) {
     return {
         uid: state.user.uid,
         user: state.user.uid?state.user.data[state.user.uid]:null
-    };
+    }
 }
 
 /**
@@ -25,7 +25,7 @@ function mapStateToProps(state) {
  */
 let mapDispatchToProps = {
 
-};
+}
 
 /**
  * Main component class.
@@ -39,8 +39,8 @@ class Component extends React.Component {
     state = {};
 
     async componentDidMount() {
-        let logger = Logger.create("componentDidMount");
-        logger.info("enter");
+        let logger = Logger.create("componentDidMount")
+        logger.info("enter")
     }
 
     render() {
@@ -48,7 +48,7 @@ class Component extends React.Component {
             <div>
                 subscribe
             </div>
-        );
+        )
     }
 }
 
@@ -56,4 +56,4 @@ class Component extends React.Component {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Component);
+)(Component)
